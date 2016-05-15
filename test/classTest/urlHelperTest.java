@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import it.utils.UrlHelper;
 
-public class urlHelperTest {
+public class UrlHelperTest {
 	private static final String HTTP_WWW_TEST_COM = "http://www.test.com";
 	String urlSite;
 

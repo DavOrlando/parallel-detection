@@ -20,7 +20,7 @@ public class UrlHelper {
 	 * @return nameFolder
 	 */
 	public static String getNameFolderFromSiteUrl(String siteUrl) {
-		return siteUrl.replace("http://", "").replaceAll(":", "").replaceAll("/", "").replaceAll("https://", "")
+		return siteUrl.replace("http://", "").replaceAll(":", "").replaceAll("/", "").replace("https://", "")
 				.replaceAll("/?", ""); // TODO qui si deve togliere replaceAll e
 										// mettere replace giusto?
 	}

@@ -85,10 +85,10 @@ public class MultilingualDetector {
 		homePagePurge = UrlHelper.getUrlWithoutSlashesAtEnd(homePagePurge);
 
 		/*
-		 * groupHreflang.add(current); errore perchè aggiunge due volte se non
+		 *  errore perchè aggiunge due volte se non
 		 * riempie la prima lista DAVIDE
 		 */
-
+		//setOfListThatContainEntryPoints.add(listOfMax5EntryPoints);
 		for (Element link : linksInHomePage) {
 			// invece di creare tutte coppie lancio la visita ricorsiva di 5 in 5
 			if (listOfMax5EntryPoints.size() == 5) {
