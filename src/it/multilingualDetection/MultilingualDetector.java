@@ -1,6 +1,7 @@
 package it.multilingualDetection;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -11,8 +12,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import it.model.Site;
-import it.utils.UrlHelper;
+import it.model.Page;
+import it.model.ParallelPages;
+import it.utils.UrlUtil;
 
 /**
  * Classe che rappresenta un rilevatore di siti multilingua. Possiede metodi per
@@ -25,20 +27,21 @@ import it.utils.UrlHelper;
 
 public class MultilingualDetector {
 
-
 	public MultilingualDetector() {
 	}
 
 	/**
 	 * Rileva se il sito è un falso multilingua, attraverso l'analisi del suo
-	 * URL.
+	 * URL. Sito falso multlingua vuol dire parallelo nella struttura ma non
+	 * nella semantica.
 	 * 
-	 * @param site
+	 * @param homepageURL
 	 *            la stringa che corrisponde all'URL del sito
 	 * @return true se il sito è un falso multilingua, false altrimenti
 	 */
-	public boolean detectFalseMultilingualSite(String site) {
-		return site.contains("citysite.") || site.contains("citycorner.") || site.contains("stadtsite.");
+	public boolean detectFalseMultilingualSite(URL homepageURL) {
+		return homepageURL.toString().contains("citysite.") || homepageURL.toString().contains("citycorner.")
+				|| homepageURL.toString().contains("stadtsite.");
 	}
 
 	/*
@@ -58,76 +61,46 @@ public class MultilingualDetector {
 	/**
 	 * Si cercano nella homepage del sito passato come parametro dei link
 	 * uscenti con l'attributo hreflang, euristica che ci porta a dire che il
-	 * sito è multilingua. Si collezionano tutti questi link in delle liste di
-	 * stringhe (con al massimo 5 elementi), successivamente si inseriscono le
-	 * liste all'interno di un set.
+	 * sito è multilingua. Si collezionano tutti questi URL, che rappresentano
+	 * le pagine nelle varie lingue, in delle liste di stringhe (con al massimo
+	 * 5 elementi), successivamente si inseriscono le liste all'interno di un
+	 * set.
 	 * 
-	 * @param site
+	 * @param homepage
 	 *            il sito che si deve analizzare
 	 * @return un set di liste dove ciascuna possiede al massimo 5 homepage
 	 *         multilingua e parallele
 	 * @throws IOException
 	 */
-	public Set<List<String>> detectByHreflang(Site site) throws IOException {
-		// set ritornato dal metodo
-		Set<List<String>> setOfListThatContainEntryPoints = new HashSet<List<String>>();
+	public ParallelPages detectByHreflang(Page homepage) throws IOException {
+		// dove andiamo a mettere tutte le pagine parallele.
+		ParallelPages parallelHomepage = new ParallelPages();
 
-		// lista corrente di max 5 entry points
-		List<String> listOfMax5EntryPoints= new LinkedList<String>();
-
-		Document document = site.getDocument();
+		Document document = homepage.getDocument();
 		// seleziono i link della pagina
 		Elements linksInHomePage = document.select("link");
 
-		//TODO:DAVIDE qui secondo me voleva fare un altra cosa, non ha senso così.
-		String homePagePurge = site.getUrlRedirect();
-		listOfMax5EntryPoints.add(homePagePurge);
-		homePagePurge = UrlHelper.getUrlWithoutSlashesAtEnd(homePagePurge);
-
-		/*
-		 *  errore perchè aggiunge due volte se non
-		 * riempie la prima lista DAVIDE
-		 */
-		//setOfListThatContainEntryPoints.add(listOfMax5EntryPoints);
+		String homePagePurge = homepage.getUrlRedirect().toString();
+		parallelHomepage.addURL(new URL(UrlUtil.getUrlWithoutSlashesAtEnd(
+				UrlUtil.getUrlWithoutSlashesAtEnd(UrlUtil.getUrlWithoutSlashesAtEnd(homePagePurge)))));
+		
 		for (Element link : linksInHomePage) {
-			// invece di creare tutte coppie lancio la visita ricorsiva di 5 in 5
-			if (listOfMax5EntryPoints.size() == 5) {
-				setOfListThatContainEntryPoints.add(listOfMax5EntryPoints);
-				listOfMax5EntryPoints = new LinkedList<String>();
-			}
-
 			if (!link.attr("hreflang").isEmpty()) {
-				String outLinkWithHrefLang = UrlHelper.getUrlWithoutSlashesAtEnd(link.attr("href"));
+				String outLinkWithHrefLang = UrlUtil.getUrlWithoutSlashesAtEnd(link.attr("href"));
 				// se link è relativo modificalo adeguatemente
 				if (!outLinkWithHrefLang.contains("http")) {
-					outLinkWithHrefLang = UrlHelper.getAbsoluteUrlFromRelativeUrl(site.getUrlRedirect(), outLinkWithHrefLang);
+					outLinkWithHrefLang = UrlUtil.getAbsoluteUrlFromRelativeUrl(homepage.getUrlRedirect().toString(),
+							outLinkWithHrefLang);
 				}
-				listOfMax5EntryPoints.add(outLinkWithHrefLang);
+				parallelHomepage.addURL(new URL(outLinkWithHrefLang));
 			}
 		}
-		setOfListThatContainEntryPoints.add(listOfMax5EntryPoints);
 
 		// se solo homepage restituisco set vuoto
-		if (countEntryPoints(setOfListThatContainEntryPoints) == 1)
-			return new HashSet<List<String>>();
+		if (parallelHomepage.getParallelPageUrls().size() == 1)
+			return new ParallelPages();
 
-		return setOfListThatContainEntryPoints;
-	}
-
-	/**
-	 * Conta il numero di entry points, contenuti in liste all'interno di un
-	 * insieme
-	 * 
-	 * @param groupOfEntryPoints
-	 *            ovvero la collezione di
-	 * @return int numero di entry points
-	 */
-	private int countEntryPoints(Collection<List<String>> groupOfEntryPoints) {
-		int countEntryPoints = 0;
-		for (List<String> entryPoints : groupOfEntryPoints) {
-			countEntryPoints = countEntryPoints + entryPoints.size();
-		}
-		return countEntryPoints;
+		return parallelHomepage;
 	}
 
 }

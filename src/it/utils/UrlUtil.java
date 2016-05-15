@@ -10,7 +10,7 @@ import org.apache.commons.lang.StringUtils;
  * @author davideorlando
  * 
  */
-public class UrlHelper {
+public class UrlUtil {
 
 	/**
 	 * Ritorna una stringa senza "http://" o '/' o "/?" o "https://" utile per
@@ -19,8 +19,8 @@ public class UrlHelper {
 	 * @param siteUrl
 	 * @return nameFolder
 	 */
-	public static String getNameFolderFromSiteUrl(String siteUrl) {
-		return siteUrl.replace("http://", "").replaceAll(":", "").replaceAll("/", "").replace("https://", "")
+	public static String getNameFolderFromSiteUrl(URL siteUrl) {
+		return siteUrl.toString().replace("http://", "").replaceAll(":", "").replaceAll("/", "").replace("https://", "")
 				.replaceAll("/?", ""); // TODO qui si deve togliere replaceAll e
 										// mettere replace giusto?
 	}
@@ -32,7 +32,7 @@ public class UrlHelper {
 	 * @return "http://" + site
 	 */
 
-	public static String getUrlWithHttp(String siteUrl) {
+	public static String addHttp(String siteUrl) {
 		return "http://".concat(siteUrl);
 	}
 
@@ -61,22 +61,6 @@ public class UrlHelper {
 	public static String getAbsoluteUrlFromRelativeUrl(String homePage, String outlink) throws IOException {
 		URL url = new URL(new URL(homePage), (outlink));
 		return url.toString();
-	}
-
-	/**
-	 * Ritorna la root dell'URL. Esempio: "http://www.test.com/test" diventa
-	 * "http://www.test.com".
-	 * 
-	 * @param url
-	 * @return urlRoot
-	 */
-	public static String getUrlRoot(String url) {
-		String urlRoot = url;
-		if (!hasHttp(url))
-			urlRoot = getUrlWithHttp(urlRoot);
-		if (StringUtils.ordinalIndexOf(urlRoot, "/", 3) != -1)
-			urlRoot = urlRoot.substring(0, StringUtils.ordinalIndexOf(urlRoot, "/", 3));
-		return urlRoot;
 	}
 
 	/**

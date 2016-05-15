@@ -2,36 +2,58 @@ package featureTest;
 
 import static org.junit.Assert.*;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+
 import org.junit.Before;
 import org.junit.Test;
-import it.model.Site;
+import it.model.Page;
 import it.multilingualDetection.M2ltilingualSite;
 import it.multilingualDetection.MultilingualDetector;
 
 public class DetectFalseMultilingualSiteTest {
-	
+
 	private MultilingualDetector multilingualDetector;
-	
+
 	@Before
-	public void setUp(){
+	public void setUp() {
 		multilingualDetector = new MultilingualDetector();
 	}
-	
-	
+
 	@Test
 	public void detectFalseMultilingualSiteTest_stadsite() {
-		String falseMultilingualSite = "www.test.stadtsite.com";
-		assertTrue(this.multilingualDetector.detectFalseMultilingualSite(falseMultilingualSite));
+		URL falseMultilingualSite;
+		try {
+			falseMultilingualSite = new URL("http://www.test.stadtsite.com");
+			assertTrue(this.multilingualDetector.detectFalseMultilingualSite(falseMultilingualSite));
+		} catch (MalformedURLException e) {
+			fail();
+			e.printStackTrace();
+		}
 	}
-	
+
 	@Test
 	public void detectFalseMultilingualSiteTest_citycorner() {
-		String falseMultilingualSite = "www.test.citycorner.com";
-		assertTrue(this.multilingualDetector.detectFalseMultilingualSite(falseMultilingualSite));
+		URL falseMultilingualSite;
+		try {
+			falseMultilingualSite = new URL("http://www.test.citycorner.com");
+			assertTrue(this.multilingualDetector.detectFalseMultilingualSite(falseMultilingualSite));
+		} catch (MalformedURLException e) {
+			fail();
+			e.printStackTrace();
+		}
 	}
+
 	@Test
 	public void detectFalseMultilingualSiteTest_citysite() {
-		String falseMultilingualSite = "www.test.citysite.com";
-		assertTrue(this.multilingualDetector.detectFalseMultilingualSite(falseMultilingualSite));
+		URL falseMultilingualSite;
+		try {
+			falseMultilingualSite = new URL("http://www.test.citysite.com");
+			assertTrue(this.multilingualDetector.detectFalseMultilingualSite(falseMultilingualSite));
+		} catch (MalformedURLException e) {
+			fail();
+			e.printStackTrace();
+		}
 	}
 }

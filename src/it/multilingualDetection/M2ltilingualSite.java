@@ -1,8 +1,9 @@
 package it.multilingualDetection;
 
 import it.model.ParallelCollections;
-import it.model.Site;
-import it.utils.UrlHelper;
+import it.model.ParallelPages;
+import it.model.Page;
+import it.utils.UrlUtil;
 import it.utils.Utils;
 
 import java.io.BufferedReader;
@@ -79,27 +80,26 @@ public class M2ltilingualSite {
 	// argomenti: homepage e depth di visita, lock scrivere txt errori e siti
 	// mult o not mult rilevati
 	// trova entry points e li passa al metodo di crawling effettivo
-	public static void multilingualDetection(String siteUrl, int depthT, Lock multSiteLogLock, Lock errorLogLock,
-			Lock productivityLock, Lock timeLock) throws IOException, InterruptedException, LangDetectException {
+	public static void multilingualDetection(String homepageStringUrl, int depthT, Lock multSiteLogLock,
+			Lock errorLogLock, Lock productivityLock, Lock timeLock)
+					throws IOException, InterruptedException, LangDetectException {
+
+		long startDetectionTime = Utils.getTime();
 
 		// creo oggetto per fare detection con le varie euristiche DAVIDE
 		MultilingualDetector multilingualDetector = new MultilingualDetector();
-		// creo oggetto che ha la responsabilità di lavorare sulla stringa url
-		// del sito DAVIDE
 
-		long noww = Utils.getTime();
+		// aggiungo http alla stringa dell'url se già non c'è
+		if (!UrlUtil.hasHttp(homepageStringUrl))
+			homepageStringUrl = UrlUtil.addHttp(homepageStringUrl);
 
-		// aggiungo http alla stringa dell'url
-		if (!UrlHelper.hasHttp(siteUrl))
-			siteUrl = UrlHelper.getUrlWithHttp(siteUrl);
+		URL homepageURL = new URL(homepageStringUrl);
 
 		// controllo per escludere alcuni siti falsi positivi multilingua
-		// (paralleli nella struttura ma non nella semantica)
-		if (multilingualDetector.detectFalseMultilingualSite(siteUrl)) {
+		if (multilingualDetector.detectFalseMultilingualSite(homepageURL)) {
 			synchronized (multSiteLogLock) {
 				// scrivo su un csv che il sito non è multilingua
-				long noww2 = Utils.getTime();
-				Utils.csvWr(new String[] { siteUrl, Utils.getDate() }, "SiteNotMultilingual.csv");
+				Utils.csvWr(new String[] { homepageStringUrl, Utils.getDate() }, "SiteNotMultilingual.csv");
 			}
 			return;
 		}
@@ -107,69 +107,57 @@ public class M2ltilingualSite {
 		// System.out.println("STEP 0... sono dentro la multilingual site
 		// detection");
 
-		// ----------------------------------------------------------------------------------------------------
 		// blocco try in cui provo attraverso varie euristiche a rilevare se un
 		// sito sia multilingua
 		try {
 
-			/*
-			 * modifico la stringa del sito in modo opportuno per creare
-			 * cartelle di output
-			 */
-
-			String nameFolder = UrlHelper.getNameFolderFromSiteUrl(siteUrl);
+			// Prendo il nome della cartella di output dall'URL della homepage
+			String nameFolder = UrlUtil.getNameFolderFromSiteUrl(homepageURL);
 
 			// creo set dove mettere coppie trovate e su cui lanciare visita
 			// ricorsiva
 			// coppie trovate con metodo hreflang
-			Set<List<String>> resultsPageExplorationHP = new HashSet<List<String>>();
+			ParallelPages parallelHomepages;
 			// coppie trovate con metodo lang detection+analisi strutturale
 			Set<Set<String>> resultsPageExploration = new HashSet<Set<String>>();
 
-			/*
-			 * oggetto che rappresenta le info sul sito che si sta analizzando.
-			 * il costruttore si va a creare il sito facendo get dal sito vero e
-			 * proprio DAVIDE
-			 */
-			Site siteToDetect = new Site(siteUrl);
+			//costruisco l'oggetto che rappresenta l' homepage su cui si fa la detection
+			Page homepageToDetect = new Page(homepageURL);
 
-			long now = Utils.getTime();
+			long startTime = Utils.getTime();
 
-			// lancio metodo per cercare l'attribute hreflang nella homepage, se
-			// c'è restituisce set liste di url nelle varie lingue
-			// in particolare RITORNA GRUPPI DI 5 SU CUI lanciare la visita
-			// ricorsiva
-			resultsPageExplorationHP = multilingualDetector.detectByHreflang(siteToDetect);
+			//su gruppi di 5 viene lanciata la visita ricorsiva
+			parallelHomepages = multilingualDetector.detectByHreflang(homepageToDetect);
 
-			long now2 = Utils.getTime();
+			long endTime = Utils.getTime();
 			synchronized (timeLock) {
-				Utils.csvWr(new String[] { siteUrl, "", "mult detection hreflang", "", Long.toString(now2 - now) },
-						java.lang.Thread.currentThread().toString() + "time.csv");
+				Utils.csvWr(new String[] { homepageStringUrl, "", "mult detection hreflang", "",
+						Long.toString(endTime - startTime) }, java.lang.Thread.currentThread().toString() + "time.csv");
 			}
 
 			// se ottengo entry points stampo il sito tra quelli multilingua e
 			// aggiorno la struttura dati del sito
-			if (resultsPageExplorationHP.size() != 0) {
+			if (!parallelHomepages.getParallelPageUrls().isEmpty()) {
 				// aggiungo info al sito
-				long noww2 = Utils.getTime();
+				long endDetectionTime = Utils.getTime();
 
 				synchronized (multSiteLogLock) {
 					// scrivo su csv il sito, l'eventuale redirect, il tipo di
 					// rilevamento e l'istante in cui lo rilevo
-					Utils.csvWr(new String[] { siteUrl, "homepageHrefLang", Long.toString(noww2 - noww) },
-							"SiteMultilingual.csv");
+					Utils.csvWr(new String[] { homepageStringUrl, "homepageHrefLang",
+							Long.toString(endDetectionTime - startDetectionTime) }, "SiteMultilingual.csv");
 				}
 
 				// elimino folder di output e di crawling
 				Utils.deleteDir("htmlPagesPreliminary" + nameFolder);
 
 				int countEntryPoints = 0;
-				for (List<String> currentGroupEP : resultsPageExplorationHP) {
+				for (List<String> currentGroupEP : parallelHomepages.getGroupOfEntryPoints(5)) {
 
 					// creo l'oggetto parallelCollection con il gruppetto di
 					// entry points paralleli corrente
 					ParallelCollections parallelColl = new ParallelCollections(nameFolder + countEntryPoints,
-							currentGroupEP, (depthT), siteUrl);
+							currentGroupEP, (depthT), homepageStringUrl);
 
 					// incremento l'id della collezione di entry points
 					// corrente, per dare nomi diversi alle collezioni di file
@@ -183,7 +171,7 @@ public class M2ltilingualSite {
 						synchronized (errorLogLock) {
 							// stampo nell'error log il sito che da il problema
 							// e l'errore
-							Utils.csvWr(siteUrl, e, "ErrorLog.csv");
+							Utils.csvWr(homepageStringUrl, e, "ErrorLog.csv");
 						}
 					}
 				}
@@ -202,27 +190,28 @@ public class M2ltilingualSite {
 			// lancio il metodo isMultilingual per la rilevazione visitando i
 			// link uscenti dalla hp
 
-			now = Utils.getTime();
+			startTime = Utils.getTime();
 
-			if (resultsPageExplorationHP.size() == 0) {
-				resultsPageExploration = (isMultilingualByExplorationLink(siteToDetect, nameFolder, errorLogLock));
+			if (parallelHomepages.getParallelPageUrls().isEmpty()) {
+				resultsPageExploration = (isMultilingualByExplorationLink(homepageToDetect, nameFolder, errorLogLock));
 			}
-			now2 = Utils.getTime();
+			endTime = Utils.getTime();
 
 			synchronized (timeLock) {
 
-				Utils.csvWr(new String[] { siteUrl, "", "mult detection outlinks", "", Long.toString(now2 - now) },
-						java.lang.Thread.currentThread().toString() + "time.csv");
+				Utils.csvWr(new String[] { homepageStringUrl, "", "mult detection outlinks", "",
+						Long.toString(endTime - startTime) }, java.lang.Thread.currentThread().toString() + "time.csv");
 			}
 
 			// se rilevato presenza contenuto multilingua stampa sito come
 			// multilingua
 			if (resultsPageExploration.size() != 0) {
-				long noww2 = Utils.getTime();
+				long endDetectionTime = Utils.getTime();
 
 				synchronized (multSiteLogLock) {
 
-					Utils.csvWr(new String[] { siteUrl, "visitHomepage", Long.toString(noww2 - noww) },
+					Utils.csvWr(
+							new String[] { homepageStringUrl, "visitHomepage", Long.toString(endDetectionTime - startDetectionTime) },
 							"SiteMultilingual.csv");
 				}
 			}
@@ -240,7 +229,7 @@ public class M2ltilingualSite {
 					List<String> entryPoints = new ArrayList<String>();
 					entryPoints.addAll(currentPairEP);
 					ParallelCollections parallelColl = new ParallelCollections(nameFolder + countGroupEP, entryPoints,
-							(depthT), siteUrl);
+							(depthT), homepageStringUrl);
 					countGroupEP++;
 
 					// lancio rr
@@ -249,7 +238,7 @@ public class M2ltilingualSite {
 					} catch (Exception e) {
 						e.printStackTrace();
 						synchronized (errorLogLock) {
-							Utils.csvWr(siteUrl, e, "ErrorLog.csv");
+							Utils.csvWr(homepageStringUrl, e, "ErrorLog.csv");
 						}
 					}
 				}
@@ -265,16 +254,16 @@ public class M2ltilingualSite {
 			// (con link uscenti paralleli tra loro, ciascuno che porta ad una
 			// lingua diversa)
 
-			now = Utils.getTime();
+			startTime = Utils.getTime();
 
 			if (resultsPageExploration.size() == 0) {
-				resultsPageExploration = preHomePage(siteToDetect, nameFolder, errorLogLock);
+				resultsPageExploration = preHomePage(homepageToDetect, nameFolder, errorLogLock);
 			}
-			now2 = Utils.getTime();
+			endTime = Utils.getTime();
 
 			synchronized (timeLock) {
-				Utils.csvWr(new String[] { siteUrl, "", "mult detection prehomepage", "", Long.toString(now2 - now) },
-						java.lang.Thread.currentThread().toString() + "time.csv");
+				Utils.csvWr(new String[] { homepageStringUrl, "", "mult detection prehomepage", "",
+						Long.toString(endTime - startTime) }, java.lang.Thread.currentThread().toString() + "time.csv");
 			}
 
 			if (resultsPageExploration.size() != 0) {
@@ -287,7 +276,7 @@ public class M2ltilingualSite {
 					List<String> entryPoints = new ArrayList<String>();
 					entryPoints.addAll(currentPairEP);
 					ParallelCollections parallelColl = new ParallelCollections(nameFolder + countGroupEP, entryPoints,
-							(depthT), siteUrl);
+							(depthT), homepageStringUrl);
 					countGroupEP++;
 
 					try {
@@ -295,16 +284,16 @@ public class M2ltilingualSite {
 					} catch (Exception e) {
 						e.printStackTrace();
 						synchronized (errorLogLock) {
-							Utils.csvWr(siteUrl, e, "ErrorLog.csv");
+							Utils.csvWr(homepageStringUrl, e, "ErrorLog.csv");
 						}
 					}
 				}
 				{
 					synchronized (multSiteLogLock) {
-						long noww2 = Utils.getTime();
+						long endDetectionTime = Utils.getTime();
 
-						Utils.csvWr(new String[] { siteUrl, "PreHomepage", Long.toString(noww2 - noww) },
-								"SiteMultilingual.csv");
+						Utils.csvWr(new String[] { homepageStringUrl, "PreHomepage",
+								Long.toString(endDetectionTime - startDetectionTime) }, "SiteMultilingual.csv");
 					}
 
 				}
@@ -324,14 +313,15 @@ public class M2ltilingualSite {
 					synchronized (errorLogLock) {
 						// stampo nell'error log il sito che da il problema e
 						// l'errore
-						Utils.csvWr(siteUrl, e, "ErrorLog.csv");
+						Utils.csvWr(homepageStringUrl, e, "ErrorLog.csv");
 					}
 				}
 
 				synchronized (multSiteLogLock) {
-					long noww2 = Utils.getTime();
+					long endDetectionTime = Utils.getTime();
 
-					Utils.csvWr(new String[] { siteUrl, Long.toString(noww2 - noww) }, "SiteNotMultilingual.csv");
+					Utils.csvWr(new String[] { homepageStringUrl, Long.toString(endDetectionTime - startDetectionTime) },
+							"SiteNotMultilingual.csv");
 				}
 				// System.out.println("FINE STEP 3 PREHOMEPAGE");
 
@@ -344,13 +334,14 @@ public class M2ltilingualSite {
 		catch (Exception e) {
 			e.printStackTrace();
 			synchronized (errorLogLock) {
-				Utils.csvWr(siteUrl, e, "ErrorLog.csv");
+				Utils.csvWr(homepageStringUrl, e, "ErrorLog.csv");
 			}
 			{
 				synchronized (multSiteLogLock) {
-					long noww2 = Utils.getTime();
+					long endDetectionTime = Utils.getTime();
 
-					Utils.csvWr(new String[] { siteUrl, Long.toString(noww2 - noww) }, "SiteNotMultilingual.csv");
+					Utils.csvWr(new String[] { homepageStringUrl, Long.toString(endDetectionTime - startDetectionTime) },
+							"SiteNotMultilingual.csv");
 				}
 				// System.out.println("FINE STEP 3");
 				return;
@@ -359,7 +350,7 @@ public class M2ltilingualSite {
 
 	}// fine main
 
-	private static Set<Set<String>> preHomePage(Site site, String nameFolder, Lock errorLogLock)
+	private static Set<Set<String>> preHomePage(Page site, String nameFolder, Lock errorLogLock)
 			throws IOException, LangDetectException {
 		// creo set dove mettere coppie trovate
 		Set<Set<String>> parallelEntryPoints = null;
@@ -435,7 +426,7 @@ public class M2ltilingualSite {
 						} catch (Exception e) {
 							e.printStackTrace();
 							synchronized (errorLogLock) {
-								Utils.csvWr(new String[] { site.getUrl(), e.toString() }, "ErrorLog.csv");
+								Utils.csvWr(new String[] { site.getUrl().toString(), e.toString() }, "ErrorLog.csv");
 							}
 						}
 					}
@@ -459,9 +450,9 @@ public class M2ltilingualSite {
 			countPotentialEntryPoints++;
 
 			fileToVerify.add(nameFolder + countPotentialEntryPoints);
-			localPath2url.putAll(
-					launchRRDownloadPagesToDecideIfMultilingual(nameFolder, linkPossible.get(0), linkPossible.get(1),
-							countPotentialEntryPoints, errorLogLock, true, errorLogLock, site.getUrlRedirect()));
+			localPath2url.putAll(launchRRDownloadPagesToDecideIfMultilingual(nameFolder, linkPossible.get(0),
+					linkPossible.get(1), countPotentialEntryPoints, errorLogLock, true, errorLogLock,
+					site.getUrlRedirect().toString()));
 
 		}
 
@@ -479,7 +470,7 @@ public class M2ltilingualSite {
 		} catch (LangDetectException e) {
 			synchronized (errorLogLock) {
 				e.printStackTrace();
-				Utils.csvWr(new String[] { site.getUrl(), e.toString() }, "ErrorLog.csv");
+				Utils.csvWr(new String[] { site.getUrl().toString(), e.toString() }, "ErrorLog.csv");
 
 			}
 		}
@@ -498,7 +489,7 @@ public class M2ltilingualSite {
 	// OK
 	// se sito multilingua tramite esplorazione link uscenti (verifica lingua e
 	// struttura), se sito multilingua ritorna set di coppie candidate
-	public static Set<Set<String>> isMultilingualByExplorationLink(Site site, String nameFolder, Lock errorLogLock)
+	public static Set<Set<String>> isMultilingualByExplorationLink(Page site, String nameFolder, Lock errorLogLock)
 			throws IOException, InterruptedException, LangDetectException {
 
 		// creo set dove mettere coppie trovate, (set di set(coppie))
@@ -520,14 +511,15 @@ public class M2ltilingualSite {
 			countPotentialEntryPoints++;
 
 			// lancio rr e faccio language detection
-			// String[] a ={nameFolder,site.getUrlRedirect(),
+			// String[] a ={nameFolder,site.getUrlRedirect().toString(),
 			// linkPossible,Integer.toString(countEntryPoints)};
 
 			// lingua già verificata, lancia rr solo se superata scrematura di
 			// verifica strutt blanda
 			fileToVerify.add(nameFolder + countPotentialEntryPoints);
-			localPath2url.putAll(launchRRDownloadPagesToDecideIfMultilingual(nameFolder, site.getUrlRedirect(),
-					linkPossible, countPotentialEntryPoints, errorLogLock, false, errorLogLock, site.getUrlRedirect()));
+			localPath2url.putAll(launchRRDownloadPagesToDecideIfMultilingual(nameFolder,
+					site.getUrlRedirect().toString(), linkPossible, countPotentialEntryPoints, errorLogLock, false,
+					errorLogLock, site.getUrlRedirect().toString()));
 		}
 
 		// System.out.println("VISIT OUTLINKS 2 fileToVerify: " +
@@ -547,7 +539,7 @@ public class M2ltilingualSite {
 
 			for (String outlink : list) {
 				Set<String> currPair = new HashSet<String>();
-				currPair.add(site.getUrlRedirect());
+				currPair.add(site.getUrlRedirect().toString());
 				currPair.add(localPath2url.get(outlink));
 				resultsPageExploration.add(currPair);
 			}
@@ -555,7 +547,7 @@ public class M2ltilingualSite {
 		} catch (LangDetectException e) {
 			e.printStackTrace();
 			synchronized (errorLogLock) {
-				Utils.csvWr(new String[] { site.getUrl(), e.toString() }, "ErrorLog.csv");
+				Utils.csvWr(new String[] { site.getUrl().toString(), e.toString() }, "ErrorLog.csv");
 			}
 		}
 
@@ -602,7 +594,7 @@ public class M2ltilingualSite {
 	// link da visitare, scorrendo link del sito e scremando quelli con edit
 	// distance troppo grande rispetto alla homepage
 	// verifico anche che siano in lingua diversa, altrimenti non mi interessano
-	public static List<String> outlinkToVisit(Site site, Lock errorLogLock) throws IOException, LangDetectException {
+	public static List<String> outlinkToVisit(Page site, Lock errorLogLock) throws IOException, LangDetectException {
 
 		// set di link già visitati
 		Set<String> alreadyVisit = new HashSet<String>();
@@ -714,7 +706,7 @@ public class M2ltilingualSite {
 	// OK
 	// metodo che verifica che edit distance e lingua dei link uscenti dalla
 	// homepage siano compatibili con lo stato di entry points
-	public static void editDistanceAndLanguageFilter(Elements links, Set<String> alreadyVisit, Site site,
+	public static void editDistanceAndLanguageFilter(Elements links, Set<String> alreadyVisit, Page site,
 			List<String> linkToExplore, Lock errorLogLock, Detector detector, String langHP) throws IOException {
 
 		for (Element link : links) {
@@ -726,17 +718,18 @@ public class M2ltilingualSite {
 			if (!alreadyVisit.contains(linkPossible))
 
 				// controllo se link è diverso da homepage
-				if (!site.getUrlRedirect().equals(linkPossible)) {
+				if (!site.getUrlRedirect().toString().equals(linkPossible)) {
 
 					// controllo se la edit distance tra i link sia ragionevole
-					if (((linkPossible.length() >= site.getUrlRedirect().length())
-							&& (StringUtils.getLevenshteinDistance(site.getUrlRedirect(),
-									linkPossible) < linkPossible.length() - site.getUrlRedirect().length() + 4
-							|| StringUtils.getLevenshteinDistance(site.getUrlRedirect(),
-									linkPossible) < linkPossible.length() - site.getUrlRoot().length() + 4)
-							&& (linkPossible.length() < site.getUrlRedirect().length() * 2.7))
-							|| ((linkPossible.length() <= site.getUrlRedirect().length())
-									&& (StringUtils.getLevenshteinDistance(site.getUrlRedirect(),
+					if (((linkPossible.length() >= site.getUrlRedirect().toString().length())
+							&& (StringUtils.getLevenshteinDistance(site.getUrlRedirect().toString(),
+									linkPossible) < linkPossible.length() - site.getUrlRedirect().toString().length()
+											+ 4
+							|| StringUtils.getLevenshteinDistance(site.getUrlRedirect().toString(),
+									linkPossible) < linkPossible.length() - site.getDomain().length() + 4)
+							&& (linkPossible.length() < site.getUrlRedirect().toString().length() * 2.7))
+							|| ((linkPossible.length() <= site.getUrlRedirect().toString().length())
+									&& (StringUtils.getLevenshteinDistance(site.getUrlRedirect().toString(),
 											linkPossible) < linkPossible.length() / 2))) {
 						// verifico che la lingua sia diversa
 						try {
@@ -759,7 +752,8 @@ public class M2ltilingualSite {
 						} catch (Exception e) {
 							e.printStackTrace();
 							synchronized (errorLogLock) {
-								Utils.csvWr(new String[] { site.getUrlRedirect(), e.toString() }, "ErrorLog.csv");
+								Utils.csvWr(new String[] { site.getUrlRedirect().toString(), e.toString() },
+										"ErrorLog.csv");
 
 							}
 						}
@@ -967,7 +961,7 @@ public class M2ltilingualSite {
 	// lavora su cartelle contententi molti output che sono sempre relativi a
 	// coppie(e non gruppi) di link allineati
 	public static Collection<String> langDetectAndThresholdLabel(String folderRoot, List<String> fileToVerify,
-			Lock errLogLock, Site site) throws LangDetectException, IOException {
+			Lock errLogLock, Page site) throws LangDetectException, IOException {
 
 		List<String> nameFileParallel;
 		Map<String, List<String>> fileOutputRR2textParallel;
@@ -1063,7 +1057,8 @@ public class M2ltilingualSite {
 							synchronized (errLogLock) {
 								// stampo nell'error log il sito che da il
 								// problema e l'errore
-								Utils.csvWr(new String[] { site.getUrlRedirect(), e.toString() }, "ErrorLog.csv");
+								Utils.csvWr(new String[] { site.getUrlRedirect().toString(), e.toString() },
+										"ErrorLog.csv");
 							}
 						}
 
@@ -1072,7 +1067,7 @@ public class M2ltilingualSite {
 
 			} catch (Exception e) {
 				e.printStackTrace();
-				Utils.csvWr(new String[] { site.getUrlRedirect(), e.toString() }, "ErrorLog.csv");
+				Utils.csvWr(new String[] { site.getUrlRedirect().toString(), e.toString() }, "ErrorLog.csv");
 			}
 		}
 
@@ -1090,7 +1085,7 @@ public class M2ltilingualSite {
 	// e una mappa che ha come chiave stringhe e come valori liste di stringhe,
 	// la chiave è il path che gli passo(file output) e il valore sono liste con
 	// il testo concatenato delle label di ogni source
-	public static List textParallel(String path, Lock errorLogLock, Site site) throws IOException {
+	public static List textParallel(String path, Lock errorLogLock, Page site) throws IOException {
 
 		// lista ritornata dal metodo
 		List ret = new ArrayList();
@@ -1176,7 +1171,7 @@ public class M2ltilingualSite {
 			e.printStackTrace();
 			synchronized (errorLogLock) {
 				// stampo nell'error log il sito che da il problema e l'errore
-				Utils.csvWr(new String[] { site.getUrlRedirect(), e.toString() }, "ErrorLog.csv");
+				Utils.csvWr(new String[] { site.getUrlRedirect().toString(), e.toString() }, "ErrorLog.csv");
 			}
 			keyToUrls2.put(path, listStringoni);
 			ret.add(numLabel);
@@ -1259,7 +1254,7 @@ public class M2ltilingualSite {
 	// lavora su cartelle contententi molti output che sono sempre relativi a
 	// coppie(e non gruppi) di link allineati
 	public static Set<Set<String>> langDetectAndThresholdLabelPreHomepage(String folderRoot, List<String> fileToVerify,
-			Lock errLogLock, Site site, Map<String, String> localPath2url) throws LangDetectException, IOException {
+			Lock errLogLock, Page site, Map<String, String> localPath2url) throws LangDetectException, IOException {
 
 		List<String> nameFileParallel;
 		Map<String, List<String>> fileOutputRR2textParallel;
@@ -1303,7 +1298,7 @@ public class M2ltilingualSite {
 
 			} catch (Exception e) {
 				e.printStackTrace();
-				Utils.csvWr(new String[] { site.getUrlRedirect(), e.toString() }, "ErrorLog.csv");
+				Utils.csvWr(new String[] { site.getUrlRedirect().toString(), e.toString() }, "ErrorLog.csv");
 			}
 		}
 
