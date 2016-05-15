@@ -1,8 +1,6 @@
 package it.model;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Set;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
