@@ -48,8 +48,7 @@ public class Page {
 		// get del sito
 		Document document;
 		try {
-			document = Jsoup.connect(url.toString()).userAgent(USER_AGENT)
-					.timeout(8000).get();
+			document = Jsoup.connect(url.toString()).userAgent(USER_AGENT).timeout(8000).get();
 			this.document = document;
 			this.urlRedirect = new URL(document.location());
 		} catch (IOException e) {
@@ -95,35 +94,55 @@ public class Page {
 	public String getDomain() {
 		return this.urlRedirect.getProtocol() + "://" + this.urlRedirect.getAuthority();
 	}
-	
-	// seleziono i paragrafi per fare lang detection
+
+	/***
+	 * Ritorna una stringa che rappresenta il linguaggio della pagina.
+	 * 
+	 * @return language
+	 * @throws LangDetectException
+	 */
 	// TODO selezionare gli elementi per fare lang detection : parametrico
 	// con una lista specificata in un file di properties
-	public String getLanguage() throws LangDetectException{
-			Elements paragraphHtmlDocument = this.getDocument().select("p");
-			String stringParagraphHtmlDocument = paragraphHtmlDocument.text();
+	public String getLanguage() throws LangDetectException {
+		Elements paragraphHtmlDocument = this.getDocument().select("p");
+		String stringParagraphHtmlDocument = paragraphHtmlDocument.text();
 
-			// caricamento dei profili per la language detection
-			if (DetectorFactory.getLangList().size() == 0)
-				DetectorFactory.loadProfile("profiles.sm");
+		// caricamento dei profili per la language detection
+		if (DetectorFactory.getLangList().size() == 0)
+			DetectorFactory.loadProfile("profiles.sm");
 
-			Detector detector = DetectorFactory.create();
-			if (paragraphHtmlDocument.text().length() == 0) {
-				detector.append(this.getDocument().text());
-			} else
-				detector.append(stringParagraphHtmlDocument);
-			return (detector.detect());
+		Detector detector = DetectorFactory.create();
+		if (paragraphHtmlDocument.text().length() == 0) {
+			detector.append(this.getDocument().text());
+		} else
+			detector.append(stringParagraphHtmlDocument);
+		return (detector.detect());
 	}
-	
-	public List<Element> getHtmlElements(String elementName){
+
+	/***
+	 * Ritorna una lista di elementi HTML presenti nella pagina e che
+	 * corrispondono al tag elementName passato per parametro.
+	 * 
+	 * @param elementName
+	 *            nome dell'elemento HTML da cercare nella pagina.
+	 * @return
+	 */
+	public List<Element> getHtmlElements(String elementName) {
 		ArrayList<Element> elements = new ArrayList<Element>();
-		for(Element element:  this.getDocument().select(elementName)){
+		for (Element element : this.getDocument().select(elementName)) {
 			elements.add(element);
 		}
 		return elements;
 	}
-	
-	public List<Element> getAllOutlinks(){
+
+	/***
+	 * Ritorna tutti gli elementi HTML della pagina che potrebbero essere dei
+	 * link uscenti dalla pagina stessa.
+	 * 
+	 * @return
+	 */
+
+	public List<Element> getAllOutlinks() {
 		List<Element> elements = getHtmlElements("a");
 		elements.addAll(this.getHtmlElements("option"));
 		return elements;
