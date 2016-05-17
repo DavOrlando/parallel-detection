@@ -2,9 +2,17 @@ package it.model;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import com.cybozu.labs.langdetect.Detector;
+import com.cybozu.labs.langdetect.DetectorFactory;
+import com.cybozu.labs.langdetect.LangDetectException;
 
 /**
  * Classe che rappresenta il concetto di sito. Ovvero possiede i dati che sono
@@ -16,6 +24,7 @@ import org.jsoup.nodes.Document;
 
 public class Page {
 
+	private static final String USER_AGENT = "Opera/9.63 (Windows NT 5.1; U; en) Presto/2.1.1";
 	private URL url;
 	private URL urlRedirect;
 	private Document document;
@@ -33,16 +42,21 @@ public class Page {
 	 *            String nel formato "http://www.dominio.com/risorsa/"
 	 * @throws IOException
 	 */
-	public Page(URL url) throws IOException {
+	public Page(URL url) {
 		this();
 		this.url = url;
 		// get del sito
-		Document document = Jsoup.connect(url.toString()).userAgent("Opera/9.63 (Windows NT 5.1; U; en) Presto/2.1.1")
-				.timeout(8000).get();
-		this.document = document;
+		Document document;
+		try {
+			document = Jsoup.connect(url.toString()).userAgent(USER_AGENT)
+					.timeout(8000).get();
+			this.document = document;
+			this.urlRedirect = new URL(document.location());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		// Stringa dove salverò il redirect eventuale del sito, quindi url che
 		// effettivamente vado ad analizzare
-		this.urlRedirect = new URL(document.location());
 	}
 
 	public URL getUrl() {
@@ -80,5 +94,38 @@ public class Page {
 
 	public String getDomain() {
 		return this.urlRedirect.getProtocol() + "://" + this.urlRedirect.getAuthority();
+	}
+	
+	// seleziono i paragrafi per fare lang detection
+	// TODO selezionare gli elementi per fare lang detection : parametrico
+	// con una lista specificata in un file di properties
+	public String getLanguage() throws LangDetectException{
+			Elements paragraphHtmlDocument = this.getDocument().select("p");
+			String stringParagraphHtmlDocument = paragraphHtmlDocument.text();
+
+			// caricamento dei profili per la language detection
+			if (DetectorFactory.getLangList().size() == 0)
+				DetectorFactory.loadProfile("profiles.sm");
+
+			Detector detector = DetectorFactory.create();
+			if (paragraphHtmlDocument.text().length() == 0) {
+				detector.append(this.getDocument().text());
+			} else
+				detector.append(stringParagraphHtmlDocument);
+			return (detector.detect());
+	}
+	
+	public List<Element> getHtmlElements(String elementName){
+		ArrayList<Element> elements = new ArrayList<Element>();
+		for(Element element:  this.getDocument().select(elementName)){
+			elements.add(element);
+		}
+		return elements;
+	}
+	
+	public List<Element> getAllOutlinks(){
+		List<Element> elements = getHtmlElements("a");
+		elements.addAll(this.getHtmlElements("option"));
+		return elements;
 	}
 }

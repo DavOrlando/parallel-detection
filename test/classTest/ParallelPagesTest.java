@@ -8,18 +8,18 @@ import java.net.URL;
 import org.junit.Before;
 import org.junit.Test;
 
-import it.model.ParallelPages;
+import it.model.GroupOfParallelUrls;
 
 public class ParallelPagesTest {
 
-	private ParallelPages pp;
+	private GroupOfParallelUrls pp;
 	private URL url;
 	private URL url2;
 	private URL url3;
 
 	@Before
 	public void setUp() throws Exception {
-		this.pp = new ParallelPages();
+		this.pp = new GroupOfParallelUrls();
 		this.url = new URL("http://localhost:8080/testMinimale/homeIt.html");
 		this.url2 = new URL("http://test2");
 		this.url3 = new URL("http://test3");
@@ -28,7 +28,7 @@ public class ParallelPagesTest {
 	@Test
 	public void testAddOneURL() {
 		pp.addURL(url);
-		assertEquals(1, pp.getParallelPageUrls().size());
+		assertEquals(1, pp.getParallelUrls().size());
 	}
 
 	@Test

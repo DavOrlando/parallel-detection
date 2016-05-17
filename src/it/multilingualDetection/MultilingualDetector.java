@@ -13,7 +13,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import it.model.Page;
-import it.model.ParallelPages;
+import it.model.GroupOfParallelUrls;
 import it.utils.UrlUtil;
 
 /**
@@ -39,7 +39,7 @@ public class MultilingualDetector {
 	 *            la stringa che corrisponde all'URL del sito
 	 * @return true se il sito è un falso multilingua, false altrimenti
 	 */
-	public boolean detectFalseMultilingualSite(URL homepageURL) {
+	public boolean isInBlackList(URL homepageURL) {
 		return homepageURL.toString().contains("citysite.") || homepageURL.toString().contains("citycorner.")
 				|| homepageURL.toString().contains("stadtsite.");
 	}
@@ -72,35 +72,25 @@ public class MultilingualDetector {
 	 *         multilingua e parallele
 	 * @throws IOException
 	 */
-	public ParallelPages detectByHreflang(Page homepage) throws IOException {
+	public GroupOfParallelUrls detectByHreflang(Page homepage) throws IOException {
 		// dove andiamo a mettere tutte le pagine parallele.
-		ParallelPages parallelHomepage = new ParallelPages();
-
+		GroupOfParallelUrls parallelHomepageURL = new GroupOfParallelUrls();
 		Document document = homepage.getDocument();
 		// seleziono i link della pagina
 		Elements linksInHomePage = document.select("link");
-
-		String homePagePurge = homepage.getUrlRedirect().toString();
-		parallelHomepage.addURL(new URL(UrlUtil.getUrlWithoutSlashesAtEnd(
-				UrlUtil.getUrlWithoutSlashesAtEnd(UrlUtil.getUrlWithoutSlashesAtEnd(homePagePurge)))));
-		
 		for (Element link : linksInHomePage) {
 			if (!link.attr("hreflang").isEmpty()) {
-				String outLinkWithHrefLang = UrlUtil.getUrlWithoutSlashesAtEnd(link.attr("href"));
-				// se link è relativo modificalo adeguatemente
-				if (!outLinkWithHrefLang.contains("http")) {
-					outLinkWithHrefLang = UrlUtil.getAbsoluteUrlFromRelativeUrl(homepage.getUrlRedirect().toString(),
-							outLinkWithHrefLang);
-				}
-				parallelHomepage.addURL(new URL(outLinkWithHrefLang));
+				parallelHomepageURL.addURL(new URL(link.attr("abs:href")));
 			}
 		}
-
-		// se solo homepage restituisco set vuoto
-		if (parallelHomepage.getParallelPageUrls().size() == 1)
-			return new ParallelPages();
-
-		return parallelHomepage;
+		// TODO verifica successivamente se questa riga serve qui oppure no
+		// String homePagePurge =
+		// UrlUtil.getUrlWithoutSlashesAtEnd(homepage.getUrlRedirect().toString());
+		if (parallelHomepageURL.getParallelUrls().isEmpty())
+			return null;
+		parallelHomepageURL.setHomepageURL(homepage.getUrlRedirect());
+		parallelHomepageURL.addURL(homepage.getUrlRedirect());
+		return parallelHomepageURL;
 	}
 
 }

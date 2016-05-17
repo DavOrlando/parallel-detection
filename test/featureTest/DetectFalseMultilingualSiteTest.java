@@ -26,7 +26,7 @@ public class DetectFalseMultilingualSiteTest {
 		URL falseMultilingualSite;
 		try {
 			falseMultilingualSite = new URL("http://www.test.stadtsite.com");
-			assertTrue(this.multilingualDetector.detectFalseMultilingualSite(falseMultilingualSite));
+			assertTrue(this.multilingualDetector.isInBlackList(falseMultilingualSite));
 		} catch (MalformedURLException e) {
 			fail();
 			e.printStackTrace();
@@ -38,7 +38,7 @@ public class DetectFalseMultilingualSiteTest {
 		URL falseMultilingualSite;
 		try {
 			falseMultilingualSite = new URL("http://www.test.citycorner.com");
-			assertTrue(this.multilingualDetector.detectFalseMultilingualSite(falseMultilingualSite));
+			assertTrue(this.multilingualDetector.isInBlackList(falseMultilingualSite));
 		} catch (MalformedURLException e) {
 			fail();
 			e.printStackTrace();
@@ -50,7 +50,7 @@ public class DetectFalseMultilingualSiteTest {
 		URL falseMultilingualSite;
 		try {
 			falseMultilingualSite = new URL("http://www.test.citysite.com");
-			assertTrue(this.multilingualDetector.detectFalseMultilingualSite(falseMultilingualSite));
+			assertTrue(this.multilingualDetector.isInBlackList(falseMultilingualSite));
 		} catch (MalformedURLException e) {
 			fail();
 			e.printStackTrace();

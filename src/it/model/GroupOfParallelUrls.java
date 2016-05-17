@@ -6,24 +6,34 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class ParallelPages {
+public class GroupOfParallelUrls {
 
-	private List<URL> parallelPageUrls;
+	private static final int DEFAULT_ENTRY_POINT_NUMBER = 5;
+	private List<URL> parallelUrls;
+	private URL homepageURL;
 
 	/**
-	 * Crea un oggetto ParallelPages che mi rappresenta un gruppo di pagine
-	 * parallele e multilingua.
+	 * Crea un oggetto ParallelUrls che mi rappresenta un gruppo di URL
+	 * di pagine parallele e multilingua.
 	 */
-	public ParallelPages() {
-		this.parallelPageUrls = new LinkedList<URL>();
+	public GroupOfParallelUrls() {
+		this.parallelUrls = new LinkedList<URL>();
 	}
 
 	public void addURL(URL url) {
-		this.parallelPageUrls.add(url);
+		this.parallelUrls.add(url);
 	}
 
-	public List<URL> getParallelPageUrls() {
-		return this.parallelPageUrls;
+	public List<URL> getParallelUrls() {
+		return this.parallelUrls;
+	}
+	
+	public URL getHomepageURL() {
+		return homepageURL;
+	}
+
+	public void setHomepageURL(URL homepageURL) {
+		this.homepageURL = homepageURL;
 	}
 
 	/***
@@ -35,7 +45,10 @@ public class ParallelPages {
 	 *            lista.
 	 * @return
 	 */
-
+	
+	public Set<List<String>> getGroupOfEntryPoints() {
+		return this.getGroupOfEntryPoints(DEFAULT_ENTRY_POINT_NUMBER);
+	}
 	/*
 	 * TODO non si è riuscito a capire se quando aggiungeva due volte la stessa
 	 * lista lo faceva apposta o non. Per adesso non lo mettiamo, non ha senso.
@@ -43,7 +56,7 @@ public class ParallelPages {
 	public Set<List<String>> getGroupOfEntryPoints(int numberMaxOfEntryPoints) {
 		Set<List<String>> group = new HashSet<>();
 		List<String> listOfFiveURL = new LinkedList<String>();
-		for (URL url : this.parallelPageUrls) {
+		for (URL url : this.parallelUrls) {
 			if (listOfFiveURL.size() == numberMaxOfEntryPoints) {
 				group.add(listOfFiveURL);
 				listOfFiveURL = new LinkedList<String>();
@@ -55,4 +68,5 @@ public class ParallelPages {
 		return group;
 
 	}
+	
 }

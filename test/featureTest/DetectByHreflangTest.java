@@ -36,9 +36,9 @@ public class DetectByHreflangTest {
 			Set<List<String>> detectedByHreflang = this.multilingualDetector.detectByHreflang(site).getGroupOfEntryPoints(5);
 			assertEquals(1,detectedByHreflang.size());
 			List<String> lista = new ArrayList<>();
-			lista.add("http://localhost:8080/testMinimale/homeIt.html");
 			lista.add("http://localhost:8080/testMinimale/homeEn.html");
 			lista.add("http://localhost:8080/testMinimale/homeFr.html");
+			lista.add("http://localhost:8080/testMinimale/homeIt.html");
 			assertTrue(detectedByHreflang.contains(lista));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -46,11 +46,10 @@ public class DetectByHreflangTest {
 	}
 	
 	@Test
-	public void testDetectByHreflang_SiteThatDoesntHasHrefLangLink() {
+	public void testDetectByHreflang_SiteThatDoesntHaveHrefLangLink() {
 		try {
 			Page siteNotMultilingual = new Page(new URL("http://localhost:8080/testNonMultilingua/homeIt.html"));
-			Set<List<String>> detectByHreflang = this.multilingualDetector.detectByHreflang(siteNotMultilingual).getGroupOfEntryPoints(5);
-			assertTrue(detectByHreflang.isEmpty());
+			assertNull(this.multilingualDetector.detectByHreflang(siteNotMultilingual));
 		} catch (IOException e) {
 			fail();
 			e.printStackTrace();
