@@ -104,19 +104,29 @@ public class Page {
 	// TODO selezionare gli elementi per fare lang detection : parametrico
 	// con una lista specificata in un file di properties
 	public String getLanguage() throws LangDetectException {
-		Elements paragraphHtmlDocument = this.getDocument().select("p");
-		String stringParagraphHtmlDocument = paragraphHtmlDocument.text();
-
 		// caricamento dei profili per la language detection
 		if (DetectorFactory.getLangList().size() == 0)
 			DetectorFactory.loadProfile("profiles.sm");
-
 		Detector detector = DetectorFactory.create();
-		if (paragraphHtmlDocument.text().length() == 0) {
+		String paragraphHtmlDocument = getStringElement("p");
+		if (paragraphHtmlDocument.length() == 0) {
 			detector.append(this.getDocument().text());
 		} else
-			detector.append(stringParagraphHtmlDocument);
-		return (detector.detect());
+			detector.append(paragraphHtmlDocument);
+		return detector.detect();
+	}
+
+	/***
+	 * Ritorna una stringa con il contenuto degli elementi della pagina HTML che
+	 * si chiamano elementName.
+	 * 
+	 * @param elementName
+	 *            nome del parametro HTML
+	 * @return
+	 */
+	private String getStringElement(String elementName) {
+		Elements paragraphHtmlDocument = this.getDocument().select(elementName);
+		return paragraphHtmlDocument.text();
 	}
 
 	/***
