@@ -1,10 +1,10 @@
-package it.multilingualDetection;
+package it.uniroma3.parallel.detection;
 
-import it.model.ParallelCollections;
-import it.model.GroupOfParallelUrls;
-import it.model.Page;
-import it.utils.UrlUtil;
-import it.utils.Utils;
+import it.uniroma3.parallel.model.GroupOfParallelUrls;
+import it.uniroma3.parallel.model.Page;
+import it.uniroma3.parallel.model.ParallelCollections;
+import it.uniroma3.parallel.utils.UrlUtil;
+import it.uniroma3.parallel.utils.Utils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -100,14 +100,12 @@ public class M2ltilingualSite {
 		// creo oggetto per fare detection con le varie euristiche DAVIDE
 		MultilingualDetector multilingualDetector = new MultilingualDetector();
 
-		// aggiungo http alla stringa dell'url se già non c'è
-		if (!UrlUtil.hasHttp(homepageStringUrl))
-			homepageStringUrl = UrlUtil.addHttp(homepageStringUrl);
+		//oggetto che rappresenta l'homepage su cui si fa la detection
+		Page homepageToDetect = new Page(homepageStringUrl);
 
-		URL homepageURL = new URL(homepageStringUrl);
 
 		// controllo per escludere alcuni siti falsi positivi multilingua
-		if (multilingualDetector.isInBlackList(homepageURL)) {
+		if (multilingualDetector.isInBlacklist(homepageToDetect.getUrlRedirect())) {
 			synchronized (multSiteLogLock) {
 				// scrivo su un csv che il sito non è multilingua
 				Utils.csvWr(new String[] { homepageStringUrl, Utils.getDate() }, SITE_NOT_MULTILINGUAL_CSV);
@@ -119,12 +117,8 @@ public class M2ltilingualSite {
 		// sito sia multilingua
 		try {
 			// Prendo il nome della cartella di output dall'URL della homepage
-			String nameFolder = UrlUtil.getNameFolderFromSiteUrl(homepageURL);
+			String nameFolder = UrlUtil.getNameFolderFromSiteUrl(homepageToDetect.getUrlRedirect());
 			GroupOfParallelUrls parallelHomepageURLs;
-
-			// costruisco l'oggetto che rappresenta l' homepage su cui si fa la
-			// detection
-			Page homepageToDetect = new Page(homepageURL);
 
 			long startTime = Utils.getTime();
 
@@ -679,7 +673,8 @@ public class M2ltilingualSite {
 	// homepage siano compatibili con lo stato di entry points
 	// TODO verificare se conviene fare prima detection lingua o controllo edit
 	// distance
-	public static List<String> editDistanceAndLanguageFilter(Page homepage, Lock errorLogLock) throws IOException, LangDetectException {
+	public static List<String> editDistanceAndLanguageFilter(Page homepage, Lock errorLogLock)
+			throws IOException, LangDetectException {
 		String langHp = homepage.getLanguage();
 		// select all link to search other half of candidate pair (hp, half)
 		List<Element> links = homepage.getAllOutlinks();

@@ -8,11 +8,12 @@ import java.net.URL;
 
 import org.junit.Before;
 import org.junit.Test;
-import it.model.Page;
-import it.multilingualDetection.M2ltilingualSite;
-import it.multilingualDetection.MultilingualDetector;
 
-public class DetectFalseMultilingualSiteTest {
+import it.uniroma3.parallel.detection.M2ltilingualSite;
+import it.uniroma3.parallel.detection.MultilingualDetector;
+import it.uniroma3.parallel.model.Page;
+
+public class IsBlacklistTest {
 
 	private MultilingualDetector multilingualDetector;
 
@@ -22,11 +23,11 @@ public class DetectFalseMultilingualSiteTest {
 	}
 
 	@Test
-	public void detectFalseMultilingualSiteTest_stadsite() {
+	public void isBlacklistTest_stadsite() {
 		URL falseMultilingualSite;
 		try {
 			falseMultilingualSite = new URL("http://www.test.stadtsite.com");
-			assertTrue(this.multilingualDetector.isInBlackList(falseMultilingualSite));
+			assertTrue(this.multilingualDetector.isInBlacklist(falseMultilingualSite));
 		} catch (MalformedURLException e) {
 			fail();
 			e.printStackTrace();
@@ -34,11 +35,11 @@ public class DetectFalseMultilingualSiteTest {
 	}
 
 	@Test
-	public void detectFalseMultilingualSiteTest_citycorner() {
+	public void isBlacklistTest_citycorner() {
 		URL falseMultilingualSite;
 		try {
 			falseMultilingualSite = new URL("http://www.test.citycorner.com");
-			assertTrue(this.multilingualDetector.isInBlackList(falseMultilingualSite));
+			assertTrue(this.multilingualDetector.isInBlacklist(falseMultilingualSite));
 		} catch (MalformedURLException e) {
 			fail();
 			e.printStackTrace();
@@ -46,11 +47,11 @@ public class DetectFalseMultilingualSiteTest {
 	}
 
 	@Test
-	public void detectFalseMultilingualSiteTest_citysite() {
+	public void isBlacklistTest_citysite() {
 		URL falseMultilingualSite;
 		try {
 			falseMultilingualSite = new URL("http://www.test.citysite.com");
-			assertTrue(this.multilingualDetector.isInBlackList(falseMultilingualSite));
+			assertTrue(this.multilingualDetector.isInBlacklist(falseMultilingualSite));
 		} catch (MalformedURLException e) {
 			fail();
 			e.printStackTrace();

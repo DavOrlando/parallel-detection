@@ -1,6 +1,7 @@
-package it.model;
+package it.uniroma3.parallel.model;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,8 @@ import org.jsoup.select.Elements;
 import com.cybozu.labs.langdetect.Detector;
 import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.LangDetectException;
+
+import it.uniroma3.parallel.utils.UrlUtil;
 
 /**
  * Classe che rappresenta il concetto di sito. Ovvero possiede i dati che sono
@@ -32,6 +35,9 @@ public class Page {
 	public Page() {
 	}
 
+	public Page(String homepageStringUrl) throws MalformedURLException {
+		this(new URL(UrlUtil.addHttp(homepageStringUrl)));
+	}
 	/***
 	 * 
 	 * Costruttore parametrico rispetto all' URL. Si connette all'URL tramite
@@ -57,6 +63,7 @@ public class Page {
 		// Stringa dove salverò il redirect eventuale del sito, quindi url che
 		// effettivamente vado ad analizzare
 	}
+
 
 	public URL getUrl() {
 		return url;

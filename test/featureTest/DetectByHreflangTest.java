@@ -11,8 +11,8 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-import it.model.Page;
-import it.multilingualDetection.MultilingualDetector;
+import it.uniroma3.parallel.detection.MultilingualDetector;
+import it.uniroma3.parallel.model.Page;
 
 public class DetectByHreflangTest {
 

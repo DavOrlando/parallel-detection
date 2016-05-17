@@ -1,20 +1,13 @@
-package it.multilingualDetection;
+package it.uniroma3.parallel.detection;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import it.model.Page;
-import it.model.GroupOfParallelUrls;
-import it.utils.UrlUtil;
+import it.uniroma3.parallel.model.GroupOfParallelUrls;
+import it.uniroma3.parallel.model.Page;
 
 /**
  * Classe che rappresenta un rilevatore di siti multilingua. Possiede metodi per
@@ -39,7 +32,7 @@ public class MultilingualDetector {
 	 *            la stringa che corrisponde all'URL del sito
 	 * @return true se il sito è un falso multilingua, false altrimenti
 	 */
-	public boolean isInBlackList(URL homepageURL) {
+	public boolean isInBlacklist(URL homepageURL) {
 		return homepageURL.toString().contains("citysite.") || homepageURL.toString().contains("citycorner.")
 				|| homepageURL.toString().contains("stadtsite.");
 	}

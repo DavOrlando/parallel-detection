@@ -8,7 +8,7 @@ import java.net.URL;
 import org.junit.Before;
 import org.junit.Test;
 
-import it.utils.UrlUtil;
+import it.uniroma3.parallel.utils.UrlUtil;
 
 public class UrlUtilTest {
 	String urlSite;

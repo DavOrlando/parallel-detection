@@ -1,4 +1,4 @@
-package it.model;
+package it.uniroma3.parallel.model;
 
 import java.net.URL;
 import java.util.HashSet;

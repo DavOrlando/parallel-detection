@@ -11,8 +11,8 @@ import org.jsoup.nodes.Document;
 import org.junit.Before;
 import org.junit.Test;
 
-import it.model.Page;
-import it.utils.UrlUtil;
+import it.uniroma3.parallel.model.Page;
+import it.uniroma3.parallel.utils.UrlUtil;
 
 public class PageTest {
 	private static final String HTTP_LOCALHOST_8080 = "http://localhost:8080";

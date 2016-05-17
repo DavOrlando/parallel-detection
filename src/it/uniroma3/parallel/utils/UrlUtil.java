@@ -1,4 +1,4 @@
-package it.utils;
+package it.uniroma3.parallel.utils;
 
 import java.io.IOException;
 import java.net.URL;
@@ -33,6 +33,8 @@ public class UrlUtil {
 	 */
 
 	public static String addHttp(String siteUrl) {
+		if(hasHttp(siteUrl))
+			return siteUrl;
 		return "http://".concat(siteUrl);
 	}
 
@@ -43,11 +45,11 @@ public class UrlUtil {
 	 * @return urlWithoutSlashesAtEnd
 	 */
 
-	public static String getUrlWithoutSlashesAtEnd(String urlToPurge) {
-		if (urlToPurge.endsWith("/") || urlToPurge.endsWith("\\"))
-			return urlToPurge.substring(0, urlToPurge.length() - 1);
-		return urlToPurge;
-	}
+//	public static String getUrlWithoutSlashesAtEnd(String urlToPurge) {
+//		if (urlToPurge.endsWith("/") || urlToPurge.endsWith("\\"))
+//			return urlToPurge.substring(0, urlToPurge.length() - 1);
+//		return urlToPurge;
+//	}
 
 	/**
 	 * Ritorna un URL assoluto da un URL relativo.
