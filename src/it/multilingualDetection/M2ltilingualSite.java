@@ -69,7 +69,18 @@ import com.cybozu.labs.langdetect.LangDetectException;
 //classe che permette di sapere se un sito è multilingua e avere coppie candidate di link paralleli (entry points)
 public class M2ltilingualSite {
 
-	private static final int LABEL_MINIME = 8;
+	private static final String OUTPUT = "output";
+	private static final String PRE_HOMEPAGE = "PreHomepage";
+	private static final String MULT_DETECTION_PREHOMEPAGE = "mult detection prehomepage";
+	private static final String HTML_PAGES_PRELIMINARY = "htmlPagesPreliminary";
+	private static final String VISIT_HOMEPAGE = "visitHomepage";
+	private static final String MULT_DETECTION_OUTLINKS = "mult detection outlinks";
+	private static final String ERROR_LOG_CSV = "ErrorLog.csv";
+	private static final String HOMEPAGE_HREF_LANG = "homepageHrefLang";
+	private static final String SITE_MULTILINGUAL_CSV = "SiteMultilingual.csv";
+	private static final String TIME_CSV = "time.csv";
+	private static final String MULT_DETECTION_HREFLANG = "mult detection hreflang";
+	private static final String SITE_NOT_MULTILINGUAL_CSV = "SiteNotMultilingual.csv";
 
 	// main per debugging
 	public static void main(String[] argv) throws IOException, InterruptedException, LangDetectException {
@@ -99,7 +110,7 @@ public class M2ltilingualSite {
 		if (multilingualDetector.detectFalseMultilingualSite(homepageURL)) {
 			synchronized (multSiteLogLock) {
 				// scrivo su un csv che il sito non è multilingua
-				Utils.csvWr(new String[] { homepageStringUrl, Utils.getDate() }, "SiteNotMultilingual.csv");
+				Utils.csvWr(new String[] { homepageStringUrl, Utils.getDate() }, SITE_NOT_MULTILINGUAL_CSV);
 			}
 			return;
 		}
@@ -131,8 +142,8 @@ public class M2ltilingualSite {
 
 			long endTime = Utils.getTime();
 			synchronized (timeLock) {
-				Utils.csvWr(new String[] { homepageStringUrl, "", "mult detection hreflang", "",
-						Long.toString(endTime - startTime) }, java.lang.Thread.currentThread().toString() + "time.csv");
+				Utils.csvWr(new String[] { homepageStringUrl, "", MULT_DETECTION_HREFLANG, "",
+						Long.toString(endTime - startTime) }, java.lang.Thread.currentThread().toString() + TIME_CSV);
 			}
 
 			// se ottengo entry points stampo il sito tra quelli multilingua e
@@ -144,12 +155,12 @@ public class M2ltilingualSite {
 				synchronized (multSiteLogLock) {
 					// scrivo su csv il sito, l'eventuale redirect, il tipo di
 					// rilevamento e l'istante in cui lo rilevo
-					Utils.csvWr(new String[] { homepageStringUrl, "homepageHrefLang",
-							Long.toString(endDetectionTime - startDetectionTime) }, "SiteMultilingual.csv");
+					Utils.csvWr(new String[] { homepageStringUrl, HOMEPAGE_HREF_LANG,
+							Long.toString(endDetectionTime - startDetectionTime) }, SITE_MULTILINGUAL_CSV);
 				}
 
 				// elimino folder di output e di crawling
-				Utils.deleteDir("htmlPagesPreliminary" + nameFolder);
+				Utils.deleteDir(HTML_PAGES_PRELIMINARY + nameFolder);
 
 				int countEntryPoints = 0;
 				for (List<String> currentGroupEP : parallelHomepages.getGroupOfEntryPoints(5)) {
@@ -171,7 +182,7 @@ public class M2ltilingualSite {
 						synchronized (errorLogLock) {
 							// stampo nell'error log il sito che da il problema
 							// e l'errore
-							Utils.csvWr(homepageStringUrl, e, "ErrorLog.csv");
+							Utils.csvWr(homepageStringUrl, e, ERROR_LOG_CSV);
 						}
 					}
 				}
@@ -199,8 +210,8 @@ public class M2ltilingualSite {
 
 			synchronized (timeLock) {
 
-				Utils.csvWr(new String[] { homepageStringUrl, "", "mult detection outlinks", "",
-						Long.toString(endTime - startTime) }, java.lang.Thread.currentThread().toString() + "time.csv");
+				Utils.csvWr(new String[] { homepageStringUrl, "", MULT_DETECTION_OUTLINKS, "",
+						Long.toString(endTime - startTime) }, java.lang.Thread.currentThread().toString() + TIME_CSV);
 			}
 
 			// se rilevato presenza contenuto multilingua stampa sito come
@@ -211,14 +222,14 @@ public class M2ltilingualSite {
 				synchronized (multSiteLogLock) {
 
 					Utils.csvWr(
-							new String[] { homepageStringUrl, "visitHomepage", Long.toString(endDetectionTime - startDetectionTime) },
-							"SiteMultilingual.csv");
+							new String[] { homepageStringUrl, VISIT_HOMEPAGE, Long.toString(endDetectionTime - startDetectionTime) },
+							SITE_MULTILINGUAL_CSV);
 				}
 			}
 
 			// pulisco le folder di output e di crawling e lancio visita
 			// ricorsiva
-			Utils.deleteDir("htmlPagesPreliminary" + nameFolder);
+			Utils.deleteDir(HTML_PAGES_PRELIMINARY + nameFolder);
 
 			// se ho coppie candidate lancio visita ricorsiva
 			if (resultsPageExploration.size() != 0) {
@@ -238,7 +249,7 @@ public class M2ltilingualSite {
 					} catch (Exception e) {
 						e.printStackTrace();
 						synchronized (errorLogLock) {
-							Utils.csvWr(homepageStringUrl, e, "ErrorLog.csv");
+							Utils.csvWr(homepageStringUrl, e, ERROR_LOG_CSV);
 						}
 					}
 				}
@@ -262,13 +273,13 @@ public class M2ltilingualSite {
 			endTime = Utils.getTime();
 
 			synchronized (timeLock) {
-				Utils.csvWr(new String[] { homepageStringUrl, "", "mult detection prehomepage", "",
-						Long.toString(endTime - startTime) }, java.lang.Thread.currentThread().toString() + "time.csv");
+				Utils.csvWr(new String[] { homepageStringUrl, "", MULT_DETECTION_PREHOMEPAGE, "",
+						Long.toString(endTime - startTime) }, java.lang.Thread.currentThread().toString() + TIME_CSV);
 			}
 
 			if (resultsPageExploration.size() != 0) {
 				// elimino folder di output e di crawling
-				Utils.deleteDir("htmlPagesPreliminary" + nameFolder);
+				Utils.deleteDir(HTML_PAGES_PRELIMINARY + nameFolder);
 
 				int countGroupEP = 0;
 				for (Set<String> currentPairEP : resultsPageExploration) {
@@ -284,7 +295,7 @@ public class M2ltilingualSite {
 					} catch (Exception e) {
 						e.printStackTrace();
 						synchronized (errorLogLock) {
-							Utils.csvWr(homepageStringUrl, e, "ErrorLog.csv");
+							Utils.csvWr(homepageStringUrl, e, ERROR_LOG_CSV);
 						}
 					}
 				}
@@ -292,8 +303,8 @@ public class M2ltilingualSite {
 					synchronized (multSiteLogLock) {
 						long endDetectionTime = Utils.getTime();
 
-						Utils.csvWr(new String[] { homepageStringUrl, "PreHomepage",
-								Long.toString(endDetectionTime - startDetectionTime) }, "SiteMultilingual.csv");
+						Utils.csvWr(new String[] { homepageStringUrl, PRE_HOMEPAGE,
+								Long.toString(endDetectionTime - startDetectionTime) }, SITE_MULTILINGUAL_CSV);
 					}
 
 				}
@@ -307,13 +318,13 @@ public class M2ltilingualSite {
 			else {
 
 				try {
-					Utils.deleteDir("htmlPagesPreliminary" + nameFolder);
+					Utils.deleteDir(HTML_PAGES_PRELIMINARY + nameFolder);
 				} catch (Exception e) {
 					e.printStackTrace();
 					synchronized (errorLogLock) {
 						// stampo nell'error log il sito che da il problema e
 						// l'errore
-						Utils.csvWr(homepageStringUrl, e, "ErrorLog.csv");
+						Utils.csvWr(homepageStringUrl, e, ERROR_LOG_CSV);
 					}
 				}
 
@@ -321,7 +332,7 @@ public class M2ltilingualSite {
 					long endDetectionTime = Utils.getTime();
 
 					Utils.csvWr(new String[] { homepageStringUrl, Long.toString(endDetectionTime - startDetectionTime) },
-							"SiteNotMultilingual.csv");
+							SITE_NOT_MULTILINGUAL_CSV);
 				}
 				// System.out.println("FINE STEP 3 PREHOMEPAGE");
 
@@ -334,14 +345,14 @@ public class M2ltilingualSite {
 		catch (Exception e) {
 			e.printStackTrace();
 			synchronized (errorLogLock) {
-				Utils.csvWr(homepageStringUrl, e, "ErrorLog.csv");
+				Utils.csvWr(homepageStringUrl, e, ERROR_LOG_CSV);
 			}
 			{
 				synchronized (multSiteLogLock) {
 					long endDetectionTime = Utils.getTime();
 
 					Utils.csvWr(new String[] { homepageStringUrl, Long.toString(endDetectionTime - startDetectionTime) },
-							"SiteNotMultilingual.csv");
+							SITE_NOT_MULTILINGUAL_CSV);
 				}
 				// System.out.println("FINE STEP 3");
 				return;
@@ -426,7 +437,7 @@ public class M2ltilingualSite {
 						} catch (Exception e) {
 							e.printStackTrace();
 							synchronized (errorLogLock) {
-								Utils.csvWr(new String[] { site.getUrl().toString(), e.toString() }, "ErrorLog.csv");
+								Utils.csvWr(new String[] { site.getUrl().toString(), e.toString() }, ERROR_LOG_CSV);
 							}
 						}
 					}
@@ -470,7 +481,7 @@ public class M2ltilingualSite {
 		} catch (LangDetectException e) {
 			synchronized (errorLogLock) {
 				e.printStackTrace();
-				Utils.csvWr(new String[] { site.getUrl().toString(), e.toString() }, "ErrorLog.csv");
+				Utils.csvWr(new String[] { site.getUrl().toString(), e.toString() }, ERROR_LOG_CSV);
 
 			}
 		}
@@ -480,7 +491,7 @@ public class M2ltilingualSite {
 			Utils.deleteDir("output/" + ftv);
 
 		// elimino file crawlati
-		Utils.deleteDir("htmlPagesPreliminary" + nameFolder);
+		Utils.deleteDir(HTML_PAGES_PRELIMINARY + nameFolder);
 
 		return parallelEntryPoints;
 
@@ -547,7 +558,7 @@ public class M2ltilingualSite {
 		} catch (LangDetectException e) {
 			e.printStackTrace();
 			synchronized (errorLogLock) {
-				Utils.csvWr(new String[] { site.getUrl().toString(), e.toString() }, "ErrorLog.csv");
+				Utils.csvWr(new String[] { site.getUrl().toString(), e.toString() }, ERROR_LOG_CSV);
 			}
 		}
 
@@ -753,7 +764,7 @@ public class M2ltilingualSite {
 							e.printStackTrace();
 							synchronized (errorLogLock) {
 								Utils.csvWr(new String[] { site.getUrlRedirect().toString(), e.toString() },
-										"ErrorLog.csv");
+										ERROR_LOG_CSV);
 
 							}
 						}
@@ -783,13 +794,13 @@ public class M2ltilingualSite {
 
 			// folder where download pages
 			// this create in the first call and then already exist
-			new File("htmlPagesPreliminary" + nameFolder + "/").mkdir();
+			new File(HTML_PAGES_PRELIMINARY + nameFolder + "/").mkdir();
 
 			// this create folder in order to save download pages
-			new File("htmlPagesPreliminary" + nameFolder + "/" + nameFolder + countEntryPoints).mkdir();
+			new File(HTML_PAGES_PRELIMINARY + nameFolder + "/" + nameFolder + countEntryPoints).mkdir();
 
 			// folder url where download page
-			String urlBase = "htmlPagesPreliminary" + nameFolder + "/" + nameFolder + countEntryPoints;
+			String urlBase = HTML_PAGES_PRELIMINARY + nameFolder + "/" + nameFolder + countEntryPoints;
 
 			// page 1
 			String page1;
@@ -800,12 +811,12 @@ public class M2ltilingualSite {
 					downloadFromUrl(new URL(site), urlBase + "/" + "HomePage" + countEntryPoints + "-1" + ".html",
 							userAgent);
 					// aggiorno mappa link visitati
-					localPath2url.put("htmlPagesPreliminary" + nameFolder + "/" + nameFolder + 1 + "/" + "HomePage" + 1
+					localPath2url.put(HTML_PAGES_PRELIMINARY + nameFolder + "/" + nameFolder + 1 + "/" + "HomePage" + 1
 							+ "-1" + ".html", site);
 				}
 
 				// string with homepage path
-				page1 = "htmlPagesPreliminary" + nameFolder + "/" + nameFolder + 1 + "/" + "HomePage" + 1 + "-1"
+				page1 = HTML_PAGES_PRELIMINARY + nameFolder + "/" + nameFolder + 1 + "/" + "HomePage" + 1 + "-1"
 						+ ".html";
 			} else {
 				downloadFromUrl(new URL(site), urlBase + "/" + "HomePage" + countEntryPoints + "-1" + ".html",
@@ -845,7 +856,7 @@ public class M2ltilingualSite {
 								// stampo nell'error log il sito che da il
 								// problema e l'errore
 								try {
-									Utils.csvWr(new String[] { site, e1.toString() }, "ErrorLog.csv");
+									Utils.csvWr(new String[] { site, e1.toString() }, ERROR_LOG_CSV);
 								} catch (IOException e) {
 									e.printStackTrace();
 								}
@@ -864,7 +875,7 @@ public class M2ltilingualSite {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			synchronized (errLogLock) {
-				Utils.csvWr(new String[] { site, ex.toString() }, "ErrorLog.csv");
+				Utils.csvWr(new String[] { site, ex.toString() }, ERROR_LOG_CSV);
 			}
 		}
 
@@ -874,7 +885,7 @@ public class M2ltilingualSite {
 	// OK
 	// metodo per creare file style per output di rr
 	public static void backupFile(String folder) throws FileNotFoundException, IOException {
-		new File("output").mkdir();
+		new File(OUTPUT).mkdir();
 
 		String pathF = "output/" + folder;
 
@@ -972,7 +983,7 @@ public class M2ltilingualSite {
 
 		// parametro con root path risultati dove vado a verificare i suddetti
 		// file di output di rr
-		String pathRoot = "output";
+		String pathRoot = OUTPUT;
 
 		// mappa dove salvo nella chiave la lingua(che deve essere diversa da
 		// quella della home) ma deve anche essere
@@ -1020,7 +1031,7 @@ public class M2ltilingualSite {
 
 						// mi faccio restituire il nome del file su cui ho fatto
 						// la detect
-						File folderR = new File("htmlPagesPreliminary" + folderRoot + "/" + ftv);
+						File folderR = new File(HTML_PAGES_PRELIMINARY + folderRoot + "/" + ftv);
 
 						File[] listOfFilesR = folderR.listFiles();
 
@@ -1058,7 +1069,7 @@ public class M2ltilingualSite {
 								// stampo nell'error log il sito che da il
 								// problema e l'errore
 								Utils.csvWr(new String[] { site.getUrlRedirect().toString(), e.toString() },
-										"ErrorLog.csv");
+										ERROR_LOG_CSV);
 							}
 						}
 
@@ -1067,7 +1078,7 @@ public class M2ltilingualSite {
 
 			} catch (Exception e) {
 				e.printStackTrace();
-				Utils.csvWr(new String[] { site.getUrlRedirect().toString(), e.toString() }, "ErrorLog.csv");
+				Utils.csvWr(new String[] { site.getUrlRedirect().toString(), e.toString() }, ERROR_LOG_CSV);
 			}
 		}
 
@@ -1171,7 +1182,7 @@ public class M2ltilingualSite {
 			e.printStackTrace();
 			synchronized (errorLogLock) {
 				// stampo nell'error log il sito che da il problema e l'errore
-				Utils.csvWr(new String[] { site.getUrlRedirect().toString(), e.toString() }, "ErrorLog.csv");
+				Utils.csvWr(new String[] { site.getUrlRedirect().toString(), e.toString() }, ERROR_LOG_CSV);
 			}
 			keyToUrls2.put(path, listStringoni);
 			ret.add(numLabel);
@@ -1263,7 +1274,7 @@ public class M2ltilingualSite {
 
 		// parametro con root path risultati dove vado a verificare i suddetti
 		// file di output di rr
-		String pathRoot = "output";
+		String pathRoot = OUTPUT;
 
 		for (String ftv : fileToVerify) {
 
@@ -1298,7 +1309,7 @@ public class M2ltilingualSite {
 
 			} catch (Exception e) {
 				e.printStackTrace();
-				Utils.csvWr(new String[] { site.getUrlRedirect().toString(), e.toString() }, "ErrorLog.csv");
+				Utils.csvWr(new String[] { site.getUrlRedirect().toString(), e.toString() }, ERROR_LOG_CSV);
 			}
 		}
 

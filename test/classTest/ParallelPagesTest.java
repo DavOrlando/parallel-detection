@@ -1,4 +1,4 @@
-package it.model;
+package classTest;
 
 import static org.junit.Assert.*;
 
@@ -7,6 +7,8 @@ import java.net.URL;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import it.model.ParallelPages;
 
 public class ParallelPagesTest {
 
