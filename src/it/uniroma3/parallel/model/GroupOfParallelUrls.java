@@ -6,28 +6,40 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Classe che rappresenta un gruppo di URL paralleli provenienti da un homepage
+ * di un sito. Necessaria per procurare l'input al crawler.
+ * 
+ * @author davideorlando
+ *
+ */
 public class GroupOfParallelUrls {
 
 	private static final int DEFAULT_ENTRY_POINT_NUMBER = 5;
-	private List<URL> parallelUrls;
+	private Set<URL> parallelUrls;
 	private URL homepageURL;
 
 	/**
-	 * Crea un oggetto ParallelUrls che mi rappresenta un gruppo di URL
-	 * di pagine parallele e multilingua.
+	 * Crea un oggetto ParallelUrls che mi rappresenta un gruppo di URL di
+	 * pagine parallele e multilingua.
 	 */
 	public GroupOfParallelUrls() {
-		this.parallelUrls = new LinkedList<URL>();
+		this.parallelUrls = new HashSet<URL>();
 	}
 
+	/***
+	 * Aggiungo l'URL alla collezione di URL paralleli.
+	 * 
+	 * @param url
+	 */
 	public void addURL(URL url) {
 		this.parallelUrls.add(url);
 	}
 
-	public List<URL> getParallelUrls() {
+	public Set<URL> getParallelUrls() {
 		return this.parallelUrls;
 	}
-	
+
 	public URL getHomepageURL() {
 		return homepageURL;
 	}
@@ -37,21 +49,23 @@ public class GroupOfParallelUrls {
 	}
 
 	/***
-	 * Ritorna un insieme di liste, in cui ciascuna ha al massimo un numero di
-	 * entrypoints.
+	 * Ritorna un insieme di liste in cui ciascuna ha al massimo un numero di
+	 * URL paralleli.
+	 * 
+	 * @return
+	 */
+	public Set<List<String>> getGroupOfEntryPoints() {
+		return this.getGroupOfEntryPoints(DEFAULT_ENTRY_POINT_NUMBER);
+	}
+
+	/***
+	 * Ritorna un insieme di liste in cui ciascuna ha al massimo un numero di
+	 * URL paralleli.
 	 * 
 	 * @param numberMaxOfEntryPoints
 	 *            il numero di entry points massimi che vogliamo in ciascuna
 	 *            lista.
 	 * @return
-	 */
-	
-	public Set<List<String>> getGroupOfEntryPoints() {
-		return this.getGroupOfEntryPoints(DEFAULT_ENTRY_POINT_NUMBER);
-	}
-	/*
-	 * TODO non si è riuscito a capire se quando aggiungeva due volte la stessa
-	 * lista lo faceva apposta o non. Per adesso non lo mettiamo, non ha senso.
 	 */
 	public Set<List<String>> getGroupOfEntryPoints(int numberMaxOfEntryPoints) {
 		Set<List<String>> group = new HashSet<>();
@@ -68,5 +82,5 @@ public class GroupOfParallelUrls {
 		return group;
 
 	}
-	
+
 }

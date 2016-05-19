@@ -33,7 +33,7 @@ public class UrlUtil {
 	 */
 
 	public static String addHttp(String siteUrl) {
-		if(hasHttp(siteUrl))
+		if (hasHttp(siteUrl))
 			return siteUrl;
 		return "http://".concat(siteUrl);
 	}
@@ -45,11 +45,11 @@ public class UrlUtil {
 	 * @return urlWithoutSlashesAtEnd
 	 */
 
-//	public static String getUrlWithoutSlashesAtEnd(String urlToPurge) {
-//		if (urlToPurge.endsWith("/") || urlToPurge.endsWith("\\"))
-//			return urlToPurge.substring(0, urlToPurge.length() - 1);
-//		return urlToPurge;
-//	}
+	// public static String getUrlWithoutSlashesAtEnd(String urlToPurge) {
+	// if (urlToPurge.endsWith("/") || urlToPurge.endsWith("\\"))
+	// return urlToPurge.substring(0, urlToPurge.length() - 1);
+	// return urlToPurge;
+	// }
 
 	/**
 	 * Ritorna un URL assoluto da un URL relativo.

@@ -18,8 +18,8 @@ import com.cybozu.labs.langdetect.LangDetectException;
 import it.uniroma3.parallel.utils.UrlUtil;
 
 /**
- * Classe che rappresenta il concetto di sito. Ovvero possiede i dati che sono
- * di interesse per il sistema e che riguardano un sito.
+ * Classe che rappresenta il concetto di pagina. Ovvero possiede i dati che sono
+ * di interesse per il Sistema e che riguardano una pagina.
  * 
  * @author davideorlando
  *
@@ -35,9 +35,17 @@ public class Page {
 	public Page() {
 	}
 
+	/***
+	 * Costruttore parametrico rispetto a una stringa che è la rappresentazione
+	 * dell'URL dell'homepage.
+	 * 
+	 * @param homepageStringUrl
+	 * @throws MalformedURLException
+	 */
 	public Page(String homepageStringUrl) throws MalformedURLException {
 		this(new URL(UrlUtil.addHttp(homepageStringUrl)));
 	}
+
 	/***
 	 * 
 	 * Costruttore parametrico rispetto all' URL. Si connette all'URL tramite
@@ -49,21 +57,16 @@ public class Page {
 	 * @throws IOException
 	 */
 	public Page(URL url) {
-		this();
 		this.url = url;
-		// get del sito
-		Document document;
 		try {
-			document = Jsoup.connect(url.toString()).userAgent(USER_AGENT).timeout(8000).get();
-			this.document = document;
-			this.urlRedirect = new URL(document.location());
+			// get del document della pagina
+			this.document = Jsoup.connect(url.toString()).userAgent(USER_AGENT).timeout(8000).get();
+			//se c'è il redirect ci prendiamo l'URL finale.
+			this.urlRedirect = new URL(this.document.location());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		// Stringa dove salverò il redirect eventuale del sito, quindi url che
-		// effettivamente vado ad analizzare
 	}
-
 
 	public URL getUrl() {
 		return url;

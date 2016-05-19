@@ -12,47 +12,94 @@ import org.junit.Before;
 import org.junit.Test;
 
 import it.uniroma3.parallel.detection.MultilingualDetector;
+import it.uniroma3.parallel.model.GroupOfParallelUrls;
 import it.uniroma3.parallel.model.Page;
 
 public class DetectByHreflangTest {
 
-	private URL url;
-	private Page site;
+	private static final String ABSOLUTE_URL = "http://localhost:8080/testForHreflang/homeFr.html";
 	private MultilingualDetector multilingualDetector;
 	
 	@Before
 	public void setUp() throws Exception {
 		this.multilingualDetector = new MultilingualDetector();
-		this.url = new URL("http://localhost:8080/testMinimale/homeIt.html");
-		this.site = new Page(url);
 	}
 	
 
-
-
 	@Test
-	public void testDetectByHreflang_SiteThatHasHrefLangLink() {
+	public void siteNoHreflang() {
 		try {
-			Set<List<String>> detectedByHreflang = this.multilingualDetector.detectByHreflang(site).getGroupOfEntryPoints(5);
-			assertEquals(1,detectedByHreflang.size());
-			List<String> lista = new ArrayList<>();
-			lista.add("http://localhost:8080/testMinimale/homeEn.html");
-			lista.add("http://localhost:8080/testMinimale/homeFr.html");
-			lista.add("http://localhost:8080/testMinimale/homeIt.html");
-			assertTrue(detectedByHreflang.contains(lista));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	@Test
-	public void testDetectByHreflang_SiteThatDoesntHaveHrefLangLink() {
-		try {
-			Page siteNotMultilingual = new Page(new URL("http://localhost:8080/testNonMultilingua/homeIt.html"));
-			assertNull(this.multilingualDetector.detectByHreflang(siteNotMultilingual));
+			Page notMultilingual = new Page("http://localhost:8080/testForHreflang/noHreflang.html");
+			assertNull(this.multilingualDetector.detectByHreflang(notMultilingual));
 		} catch (IOException e) {
 			fail();
 			e.printStackTrace();
 		}
 	}
+	
+
+	@Test
+	public void siteOneHreflang() {
+		try {
+			Page multilingual = new Page("http://localhost:8080/testForHreflang/oneHreflang.html");
+			GroupOfParallelUrls detectByHreflang = this.multilingualDetector.detectByHreflang(multilingual);
+			assertNotNull(detectByHreflang);
+			//2 perchè anche la homepage viene aggiunta
+			assertEquals(2,detectByHreflang.getParallelUrls().size());
+		} catch (IOException e) {
+			fail();
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void siteOneHreflangRelative() {
+		try {
+			Page multilingual = new Page("http://localhost:8080/testForHreflang/oneHreflangRelative.html");
+			GroupOfParallelUrls detectByHreflang = this.multilingualDetector.detectByHreflang(multilingual);
+			assertTrue(detectByHreflang.getParallelUrls().contains(new URL(ABSOLUTE_URL)));
+		} catch (IOException e) {
+			fail();
+			e.printStackTrace();
+		}
+	}
+	
+	
+	@Test
+	public void siteTwoHreflang() {
+		try {
+			Page multilingual = new Page(new URL("http://localhost:8080/testForHreflang/twoHreflang.html"));
+			GroupOfParallelUrls detectByHreflang = this.multilingualDetector.detectByHreflang(multilingual);
+			//3 perchè anche la homepage viene aggiunta
+			assertEquals(3,detectByHreflang.getParallelUrls().size());
+		} catch (IOException e) {
+			fail();
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void siteTwoButOneIsRelativeHreflang() {
+		try {
+			Page multilingual = new Page(new URL("http://localhost:8080/testForHreflang/twoHreflangButOneIsRelative.html"));
+			GroupOfParallelUrls detectByHreflang = this.multilingualDetector.detectByHreflang(multilingual);
+			assertTrue(detectByHreflang.getParallelUrls().contains(new URL(ABSOLUTE_URL)));
+		} catch (IOException e) {
+			fail();
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void homepageWithDuplicateHreflang() {
+		try {
+			Page multilingual = new Page(new URL("http://localhost:8080/testForHreflang/duplicateHreflang.html"));
+			GroupOfParallelUrls detectByHreflang = this.multilingualDetector.detectByHreflang(multilingual);
+			assertEquals(2,detectByHreflang.getParallelUrls().size());
+		} catch (IOException e) {
+			fail();
+			e.printStackTrace();
+		}
+	}
+
 }

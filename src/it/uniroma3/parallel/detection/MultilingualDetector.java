@@ -37,52 +37,28 @@ public class MultilingualDetector {
 				|| homepageURL.toString().contains("stadtsite.");
 	}
 
-	/*
-	 * OK: RICERCA LINK USCENTI DALLA HOMEPAGE CON ATTRIBUTE HREFLANG metodo che
-	 * ricerca l'attributo hreflang nella hp e ritorna lista coppie candidate
-	 * per iniziare visita ricorsiva del sito metodo di supporto per
-	 * isMultilingual, 1) modo, restituisce coppie candidate trovate cercando
-	 * nella hp hreflang sono le coppie degli hreflang tra loro e della home con
-	 * gli hreflang
-	 * 
-	 * 
-	 * Questi commenti sopra sono errati. Il codice fa una cosa diversa: Non
-	 * torna pair o coppie ma un insieme di liste dove ciascuna possiede al
-	 * massimo 5 hreflang.
-	 */
-
 	/**
 	 * Si cercano nella homepage del sito passato come parametro dei link
 	 * uscenti con l'attributo hreflang, euristica che ci porta a dire che il
 	 * sito è multilingua. Si collezionano tutti questi URL, che rappresentano
-	 * le pagine nelle varie lingue, in delle liste di stringhe (con al massimo
-	 * 5 elementi), successivamente si inseriscono le liste all'interno di un
-	 * set.
+	 * gli URL verso le pagine nelle varie lingue.
 	 * 
+	 * @see GroupOfParallelUrls
 	 * @param homepage
-	 *            il sito che si deve analizzare
-	 * @return un set di liste dove ciascuna possiede al massimo 5 homepage
-	 *         multilingua e parallele
+	 *            la pagina che rappresenta l'homepage del sito
+	 * @return GroupOfParallelUrls
 	 * @throws IOException
 	 */
 	public GroupOfParallelUrls detectByHreflang(Page homepage) throws IOException {
-		// dove andiamo a mettere tutte le pagine parallele.
-		GroupOfParallelUrls parallelHomepageURL = new GroupOfParallelUrls();
-		Document document = homepage.getDocument();
-		// seleziono i link della pagina
-		Elements linksInHomePage = document.select("link");
-		for (Element link : linksInHomePage) {
-			if (!link.attr("hreflang").isEmpty()) {
-				parallelHomepageURL.addURL(new URL(link.attr("abs:href")));
-			}
-		}
-		// TODO verifica successivamente se questa riga serve qui oppure no
-		// String homePagePurge =
-		// UrlUtil.getUrlWithoutSlashesAtEnd(homepage.getUrlRedirect().toString());
-		if (parallelHomepageURL.getParallelUrls().isEmpty())
+		Elements linksInHomePage = homepage.getDocument().select("link[hreflang]");
+		if(linksInHomePage.isEmpty())
 			return null;
+		GroupOfParallelUrls parallelHomepageURL = new GroupOfParallelUrls();
 		parallelHomepageURL.setHomepageURL(homepage.getUrlRedirect());
 		parallelHomepageURL.addURL(homepage.getUrlRedirect());
+		for (Element link : linksInHomePage)
+			// TODO al posto di abs:href si toglieva l'ultimo slash manualmente
+			parallelHomepageURL.addURL(new URL(link.attr("abs:href")));
 		return parallelHomepageURL;
 	}
 
