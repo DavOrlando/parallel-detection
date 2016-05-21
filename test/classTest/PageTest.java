@@ -3,7 +3,6 @@ package classTest;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.jsoup.Jsoup;
@@ -12,7 +11,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import it.uniroma3.parallel.model.Page;
-import it.uniroma3.parallel.utils.UrlUtil;
 
 public class PageTest {
 	private static final String HTTP_LOCALHOST_8080 = "http://localhost:8080";

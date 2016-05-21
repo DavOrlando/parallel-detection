@@ -3,23 +3,20 @@ package featureTest;
 import static org.junit.Assert.*;
 
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import it.uniroma3.parallel.detection.M2ltilingualSite;
-import it.uniroma3.parallel.detection.MultilingualDetector;
-import it.uniroma3.parallel.model.Page;
+import it.uniroma3.parallel.detection.HreflangDetector;
 
 public class IsBlacklistTest {
 
-	private MultilingualDetector multilingualDetector;
+	private HreflangDetector multilingualDetector;
 
 	@Before
 	public void setUp() {
-		multilingualDetector = new MultilingualDetector();
+		multilingualDetector = new HreflangDetector();
 	}
 
 	@Test

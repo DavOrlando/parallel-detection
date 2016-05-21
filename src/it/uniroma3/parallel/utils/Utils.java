@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
-import com.cybozu.labs.langdetect.LangDetectException;
-
 import au.com.bytecode.opencsv.CSVWriter;
 
 public class Utils {

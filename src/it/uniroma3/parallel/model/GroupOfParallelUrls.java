@@ -83,4 +83,13 @@ public class GroupOfParallelUrls {
 
 	}
 
+	/***
+	 * Ritorna true se non ci sono entry points, false altrimenti.
+	 * 
+	 * @return
+	 */
+	public boolean isEmpty() {
+		return this.getParallelUrls().isEmpty();
+	}
+
 }

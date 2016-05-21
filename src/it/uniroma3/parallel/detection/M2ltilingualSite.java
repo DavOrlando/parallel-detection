@@ -16,14 +16,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
@@ -46,29 +44,31 @@ import com.cybozu.labs.langdetect.Detector;
 import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.LangDetectException;
 
-//siti su cui lanciare il processo
-//String ssite="http://nato.int";
-//String ssite="http://ferrari.com";
-//String ssite="http://lohmann-stahl.de/";
-//String ssite="http://www.archos.com";
-//String ssite="http://www.ferrari.com";
-//String ssite="http://www.lg.com";
-//String ssite="http://www.toyota.com";
-//String ssite="http://www.beringtime.de/";
-//String ssite="http://www.opera.com/";
-//String ssite="http://www.kongregate.com/";
-//String ssite="http://www.fairmont.com";
-//String ssite="http://www.speedtest.net/fr/";
-//String ssite="http://www.vmware.com/";
-//String ssite="https://www.articulate.com/";
-//String ssite="http://worldtimeserver.com/";
-//String ssite="http://www.box.com";
-//String ssite="http://www.uc3m.es/Home";
-//http://www.bulthaup.com/
-
+/*siti su cui lanciare il processo
+String ssite="http://nato.int";
+String ssite="http://ferrari.com";
+String ssite="http://lohmann-stahl.de/";
+String ssite="http://www.archos.com";
+String ssite="http://www.ferrari.com";
+String ssite="http://www.lg.com";
+String ssite="http://www.toyota.com";
+String ssite="http://www.beringtime.de/";
+String ssite="http://www.opera.com/";
+String ssite="http://www.kongregate.com/";
+String ssite="http://www.fairmont.com";
+String ssite="http://www.speedtest.net/fr/";
+String ssite="http://www.vmware.com/";
+String ssite="https://www.articulate.com/";
+String ssite="http://worldtimeserver.com/";
+String ssite="http://www.box.com";
+String ssite="http://www.uc3m.es/Home";
+http://www.bulthaup.com/
+*/
 //classe che permette di sapere se un sito è multilingua e avere coppie candidate di link paralleli (entry points)
 public class M2ltilingualSite {
 
+	private static final int PAIR_FOR_OUTLINK = 2;
+	private static final int MAX_LENGTH_GROUP_HREFLANG = 5;
 	private static final String OUTPUT = "output";
 	private static final String PRE_HOMEPAGE = "PreHomepage";
 	private static final String MULT_DETECTION_PREHOMEPAGE = "mult detection prehomepage";
@@ -98,11 +98,10 @@ public class M2ltilingualSite {
 		long startDetectionTime = Utils.getTime();
 
 		// creo oggetto per fare detection con le varie euristiche DAVIDE
-		MultilingualDetector multilingualDetector = new MultilingualDetector();
+		MultilingualDetector multilingualDetector = new HreflangDetector();
 
-		//oggetto che rappresenta l'homepage su cui si fa la detection
+		// oggetto che rappresenta l'homepage su cui si fa la detection
 		Page homepageToDetect = new Page(homepageStringUrl);
-
 
 		// controllo per escludere alcuni siti falsi positivi multilingua
 		if (multilingualDetector.isInBlacklist(homepageToDetect.getUrlRedirect())) {
@@ -113,8 +112,7 @@ public class M2ltilingualSite {
 			return;
 		}
 
-		// blocco try in cui provo attraverso varie euristiche a rilevare se un
-		// sito sia multilingua
+		// blocco try in cui ci sono le tre euristiche
 		try {
 			// Prendo il nome della cartella di output dall'URL della homepage
 			String nameFolder = UrlUtil.getNameFolderFromSiteUrl(homepageToDetect.getUrlRedirect());
@@ -122,8 +120,7 @@ public class M2ltilingualSite {
 
 			long startTime = Utils.getTime();
 
-			// su gruppi di 5 viene lanciata la visita ricorsiva
-			parallelHomepageURLs = multilingualDetector.detectByHreflang(homepageToDetect);
+			parallelHomepageURLs = multilingualDetector.detect(homepageToDetect);
 
 			long endTime = Utils.getTime();
 			synchronized (timeLock) {
@@ -141,22 +138,15 @@ public class M2ltilingualSite {
 				}
 				// elimino folder di output e di crawling TODO forse inutile
 				// Utils.deleteDir(HTML_PAGES_PRELIMINARY + nameFolder);
-				recursiveCrawler(parallelHomepageURLs, depthT, errorLogLock, nameFolder);
+				// su gruppi di 5 viene lanciata la visita ricorsiva
+				recursiveCrawler(parallelHomepageURLs, MAX_LENGTH_GROUP_HREFLANG, depthT, errorLogLock, nameFolder);
 				return;
 			}
-
-			// System.out.println("FINE STEP 1 HREFLANG terminata verifica delle
-			// presenza di hreflang");
-
-			// RICERCA TRA GLI OUTLINK DI UNA PAGINA DA ACCOPPIARE CON LA ROOT
-			// Se le rilevazioni di hreflang nella hp o nella sitemap non
-			// producono risultati
-			// lancio il metodo isMultilingual per la rilevazione visitando i
-			// link uscenti dalla hp
-
+			
+			multilingualDetector = new HomepageOutlinkDetector(errorLogLock);
 			// coppie trovate con metodo lang detection+analisi strutturale
-			// TODO far diventare groupofparallelurls
-			Set<Set<String>> resultsPageExploration = new HashSet<Set<String>>();
+			// Set<Set<String>> resultsPageExploration = new
+			// HashSet<Set<String>>();
 			startTime = Utils.getTime();
 
 			// TODO capire???
@@ -165,7 +155,7 @@ public class M2ltilingualSite {
 			// (isMultilingualByExplorationLink(homepageToDetect, nameFolder,
 			// errorLogLock));
 			// }
-			resultsPageExploration = isMultilingualByExplorationLink(homepageToDetect, nameFolder, errorLogLock);
+			parallelHomepageURLs = multilingualDetector.detect(homepageToDetect);
 			endTime = Utils.getTime();
 
 			synchronized (timeLock) {
@@ -176,9 +166,7 @@ public class M2ltilingualSite {
 						java.lang.Thread.currentThread().toString() + TIME_CSV);
 			}
 
-			// se rilevato presenza contenuto multilingua stampa sito come
-			// multilingua
-			if (resultsPageExploration.size() != 0) {
+			if (parallelHomepageURLs != null) {
 				long endDetectionTime = Utils.getTime();
 
 				synchronized (multSiteLogLock) {
@@ -186,36 +174,16 @@ public class M2ltilingualSite {
 					Utils.csvWr(new String[] { homepageStringUrl, VISIT_HOMEPAGE,
 							Long.toString(endDetectionTime - startDetectionTime) }, SITE_MULTILINGUAL_CSV);
 				}
+				// se ho coppie candidate lancio visita ricorsiva
+				recursiveCrawler(parallelHomepageURLs, PAIR_FOR_OUTLINK, depthT, errorLogLock, nameFolder);
+				return;
+
 			}
 
 			// pulisco le folder di output e di crawling e lancio visita
 			// ricorsiva
 			Utils.deleteDir(HTML_PAGES_PRELIMINARY + nameFolder);
 
-			// se ho coppie candidate lancio visita ricorsiva
-			if (resultsPageExploration.size() != 0) {
-
-				int countGroupEP = 0;
-				for (Set<String> currentPairEP : resultsPageExploration) {
-
-					List<String> entryPoints = new ArrayList<String>();
-					entryPoints.addAll(currentPairEP);
-					ParallelCollections parallelColl = new ParallelCollections(nameFolder + countGroupEP, entryPoints,
-							(depthT), homepageStringUrl);
-					countGroupEP++;
-
-					// lancio rr
-					try {
-						// R2cursiveCrawling.recursiveCrawling(parallelColl,depthT,errorLogLock,productivityLock,timeLock);
-					} catch (Exception e) {
-						e.printStackTrace();
-						synchronized (errorLogLock) {
-							Utils.csvWr(homepageStringUrl, e, ERROR_LOG_CSV);
-						}
-					}
-				}
-				return;
-			}
 
 			// System.out.println("FINE STEP 2 OUTLINK terminata verifica delle
 			// presenza di outlinks lang detec+struttura");
@@ -228,9 +196,8 @@ public class M2ltilingualSite {
 
 			startTime = Utils.getTime();
 
-			if (resultsPageExploration.size() == 0) {
-				resultsPageExploration = preHomePage(homepageToDetect, nameFolder, errorLogLock);
-			}
+			Set<Set<String>> resultsPageExploration = preHomePage(homepageToDetect, nameFolder, errorLogLock);
+
 			endTime = Utils.getTime();
 
 			synchronized (timeLock) {
@@ -326,10 +293,10 @@ public class M2ltilingualSite {
 
 	}// fine main
 
-	private static void recursiveCrawler(GroupOfParallelUrls parallelHomepageURLs, int depthT, Lock errorLogLock,
-			String nameFolder) throws IOException {
+	private static void recursiveCrawler(GroupOfParallelUrls parallelHomepageURLs, int lengthGroupOfEntryPoint,
+			int depthT, Lock errorLogLock, String nameFolder) throws IOException {
 		int countEntryPoints = 0;
-		for (List<String> currentGroupEP : parallelHomepageURLs.getGroupOfEntryPoints()) {
+		for (List<String> currentGroupEP : parallelHomepageURLs.getGroupOfEntryPoints(lengthGroupOfEntryPoint)) {
 
 			// creo l'oggetto parallelCollection con il gruppetto di
 			// entry points paralleli corrente
@@ -490,9 +457,9 @@ public class M2ltilingualSite {
 
 	// se sito multilingua tramite esplorazione link uscenti (verifica lingua e
 	// struttura), se sito multilingua ritorna set di coppie candidate
-	public static Set<Set<String>> isMultilingualByExplorationLink(Page homepage, String nameFolder, Lock errorLogLock)
+	public static Set<Set<String>> isMultilingualByExplorationLink(Page homepage, Lock errorLogLock)
 			throws IOException, InterruptedException, LangDetectException {
-
+		String nameFolderFromSiteUrl = UrlUtil.getNameFolderFromSiteUrl(homepage.getUrlRedirect());
 		// creo set dove mettere coppie trovate, (set di set(coppie))
 		Set<Set<String>> resultsPageExploration = new HashSet<Set<String>>();
 
@@ -515,8 +482,8 @@ public class M2ltilingualSite {
 
 			// lingua già verificata, lancia rr solo se superata scrematura di
 			// verifica strutt blanda
-			fileToVerify.add(nameFolder + countPotentialEntryPoints);
-			localPath2url.putAll(launchRRDownloadPagesToDecideIfMultilingual(nameFolder,
+			fileToVerify.add(nameFolderFromSiteUrl + countPotentialEntryPoints);
+			localPath2url.putAll(launchRRDownloadPagesToDecideIfMultilingual(nameFolderFromSiteUrl,
 					homepage.getUrlRedirect().toString(), linkPossible, countPotentialEntryPoints, errorLogLock, false,
 					errorLogLock, homepage.getUrlRedirect().toString()));
 		}
@@ -532,7 +499,7 @@ public class M2ltilingualSite {
 
 			// lancio metodo che ritorna lista file (in locale) accoppiabili con
 			// la home
-			list.addAll(langDetectAndThresholdLabel(nameFolder, fileToVerify, errorLogLock, homepage));
+			list.addAll(langDetectAndThresholdLabel(nameFolderFromSiteUrl, fileToVerify, errorLogLock, homepage));
 
 			// System.out.println("ASDD "+list);
 
@@ -788,6 +755,7 @@ public class M2ltilingualSite {
 			if (executeRR(page1, urlBase + "/" + "HomePage" + countEntryPoints + "-2" + ".html")) {
 
 				Thread t3 = new Thread() {
+					@Override
 					public void run() {
 						try {
 							rr("-N:" + nameFolder + countEntryPoints, "-O:etc/flat-prefs.xml", page1,
@@ -1081,7 +1049,7 @@ public class M2ltilingualSite {
 			// itero sulle label per sapere su quali label iterare al ciclo
 			// successivo
 			for (int i = 0; i < nodeList.getLength(); i++) {
-				keyToUrls.add((String) nodeList.item(i).getFirstChild().getNodeValue());
+				keyToUrls.add(nodeList.item(i).getFirstChild().getNodeValue());
 			}
 
 			// mi faccio ritornare i path file, creo list Stringoni del numero
@@ -1090,7 +1058,7 @@ public class M2ltilingualSite {
 			NodeList nodeList3 = (NodeList) xPath.compile(expression3).evaluate(xmlDocument, XPathConstants.NODESET);
 			for (int j = 0; j < nodeList3.getLength(); j++) {
 				listStringoni.add(j, "");
-				files.add((String) nodeList3.item(j).getFirstChild().getNodeValue().toString());
+				files.add(nodeList3.item(j).getFirstChild().getNodeValue().toString());
 			}
 
 			// itero su tutte le label, per andare a prendere il testo da tutte
@@ -1110,8 +1078,8 @@ public class M2ltilingualSite {
 					// se per doc j-esimo ho un risultato non null allora setta
 					// temp con result della query altrimenti setta temp=" "
 					String temp = " ";
-					if ((String) nodeList2.item(j).getFirstChild().getNodeValue() != null)
-						temp = (String) nodeList2.item(j).getFirstChild().getNodeValue();
+					if (nodeList2.item(j).getFirstChild().getNodeValue() != null)
+						temp = nodeList2.item(j).getFirstChild().getNodeValue();
 
 					// metodo remove rimuove elemento e lo restituisce
 					listStringoni.add(j, listStringoni.remove(j).concat(temp) + " ");

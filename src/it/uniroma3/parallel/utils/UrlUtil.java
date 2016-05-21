@@ -3,8 +3,6 @@ package it.uniroma3.parallel.utils;
 import java.io.IOException;
 import java.net.URL;
 
-import org.apache.commons.lang.StringUtils;
-
 /***
  * 
  * @author davideorlando
