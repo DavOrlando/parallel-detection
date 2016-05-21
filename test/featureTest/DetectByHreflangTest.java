@@ -13,6 +13,7 @@ import it.uniroma3.parallel.model.Page;
 
 public class DetectByHreflangTest {
 
+	private static final String URL_FOR_TEST = "http://localhost:8080/testForHreflang/";
 	private static final String ABSOLUTE_URL = "http://localhost:8080/testForHreflang/homeFr.html";
 	private HreflangDetector homepageDetector;
 	private Page homepage;
@@ -26,7 +27,7 @@ public class DetectByHreflangTest {
 	@Test
 	public void pageWithNoHreflang() {
 		try {
-			homepage = new Page("http://localhost:8080/testForHreflang/noHreflang.html");
+			homepage = new Page(URL_FOR_TEST +"noHreflang.html");
 			assertNull(this.homepageDetector.detect(homepage));
 		} catch (IOException e) {
 			fail();
@@ -38,7 +39,7 @@ public class DetectByHreflangTest {
 	@Test
 	public void pageWithOneHreflang() {
 		try {
-			homepage = new Page("http://localhost:8080/testForHreflang/oneHreflang.html");
+			homepage = new Page(URL_FOR_TEST+"oneHreflang.html");
 			GroupOfParallelUrls detectByHreflang = this.homepageDetector.detect(homepage);
 			assertNotNull(detectByHreflang);
 			//2 perchè anche la homepage viene aggiunta
@@ -52,7 +53,7 @@ public class DetectByHreflangTest {
 	@Test
 	public void pageWithOneHreflangRelative() {
 		try {
-			homepage = new Page("http://localhost:8080/testForHreflang/oneHreflangRelative.html");
+			homepage = new Page(URL_FOR_TEST+"oneHreflangRelative.html");
 			GroupOfParallelUrls detectByHreflang = this.homepageDetector.detect(homepage);
 			assertTrue(detectByHreflang.getParallelUrls().contains(new URL(ABSOLUTE_URL)));
 		} catch (IOException e) {
@@ -65,7 +66,7 @@ public class DetectByHreflangTest {
 	@Test
 	public void pageWithTwoHreflang() {
 		try {
-			homepage = new Page(new URL("http://localhost:8080/testForHreflang/twoHreflang.html"));
+			homepage = new Page(new URL(URL_FOR_TEST+"twoHreflang.html"));
 			GroupOfParallelUrls detectByHreflang = this.homepageDetector.detect(homepage);
 			//3 perchè anche la homepage viene aggiunta
 			assertEquals(3,detectByHreflang.getParallelUrls().size());
@@ -78,7 +79,7 @@ public class DetectByHreflangTest {
 	@Test
 	public void pageWithTwoButOneIsRelativeHreflang() {
 		try {
-			homepage = new Page(new URL("http://localhost:8080/testForHreflang/twoHreflangButOneIsRelative.html"));
+			homepage = new Page(new URL(URL_FOR_TEST+"twoHreflangButOneIsRelative.html"));
 			GroupOfParallelUrls detectByHreflang = this.homepageDetector.detect(homepage);
 			assertTrue(detectByHreflang.getParallelUrls().contains(new URL(ABSOLUTE_URL)));
 		} catch (IOException e) {
@@ -90,7 +91,7 @@ public class DetectByHreflangTest {
 	@Test
 	public void homepageWithDuplicateHreflang() {
 		try {
-			homepage = new Page(new URL("http://localhost:8080/testForHreflang/duplicateHreflang.html"));
+			homepage = new Page(new URL(URL_FOR_TEST+"duplicateHreflang.html"));
 			GroupOfParallelUrls detectByHreflang = this.homepageDetector.detect(homepage);
 			assertEquals(2,detectByHreflang.getParallelUrls().size());
 		} catch (IOException e) {

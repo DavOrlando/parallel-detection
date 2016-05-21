@@ -17,7 +17,6 @@ import it.uniroma3.parallel.utils.UrlUtil;
 import it.uniroma3.parallel.utils.Utils;
 
 public class HomepageOutlinkDetector extends OutlinkDetector {
-	private Lock errorLogLock;
 
 	public HomepageOutlinkDetector(Lock errorLogLock) {
 		this.errorLogLock = errorLogLock;
@@ -48,7 +47,7 @@ public class HomepageOutlinkDetector extends OutlinkDetector {
 		Map<String, String> localPath2url = new HashMap<String, String>();
 	
 		// lista con link su cui lanciare rr
-		List<String> outlinkToVisit = this.getMultilingualLink(homepage, errorLogLock);
+		List<String> outlinkToVisit = this.getMultilingualOutlink(homepage);
 	
 		List<String> fileToVerify = new ArrayList<String>();
 	

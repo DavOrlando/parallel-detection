@@ -24,7 +24,7 @@ public class GroupOfParallelUrls {
 	 * pagine parallele e multilingua.
 	 */
 	public GroupOfParallelUrls() {
-		this.parallelUrls = new HashSet<URL>();
+		this.parallelUrls = new HashSet<>();
 	}
 
 	/***
@@ -69,16 +69,16 @@ public class GroupOfParallelUrls {
 	 */
 	public Set<List<String>> getGroupOfEntryPoints(int numberMaxOfEntryPoints) {
 		Set<List<String>> group = new HashSet<>();
-		List<String> listOfFiveURL = new LinkedList<String>();
+		List<String> listOfNumberedURL = new LinkedList<String>();
 		for (URL url : this.parallelUrls) {
-			if (listOfFiveURL.size() == numberMaxOfEntryPoints) {
-				group.add(listOfFiveURL);
-				listOfFiveURL = new LinkedList<String>();
+			if (listOfNumberedURL.size() == numberMaxOfEntryPoints) {
+				group.add(listOfNumberedURL);
+				listOfNumberedURL = new LinkedList<String>();
 			}
-			listOfFiveURL.add(url.toString());
+			listOfNumberedURL.add(url.toString());
 		}
-		if (listOfFiveURL.size() != 0)
-			group.add(listOfFiveURL);
+		if (listOfNumberedURL.size() != 0)
+			group.add(listOfNumberedURL);
 		return group;
 
 	}

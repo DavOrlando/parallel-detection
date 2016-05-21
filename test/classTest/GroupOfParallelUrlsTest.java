@@ -20,8 +20,8 @@ public class GroupOfParallelUrlsTest {
 	public void setUp() throws Exception {
 		this.pp = new GroupOfParallelUrls();
 		this.url = new URL("http://localhost:8080/testMinimale/homeIt.html");
-		this.url2 = new URL("http://test2");
-		this.url3 = new URL("http://test3");
+		this.url2 = new URL("http://test2.com");
+		this.url3 = new URL("http://test3.com");
 	}
 
 	@Test
