@@ -82,6 +82,21 @@ public class GroupOfParallelUrls {
 		return group;
 
 	}
+	
+	/***
+	 * Ritorna un insieme di coppie.
+	 * @return
+	 */
+	public Set<Set<String>> getPairOfStringEntryPoint() {
+		Set<Set<String>> group = new HashSet<>();
+		for (URL url : this.parallelUrls){
+			Set<String> pairOfURL = new HashSet<String>();
+			pairOfURL.add(homepageURL.toString());
+			pairOfURL.add(url.toString());
+			group.add(pairOfURL);
+		}
+		return group;
+	}
 
 	/***
 	 * Ritorna true se non ci sono entry points, false altrimenti.

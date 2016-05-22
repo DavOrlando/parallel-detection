@@ -1,4 +1,4 @@
-package it.uniroma3.parallel.detection;
+package classTest;
 
 import static org.junit.Assert.*;
 
@@ -10,6 +10,8 @@ import org.junit.Test;
 
 import com.cybozu.labs.langdetect.LangDetectException;
 
+import it.uniroma3.parallel.detection.HomepageOutlinkDetector;
+import it.uniroma3.parallel.detection.OutlinkDetector;
 import it.uniroma3.parallel.model.Page;
 
 public class HomepageOutlinkDetectorTest {

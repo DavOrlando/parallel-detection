@@ -1,9 +1,11 @@
 package it.uniroma3.parallel.detection;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,12 +41,9 @@ public class HomepageOutlinkDetector extends OutlinkDetector {
 
 	public GroupOfParallelUrls detect(Page homepage) throws IOException, InterruptedException, LangDetectException {
 		GroupOfParallelUrls parallelHomepageUrl = new GroupOfParallelUrls();
-		// creo set dove mettere coppie trovate, (set di set(coppie))
-		Set<Set<String>> resultsPageExploration = new HashSet<Set<String>>();
-
 		// lista con link che andranno a fare coppia con la homepage
 		List<String> outlinkToVisit = this.getMultilingualOutlink(homepage);
-		
+
 		List<String> fileToVerify = new ArrayList<String>();
 		// mappa link visitati e path locale dove risiedono in locale
 		Map<String, String> localPath2url = detectOutlinkWithRR(homepage, outlinkToVisit, fileToVerify);
@@ -53,19 +52,13 @@ public class HomepageOutlinkDetector extends OutlinkDetector {
 		// se hanno abbastanza label,
 		try {
 			// lista dei file accoppiabili
-			List<String> list = new ArrayList<String>();
-
+			List<String> list = new LinkedList<String>();
 			// lancio metodo che ritorna lista file (in locale) accoppiabili con
 			// la home
 			list.addAll(langDetectAndThresholdLabel(homepage.getNameFolder(), fileToVerify, errorLogLock, homepage));
 
-			// System.out.println("ASDD "+list);
-
 			for (String outlink : list) {
-				Set<String> currPair = new HashSet<String>();
-				currPair.add(homepage.getUrlRedirect().toString());
-				currPair.add(localPath2url.get(outlink));
-				resultsPageExploration.add(currPair);
+				parallelHomepageUrl.addURL(new URL(localPath2url.get(outlink)));
 			}
 
 		} catch (LangDetectException e) {
