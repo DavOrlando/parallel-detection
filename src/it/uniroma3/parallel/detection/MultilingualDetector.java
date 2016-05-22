@@ -18,6 +18,9 @@ import it.uniroma3.parallel.model.Page;
  */
 
 public abstract class MultilingualDetector implements Detector{
+	
+	protected static final String USER_AGENT = "Opera/9.63 (Windows NT 5.1; U; en) Presto/2.1.1";
+
 	/**
 	 * Rileva se il sito è un falso multilingua, attraverso l'analisi del suo
 	 * URL. Sito falso multlingua vuol dire parallelo nella struttura ma non

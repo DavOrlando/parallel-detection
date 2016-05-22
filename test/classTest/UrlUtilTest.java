@@ -2,6 +2,7 @@ package classTest;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -24,28 +25,22 @@ public class UrlUtilTest {
 		assertEquals(completeUrlString, UrlUtil.addHttp(this.urlSite));
 	}
 
-	@Test
-	public void getNameFolderFromSiteUrlTest_removeSlash() {
-		String folderNameSite = "www.test.comtest";
-		try {
-			assertEquals(folderNameSite, UrlUtil.getNameFolderFromSiteUrl(new URL(UrlUtil.addHttp(this.urlSite))));
-		} catch (MalformedURLException e) {
-			fail();
-			e.printStackTrace();
-		}
-	}
+	
+//
+//	@Test
+//	public void getNameFolderFromSiteUrlTest_removeQuestionPoint() {
+//		String urlSiteWithQuestionPoint = "http://www.test.com/test/?";
+//		String folderNameSite = "www.test.comtest";
+//		try {
+//			assertEquals(folderNameSite, UrlUtil.getNameFolderFromSiteUrl(new URL(urlSiteWithQuestionPoint)));
+//		} catch (MalformedURLException e) {
+//			fail();
+//			e.printStackTrace();
+//		}
+//	}
 
-	@Test
-	public void getNameFolderFromSiteUrlTest_removeQuestionPoint() {
-		String urlSiteWithQuestionPoint = "http://www.test.com/test/?";
-		String folderNameSite = "www.test.comtest";
-		try {
-			assertEquals(folderNameSite, UrlUtil.getNameFolderFromSiteUrl(new URL(urlSiteWithQuestionPoint)));
-		} catch (MalformedURLException e) {
-			fail();
-			e.printStackTrace();
-		}
-	}
+
+	
 
 	@Test
 	public void hasHttp_UrlWithHttp() {

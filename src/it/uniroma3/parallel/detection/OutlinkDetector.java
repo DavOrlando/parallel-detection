@@ -40,7 +40,9 @@ import com.cybozu.labs.langdetect.Detector;
 import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.LangDetectException;
 
+import it.uniroma3.parallel.model.DownloadManager;
 import it.uniroma3.parallel.model.Page;
+import it.uniroma3.parallel.utils.RoadRunnerInvocator;
 import it.uniroma3.parallel.utils.Utils;
 
 /**
@@ -54,11 +56,11 @@ import it.uniroma3.parallel.utils.Utils;
 
 public abstract class OutlinkDetector extends MultilingualDetector {
 
-	protected static final String ERROR_LOG_CSV = "ErrorLog.csv";
-	protected static final String HTML_PAGES_PRELIMINARY = "htmlPagesPreliminary";
+	public static final String ERROR_LOG_CSV = "ErrorLog.csv";
 	protected static final String OUTPUT = "output";
-	protected Lock errorLogLock;
+	private static final String HTML_PAGES_PRELIMINARY = "htmlPagesPreliminary";
 
+	protected Lock errorLogLock;
 
 	/***
 	 * Ritorna la lista di stringhe che portano a pagine parallele e
@@ -84,147 +86,26 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 		return linkToExplore;
 	}
 
-	// OK
-	// metodo che lancia RR su potenziali pagine parallele che hanno superato un
-	// filtraggio iniziale basato sui tag in comune
-	public static Map<String, String> launchRRDownloadPagesToDecideIfMultilingual(String nameFolder, String site,
-			String outlink, int countEntryPoints, Lock errLogLock, boolean preHomepage, Lock errorLogLock,
-			String string) throws IOException {
-
-		// nameFolder name of output folder
-		// (site,outlink) pair of candidate url
-		// countEntryPoints number of files
-
-		// mappa con link visitati e loro pathLocale
+	public Map<String, String> detectOutlinkWithRR(Page homepage, List<String> outlinks, List<String> fileToVerify)
+			throws FileNotFoundException, IOException, InterruptedException {
 		Map<String, String> localPath2url = new HashMap<String, String>();
-		try {
-			// userAgent
-			String userAgent = "Opera/9.63 (Windows NT 5.1; U; en) Presto/2.1.1";
-
-			// folder where download pages
-			// this create in the first call and then already exist
-			new File(HTML_PAGES_PRELIMINARY + nameFolder + "/").mkdir();
-
-			// this create folder in order to save download pages
-			new File(HTML_PAGES_PRELIMINARY + nameFolder + "/" + nameFolder + countEntryPoints).mkdir();
-
-			// folder url where download page
-			String urlBase = HTML_PAGES_PRELIMINARY + nameFolder + "/" + nameFolder + countEntryPoints;
-
-			// page 1
-			String page1;
-			if (!preHomepage) {
-				// page 1(della coppia 1,2 da dare a rr) sempre stessa in questa
-				// fase: la home:
-				if (countEntryPoints == 1) {
-					downloadFromUrl(new URL(site), urlBase + "/" + "HomePage" + countEntryPoints + "-1" + ".html",
-							userAgent);
-					// aggiorno mappa link visitati
-					localPath2url.put(HTML_PAGES_PRELIMINARY + nameFolder + "/" + nameFolder + 1 + "/" + "HomePage" + 1
-							+ "-1" + ".html", site);
-				}
-
-				// string with homepage path
-				page1 = HTML_PAGES_PRELIMINARY + nameFolder + "/" + nameFolder + 1 + "/" + "HomePage" + 1 + "-1"
-						+ ".html";
-			} else {
-				downloadFromUrl(new URL(site), urlBase + "/" + "HomePage" + countEntryPoints + "-1" + ".html",
-						userAgent);
-				// aggiorno mappa link visitati
-				localPath2url.put(urlBase + "/" + "HomePage" + countEntryPoints + "-1" + ".html", site);
-
-				// string with homepage path
-				page1 = urlBase + "/" + "HomePage" + countEntryPoints + "-1" + ".html";
-			}
-
-			// page 2
-			downloadFromUrl(new URL(outlink), urlBase + "/" + "HomePage" + countEntryPoints + "-2" + ".html",
-					userAgent);
-
-			// aggiorno map link visitati
-			localPath2url.put(urlBase + "/" + "HomePage" + countEntryPoints + "-2" + ".html", outlink);
-
-			// creo folder e file style per l'output di rr
-			backupFile(nameFolder + countEntryPoints);
-
-			// System.out.println("RRRRRR " + page1 + " "+
-			// urlBase+"/"+"HomePage"+countEntryPoints+"-2"+".html");
-
-			// filtro rr, non applico rr su pagine palesemente troppo diverse
-			// strutturalmente
-			if (executeRR(page1, urlBase + "/" + "HomePage" + countEntryPoints + "-2" + ".html")) {
-
-				Thread t3 = new Thread() {
-					@Override
-					public void run() {
-						try {
-							rr("-N:" + nameFolder + countEntryPoints, "-O:etc/flat-prefs.xml", page1,
-									urlBase + "/" + "HomePage" + countEntryPoints + "-2" + ".html");
-						} catch (Exception e1) {
-							e1.printStackTrace();
-							synchronized (errorLogLock) {
-								// stampo nell'error log il sito che da il
-								// problema e l'errore
-								try {
-									Utils.csvWr(new String[] { site, e1.toString() }, ERROR_LOG_CSV);
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
-							}
-						}
-					}
-				};
-				t3.start();
-				t3.join(30000);
-				if (t3.isAlive())
-					t3.stop();
-
-				// System.out.println("rr terminated");
-
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			synchronized (errLogLock) {
-				Utils.csvWr(new String[] { site, ex.toString() }, ERROR_LOG_CSV);
-			}
+		int pageNumber = 1;
+		DownloadManager downloadManager = new DownloadManager(homepage.getNameFolder());
+		downloadManager.makeDirectories(pageNumber);
+		downloadManager.download(homepage, pageNumber, true);
+		localPath2url.put(homepage.getLocalPath(), homepage.getURLString());
+		// scarico in locale tutto e su ogni coppia (homepage,pagina) lancio rr.
+		for (String linkPossible : outlinks) {
+			downloadManager.makeDirectories(pageNumber);
+			Page possiblePage = new Page(linkPossible);
+			String urlBase = downloadManager.getBasePath() + pageNumber;
+			fileToVerify.add(homepage.getNameFolder() + pageNumber);
+			downloadManager.download(possiblePage, pageNumber, false);
+			localPath2url.put(possiblePage.getLocalPath(), possiblePage.getURLString());
+			RoadRunnerInvocator.launchRR(homepage, pageNumber, errorLogLock, urlBase);
+			pageNumber++;
 		}
-
 		return localPath2url;
-	}
-
-	// OK
-	// dati due doc html dice approssimativamente se sono similari
-	// strutturalmente o no
-	// utile per filtrare i link su cui lanciare RR,
-	public static boolean executeRR(String first, String second) throws IOException {
-
-		// File input = new File(first);
-		// File input2 = new File(second);
-		// List<String> tag1 = m(input);
-		// List<String> tag2 = m(input2);
-		//
-		// // //System.out.println(tag1.size());
-		// // //System.out.println(tag2.size());
-		//
-		// Set<String> union=new HashSet<String>();
-		// union.addAll(tag1);
-		// int d= union.size();
-		// union.addAll(tag2);
-		// Set<String> union2=new HashSet<String>();
-		// union2.addAll(tag2);
-		// int j=union2.size();
-		//
-		// ////System.out.println("tag min "+Integer.min(d, j) + " union " +
-		// union.size());
-		//
-		// if(((union.size()-Integer.min(d,j))<=(Integer.min(d,j)/10)) &&
-		// ((Integer.max(tag1.size(),tag2.size())-Integer.min(tag1.size(),
-		// tag2.size()))<(Integer.max(tag1.size(), tag2.size())/20)))
-		// return true;
-		// else
-		// return false;
-
-		return true;
 	}
 
 	// OK
@@ -333,8 +214,7 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 							synchronized (errLogLock) {
 								// stampo nell'error log il sito che da il
 								// problema e l'errore
-								Utils.csvWr(new String[] { site.getUrlRedirect().toString(), e.toString() },
-										ERROR_LOG_CSV);
+								Utils.csvWr(new String[] { site.getURLString(), e.toString() }, ERROR_LOG_CSV);
 							}
 						}
 
@@ -343,43 +223,13 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 
 			} catch (Exception e) {
 				e.printStackTrace();
-				Utils.csvWr(new String[] { site.getUrlRedirect().toString(), e.toString() }, ERROR_LOG_CSV);
+				Utils.csvWr(new String[] { site.getURLString(), e.toString() }, ERROR_LOG_CSV);
 			}
 		}
 
 		// System.out.println("candidati "+folderRoot+ " " +pathLocalCandidate);
 
 		return pathLocalCandidate.values();
-	}
-
-	// OK
-	public static void downloadFromUrl(URL url, String localFilename, String userAgent) throws IOException {
-		InputStream is = null;
-		FileOutputStream fos = null;
-		try {
-			URLConnection urlConn = url.openConnection();
-			urlConn.setReadTimeout(2000);
-			if (userAgent != null) {
-				urlConn.setRequestProperty("User-Agent", userAgent);
-			}
-			is = urlConn.getInputStream();
-			fos = new FileOutputStream(localFilename);
-			byte[] buffer = new byte[4096];
-			int len;
-			while ((len = is.read(buffer)) > 0) {
-
-				fos.write(buffer, 0, len);
-			}
-		} finally {
-			try {
-				if (is != null)
-					is.close();
-			} finally {
-				if (fos != null) {
-					fos.close();
-				}
-			}
-		}
 	}
 
 	// OK
@@ -418,47 +268,6 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 		}
 		in2.close();
 		out2.close();
-
-	}
-
-	// OK
-	// lacia rr
-	private static void rr(String... argv) throws Exception {
-
-		try {
-			it.uniroma3.dia.roadrunner.Shell.main(argv);
-			it.uniroma3.dia.roadrunner.tokenizer.token.TagFactory.reset();
-			it.uniroma3.dia.roadrunner.tokenizer.token.Tag.reset();
-
-			Utils.csvWr(new String[] { argv[0] }, "rr.csv");
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			String attribute = "";
-			String line = e.toString().split("/n")[0];
-			if (line.contains("Lo spazio di nomi"))
-				attribute = attribute.concat(line.split("'")[3]).concat(":");
-			else
-				return;
-			System.out.println("attr " + attribute);
-			System.out.println("1 " + argv[0].substring(3));
-			System.out.println("2 " + argv[2]);
-			String pages = "";
-			for (int i = 2; i < argv.length; i++)
-				if (i == argv.length - 1)
-					pages = pages.concat(argv[i]);
-				else
-					pages = pages.concat(argv[i]).concat(" ");
-
-			System.out.println(pages);
-			String newXMLpref = generateNewPrefsXmlNew(attribute, argv[0].substring(3), pages);
-			System.out.println(newXMLpref);
-			argv[1] = "-O:".concat(newXMLpref);
-			System.out.println("newwwwww " + argv[1]);
-			it.uniroma3.dia.roadrunner.Shell.main(argv);
-			it.uniroma3.dia.roadrunner.tokenizer.token.TagFactory.reset();
-			it.uniroma3.dia.roadrunner.tokenizer.token.Tag.reset();
-		}
 
 	}
 
@@ -557,7 +366,7 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 			e.printStackTrace();
 			synchronized (errorLogLock) {
 				// stampo nell'error log il sito che da il problema e l'errore
-				Utils.csvWr(new String[] { site.getUrlRedirect().toString(), e.toString() }, ERROR_LOG_CSV);
+				Utils.csvWr(new String[] { site.getURLString(), e.toString() }, ERROR_LOG_CSV);
 			}
 			keyToUrls2.put(path, listStringoni);
 			ret.add(numLabel);

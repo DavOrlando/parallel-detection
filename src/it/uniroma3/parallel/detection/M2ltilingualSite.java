@@ -115,7 +115,7 @@ public class M2ltilingualSite {
 		// blocco try in cui ci sono le tre euristiche
 		try {
 			// Prendo il nome della cartella di output dall'URL della homepage
-			String nameFolder = UrlUtil.getNameFolderFromSiteUrl(homepageToDetect.getUrlRedirect());
+			String nameFolder = homepageToDetect.getNameFolder();
 			GroupOfParallelUrls parallelHomepageURLs;
 
 			long startTime = Utils.getTime();
@@ -459,7 +459,7 @@ public class M2ltilingualSite {
 	// struttura), se sito multilingua ritorna set di coppie candidate
 	public static Set<Set<String>> isMultilingualByExplorationLink(Page homepage, Lock errorLogLock)
 			throws IOException, InterruptedException, LangDetectException {
-		String nameFolderFromSiteUrl = UrlUtil.getNameFolderFromSiteUrl(homepage.getUrlRedirect());
+		String nameFolderFromSiteUrl = homepage.getNameFolder();
 		// creo set dove mettere coppie trovate, (set di set(coppie))
 		Set<Set<String>> resultsPageExploration = new HashSet<Set<String>>();
 

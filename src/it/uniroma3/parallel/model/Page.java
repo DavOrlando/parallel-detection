@@ -31,6 +31,7 @@ public class Page {
 	private URL url;
 	private URL urlRedirect;
 	private Document document;
+	private String localPath;
 
 	public Page() {
 	}
@@ -61,7 +62,7 @@ public class Page {
 		try {
 			// get del document della pagina
 			this.document = Jsoup.connect(url.toString()).userAgent(USER_AGENT).timeout(8000).get();
-			//se c'è il redirect ci prendiamo l'URL finale.
+			// se c'è il redirect ci prendiamo l'URL finale.
 			this.urlRedirect = new URL(this.document.location());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -93,6 +94,28 @@ public class Page {
 	}
 
 	/**
+	 * Ritorna se presente il percorso in locale della pagina.
+	 * 
+	 * @return
+	 */
+	public String getLocalPath() {
+		return this.localPath;
+	}
+
+	public void setLocalPath(String localPath) {
+		this.localPath = localPath;
+	}
+
+	/**
+	 * Ritorna la stringa che rappresenta l'URL della pagina.
+	 * 
+	 * @return
+	 */
+	public String getURLString() {
+		return this.getUrlRedirect().toString();
+	}
+
+	/**
 	 * Ritorna la root dell'URL della pagina sottoforma di stringa. Esempio:
 	 * "http://www.test.com/test" diventa "http://www.test.com". Serve per
 	 * confrontare sempre con root del sito, per misurare edit distance anche
@@ -103,6 +126,17 @@ public class Page {
 
 	public String getDomain() {
 		return this.urlRedirect.getProtocol() + "://" + this.urlRedirect.getAuthority();
+	}
+
+	/**
+	 * Ritorna l'URL sotto forma di stringa senza "http://" o '/' o "/?" o
+	 * "https://" utile per creare il nome di una cartella.
+	 * 
+	 * @return
+	 */
+	public String getNameFolder() {
+		return this.getUrlRedirect().toString().replace("http://", "").replaceAll(":", "").replaceAll("/", "")
+				.replace("https://", "").replaceAll("/?", "");
 	}
 
 	/***

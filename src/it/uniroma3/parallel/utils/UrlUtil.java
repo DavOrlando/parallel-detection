@@ -4,24 +4,11 @@ import java.io.IOException;
 import java.net.URL;
 
 /***
- * 
+ * Classe con delle operazioni utili per gli URL.
  * @author davideorlando
  * 
  */
 public class UrlUtil {
-
-	/**
-	 * Ritorna una stringa senza "http://" o '/' o "/?" o "https://" utile per
-	 * creare il nome di una cartella partendo da un URL di un sito.
-	 * 
-	 * @param siteUrl
-	 * @return nameFolder
-	 */
-	public static String getNameFolderFromSiteUrl(URL siteUrl) {
-		return siteUrl.toString().replace("http://", "").replaceAll(":", "").replaceAll("/", "").replace("https://", "")
-				.replaceAll("/?", ""); // TODO qui si deve togliere replaceAll e
-										// mettere replace giusto?
-	}
 
 	/**
 	 * Ritorna un URL con lo scheme http all'inizio.

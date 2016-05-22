@@ -3,6 +3,7 @@ package classTest;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.jsoup.Jsoup;
@@ -11,8 +12,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import it.uniroma3.parallel.model.Page;
+import it.uniroma3.parallel.utils.UrlUtil;
 
 public class PageTest {
+	private static final String USER_AGENT = "Opera/9.63 (Windows NT 5.1; U; en) Presto/2.1.1";
 	private static final String HTTP_LOCALHOST_8080 = "http://localhost:8080";
 	private URL urlSite;
 	private Page page;
@@ -27,7 +30,7 @@ public class PageTest {
 	public void siteTest() {
 		try {
 			Document document = Jsoup.connect(urlSite.toString())
-					.userAgent("Opera/9.63 (Windows NT 5.1; U; en) Presto/2.1.1").timeout(8000).get();
+					.userAgent(USER_AGENT).timeout(8000).get();
 			assertEquals(document, page.getDocument());
 		} catch (IOException e) {
 			fail();
@@ -43,13 +46,19 @@ public class PageTest {
 	@Test
 	public void getUrlRootTest_SimpleUrl() {
 		try {
-			URL urlIncomplete = new URL("http://www.ferrari.com");
+			URL urlIncomplete = new URL("http://localhost:8080");
 			Page page = new Page(urlIncomplete);
 			assertEquals(urlIncomplete.toString(), page.getDomain());
 		} catch (Exception e) {
 			fail();
 			e.printStackTrace();
 		}
+	}
+
+	@Test
+	public void getNameFolder_removeSlash() {
+		String folderNameSite = "localhost8080testMinimalehomeIt.html";
+		assertEquals(folderNameSite, page.getNameFolder());
 
 	}
 
