@@ -1,4 +1,4 @@
-package it.uniroma3.parallel.model;
+package it.uniroma3.parallel.utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -6,11 +6,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
 
+import it.uniroma3.parallel.model.Page;
+
 public class DownloadManager {
 	private static final String HTML = ".html";
 	private static final String HOME_PAGE = "HomePage";
 	private static final String USER_AGENT = "Opera/9.63 (Windows NT 5.1; U; en) Presto/2.1.1";
-	public static final String HTML_PAGES_PRELIMINARY = "htmlPagesPreliminary";
+	private static final String HTML_PAGES_PRELIMINARY = "htmlPagesPreliminary";
 	private String basePath;
 
 	/**

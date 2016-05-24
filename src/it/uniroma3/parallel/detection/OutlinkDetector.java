@@ -40,8 +40,8 @@ import com.cybozu.labs.langdetect.Detector;
 import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.LangDetectException;
 
-import it.uniroma3.parallel.model.DownloadManager;
 import it.uniroma3.parallel.model.Page;
+import it.uniroma3.parallel.utils.DownloadManager;
 import it.uniroma3.parallel.utils.RoadRunnerInvocator;
 import it.uniroma3.parallel.utils.Utils;
 
@@ -56,35 +56,12 @@ import it.uniroma3.parallel.utils.Utils;
 
 public abstract class OutlinkDetector extends MultilingualDetector {
 
-	public static final String ERROR_LOG_CSV = "ErrorLog.csv";
+	protected static final String USER_AGENT = "Opera/9.63 (Windows NT 5.1; U; en) Presto/2.1.1";
+	protected static final String ERROR_LOG_CSV = "ErrorLog.csv";
 	protected static final String OUTPUT = "output";
-	private static final String HTML_PAGES_PRELIMINARY = "htmlPagesPreliminary";
+	protected static final String HTML_PAGES_PRELIMINARY = "htmlPagesPreliminary";
 
 	protected Lock errorLogLock;
-
-	/***
-	 * Ritorna la lista di stringhe che portano a pagine parallele e
-	 * multilingua. Ovvero i link verso queste pagine.
-	 * 
-	 * @param homepage
-	 * @param errorLogLock
-	 * @return
-	 * @throws IOException
-	 * @see {@link LevenshteinAndLanguageFilter}
-	 */
-	protected List<String> getMultilingualOutlink(Page homepage) throws IOException {
-		List<String> linkToExplore = null;
-		LevenshteinAndLanguageFilter levenshteinAndLanguageFilter = new LevenshteinAndLanguageFilter();
-		try {
-			linkToExplore = levenshteinAndLanguageFilter.doFilter(homepage);
-		} catch (Exception e) {
-			e.printStackTrace();
-			synchronized (errorLogLock) {
-				Utils.csvWr(new String[] { homepage.getUrlRedirect().toString(), e.toString() }, ERROR_LOG_CSV);
-			}
-		}
-		return linkToExplore;
-	}
 
 	public Map<String, String> detectOutlinkWithRR(Page homepage, List<String> outlinks, List<String> fileToVerify)
 			throws FileNotFoundException, IOException, InterruptedException {

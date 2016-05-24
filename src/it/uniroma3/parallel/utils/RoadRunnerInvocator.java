@@ -29,8 +29,7 @@ public class RoadRunnerInvocator {
 						// stampo nell'error log il sito che da il
 						// problema e l'errore
 						try {
-							Utils.csvWr(new String[] { homepage.getURLString(), e1.toString() },
-									OutlinkDetector.ERROR_LOG_CSV);
+							Utils.csvWr(new String[] { homepage.getURLString(), e1.toString() }, "ErrorLog.csv");
 						} catch (IOException e) {
 							e.printStackTrace();
 						}

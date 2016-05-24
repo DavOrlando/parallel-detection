@@ -13,9 +13,9 @@ import java.util.concurrent.locks.Lock;
 
 import com.cybozu.labs.langdetect.LangDetectException;
 
-import it.uniroma3.parallel.model.DownloadManager;
 import it.uniroma3.parallel.model.GroupOfParallelUrls;
 import it.uniroma3.parallel.model.Page;
+import it.uniroma3.parallel.utils.DownloadManager;
 import it.uniroma3.parallel.utils.UrlUtil;
 import it.uniroma3.parallel.utils.Utils;
 
@@ -42,7 +42,7 @@ public class HomepageOutlinkDetector extends OutlinkDetector {
 	public GroupOfParallelUrls detect(Page homepage) throws IOException, InterruptedException, LangDetectException {
 		GroupOfParallelUrls parallelHomepageUrl = new GroupOfParallelUrls();
 		// lista con link che andranno a fare coppia con la homepage
-		List<String> outlinkToVisit = this.getMultilingualOutlink(homepage);
+		List<String> outlinkToVisit = homepage.getMultilingualOutlinks();
 
 		List<String> fileToVerify = new ArrayList<String>();
 		// mappa link visitati e path locale dove risiedono in locale

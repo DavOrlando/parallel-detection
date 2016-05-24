@@ -17,6 +17,8 @@ import it.uniroma3.parallel.utils.UrlUtil;
 public class PageTest {
 	private static final String USER_AGENT = "Opera/9.63 (Windows NT 5.1; U; en) Presto/2.1.1";
 	private static final String HTTP_LOCALHOST_8080 = "http://localhost:8080";
+	private static final String URL_FOR_TEST = "http://localhost:8080/testForLevenshteinAndLanguageFilter/";
+
 	private URL urlSite;
 	private Page page;
 
@@ -60,6 +62,83 @@ public class PageTest {
 		String folderNameSite = "localhost8080testMinimalehomeIt.html";
 		assertEquals(folderNameSite, page.getNameFolder());
 
+	}
+	
+	@Test
+	public void noOutlinkTest() {
+		try {
+			this.page = new Page(new URL(URL_FOR_TEST+"noOutlink.html"));
+			assertTrue(page.getMultilingualOutlinks().isEmpty());
+		} catch (Exception e) {
+			fail();
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void oneGoodOutlinkTest() {
+		try {
+			this.page = new Page(new URL(URL_FOR_TEST+"oneOutlink.html"));
+			assertEquals(1,page.getMultilingualOutlinks().size());
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	@Test
+	public void oneBadOutlinkEditDistanceFailTest() {
+		try {
+			this.page = new Page(new URL(URL_FOR_TEST +"oneOutlinkButNoEditDistance.html"));
+			assertTrue(page.getMultilingualOutlinks().isEmpty());
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+	
+	@Test
+	public void oneBadOutlinkLanguageFailTest() {
+		try {
+			this.page = new Page(new URL(URL_FOR_TEST +"oneOutlinkButNoLanguage.html"));
+			assertTrue(page.getMultilingualOutlinks().isEmpty());
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+	
+	@Test
+	public void twoEqualsOutlinkTest() {
+		try {
+			this.page = new Page(new URL(URL_FOR_TEST +"twoEqualsOutlink.html"));
+			assertEquals(1,page.getMultilingualOutlinks().size());
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	@Test
+	public void twoGoodOutlink() {
+		try {
+			this.page = new Page(new URL(URL_FOR_TEST +"twoGoodOutlink.html"));
+			assertEquals(2,page.getMultilingualOutlinks().size());
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+	
+	@Test
+	public void oneGoodAndOneBadOutlink() {
+		try {
+			this.page = new Page(new URL(URL_FOR_TEST +"oneGoodAndOneBadOutlink.html"));
+			assertEquals(1,page.getMultilingualOutlinks().size());
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
 	}
 
 }

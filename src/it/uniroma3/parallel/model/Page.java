@@ -5,9 +5,12 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -162,6 +165,56 @@ public class Page {
 		return detector.detect();
 	}
 
+	/**
+	 * Ritorna una lista di stringhe (gli outlink) che soddisfano le condizioni
+	 * sull'edit distance e portano a pagine con una lingua differente.
+	 * 
+	 * @param homepage
+	 * @return
+	 * @throws MalformedURLException
+	 * @throws LangDetectException
+	 */
+	public List<String> getMultilingualOutlinks() throws MalformedURLException, LangDetectException {
+		Set<Element> outlinks = new HashSet<Element>(this.getAllOutlinks());
+		List<String> filteredOutlinks = new ArrayList<>();
+		OutlinkFilter outlinkFilter = new OutlinkFilter();
+		for (Element link : outlinks) {
+			String urlString = link.absUrl("href");
+			if (outlinkFilter.filter(this,urlString))
+				filteredOutlinks.add(urlString);
+		}
+		return filteredOutlinks;
+	}
+
+	/***
+	 * Ritorna tutti gli elementi HTML della pagina che potrebbero essere dei
+	 * link uscenti dalla pagina stessa.
+	 * 
+	 * @return
+	 */
+
+	private List<Element> getAllOutlinks() {
+		List<Element> elements = getHtmlElements("a");
+		elements.addAll(this.getHtmlElements("option"));
+		return elements;
+	}
+
+	/***
+	 * Ritorna una lista di elementi HTML presenti nella pagina e che
+	 * corrispondono al tag elementName passato per parametro.
+	 * 
+	 * @param elementName
+	 *            nome dell'elemento HTML da cercare nella pagina.
+	 * @return
+	 */
+	private List<Element> getHtmlElements(String elementName) {
+		ArrayList<Element> elements = new ArrayList<Element>();
+		for (Element element : this.getDocument().select(elementName)) {
+			elements.add(element);
+		}
+		return elements;
+	}
+
 	/***
 	 * Ritorna una stringa con il contenuto degli elementi della pagina HTML che
 	 * si chiamano elementName.
@@ -175,32 +228,4 @@ public class Page {
 		return paragraphHtmlDocument.text();
 	}
 
-	/***
-	 * Ritorna una lista di elementi HTML presenti nella pagina e che
-	 * corrispondono al tag elementName passato per parametro.
-	 * 
-	 * @param elementName
-	 *            nome dell'elemento HTML da cercare nella pagina.
-	 * @return
-	 */
-	public List<Element> getHtmlElements(String elementName) {
-		ArrayList<Element> elements = new ArrayList<Element>();
-		for (Element element : this.getDocument().select(elementName)) {
-			elements.add(element);
-		}
-		return elements;
-	}
-
-	/***
-	 * Ritorna tutti gli elementi HTML della pagina che potrebbero essere dei
-	 * link uscenti dalla pagina stessa.
-	 * 
-	 * @return
-	 */
-
-	public List<Element> getAllOutlinks() {
-		List<Element> elements = getHtmlElements("a");
-		elements.addAll(this.getHtmlElements("option"));
-		return elements;
-	}
 }

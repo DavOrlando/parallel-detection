@@ -17,9 +17,8 @@ import it.uniroma3.parallel.model.Page;
  *
  */
 
-public abstract class MultilingualDetector implements Detector{
-	
-	protected static final String USER_AGENT = "Opera/9.63 (Windows NT 5.1; U; en) Presto/2.1.1";
+public abstract class MultilingualDetector {
+
 
 	/**
 	 * Rileva se il sito è un falso multilingua, attraverso l'analisi del suo
@@ -34,5 +33,17 @@ public abstract class MultilingualDetector implements Detector{
 		return homepageURL.toString().contains("citysite.") || homepageURL.toString().contains("citycorner.")
 				|| homepageURL.toString().contains("stadtsite.");
 	}
-	
+
+	/**
+	 * Ritorna un gruppo di entry points, ovvero URL di homepage parallele in
+	 * altre lingue. Attraverso una delle euristiche.
+	 * 
+	 * @param homepage
+	 * @return
+	 * @throws IOException
+	 * @throws LangDetectException
+	 * @throws InterruptedException
+	 */
+	public abstract GroupOfParallelUrls detect(Page homepage)
+			throws IOException, InterruptedException, LangDetectException;
 }
