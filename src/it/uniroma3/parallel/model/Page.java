@@ -180,7 +180,7 @@ public class Page {
 		OutlinkFilter outlinkFilter = new OutlinkFilter();
 		for (Element link : outlinks) {
 			String urlString = link.absUrl("href");
-			if (outlinkFilter.filter(this,urlString))
+			if (outlinkFilter.filter(this, urlString))
 				filteredOutlinks.add(urlString);
 		}
 		return filteredOutlinks;

@@ -42,15 +42,15 @@ public class OutlinkFilter {
 	 */
 	private boolean isEditDistanceFine(Page homepage, String outlinkString) {
 		int domainLength = homepage.getDomain().length();
-		int lengthURLHomepage = homepage.getURLString().length();
-		int linkLength = outlinkString.length();
-		return ((linkLength >= lengthURLHomepage) && (StringUtils.getLevenshteinDistance(homepage.getURLString(),
-				outlinkString) < linkLength - lengthURLHomepage + 4
-				|| StringUtils.getLevenshteinDistance(homepage.getURLString(), outlinkString) < linkLength
-						- domainLength + 4)
-				&& (linkLength < lengthURLHomepage * 2.7))
-				|| ((linkLength <= lengthURLHomepage) && (StringUtils.getLevenshteinDistance(homepage.getURLString(),
-						outlinkString) < linkLength / 2));
+		int homepageURLLength = homepage.getURLString().length();
+		int outlinkURLLength = outlinkString.length();
+		int levenshteinDistance = StringUtils.getLevenshteinDistance(homepage.getURLString(), outlinkString);
+		return ((outlinkURLLength >= homepageURLLength) &&
+				(levenshteinDistance < outlinkURLLength - homepageURLLength + 4 ||
+				 levenshteinDistance < outlinkURLLength - domainLength + 4) &&
+				 (outlinkURLLength < homepageURLLength * 2.7)) ||
+				((outlinkURLLength <= homepageURLLength) &&
+				 (levenshteinDistance < outlinkURLLength / 2));
 	}
 
 	/***

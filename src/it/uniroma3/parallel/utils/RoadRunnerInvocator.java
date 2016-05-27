@@ -38,7 +38,7 @@ public class RoadRunnerInvocator {
 			}
 		};
 		t3.start();
-		t3.join(30000);
+		t3.join(30000);//aspetta 30 secondi al massimo e chiude se ancora in esecuzione
 		if (t3.isAlive())
 			t3.stop();
 	}

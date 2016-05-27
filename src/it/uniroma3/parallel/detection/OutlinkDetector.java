@@ -33,6 +33,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.junit.experimental.theories.Theories;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -94,8 +95,8 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 	// e restituisce una lista di file(in locale) accoppiabili
 	// lavora su cartelle contententi molti output che sono sempre relativi a
 	// coppie(e non gruppi) di link allineati
-	public static Collection<String> langDetectAndThresholdLabel(String folderRoot, List<String> fileToVerify,
-			Lock errLogLock, Page site) throws LangDetectException, IOException {
+	public Collection<String> langDetectAndThresholdLabel(String folderRoot, List<String> fileToVerify,
+			Lock errLogLock, Page homepage) throws LangDetectException, IOException {
 
 		List<String> nameFileParallel;
 		Map<String, List<String>> fileOutputRR2textParallel;
@@ -125,7 +126,8 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 				fileOutputRR2textParallel = new HashMap<String, List<String>>();
 				nameFileParallel = new ArrayList<String>();
 
-				List currentObject = textParallel(pathRoot + "/" + ftv + "/" + ftv + "_DataSet.xml", errLogLock, site);
+				String roadRunnerDataSet = pathRoot + "/" + ftv + "/" + ftv + "_DataSet.xml";
+				List currentObject = textParallel(roadRunnerDataSet, homepage);
 
 				Integer numberOfLabel = (Integer) currentObject.get(0);
 				nameFileParallel = (List<String>) currentObject.get(1);
@@ -136,13 +138,13 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 
 				// System.out.println("fuori dal tunnel "+currentObject);
 
-				if (fileOutputRR2textParallel.get(pathRoot + "/" + ftv + "/" + ftv + "_DataSet.xml") != null) {
+				if (fileOutputRR2textParallel.get(roadRunnerDataSet) != null) {
 
 					// metodo che restituisce una coppia formata da un booleano
 					// se lingue sono diverse e
 					String languagePage = detectLanguageListStringoniToDecidePreliminary(
-							fileOutputRR2textParallel.get(pathRoot + "/" + ftv + "/" + ftv + "_DataSet.xml"),
-							nameFileParallel, pathRoot + "/" + ftv + "/" + ftv + "_DataSet.xml");
+							fileOutputRR2textParallel.get(roadRunnerDataSet),
+							nameFileParallel, roadRunnerDataSet);
 
 					// mi serve la chiave che è un true banalmente
 
@@ -191,7 +193,7 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 							synchronized (errLogLock) {
 								// stampo nell'error log il sito che da il
 								// problema e l'errore
-								Utils.csvWr(new String[] { site.getURLString(), e.toString() }, ERROR_LOG_CSV);
+								Utils.csvWr(new String[] { homepage.getURLString(), e.toString() }, ERROR_LOG_CSV);
 							}
 						}
 
@@ -200,7 +202,7 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 
 			} catch (Exception e) {
 				e.printStackTrace();
-				Utils.csvWr(new String[] { site.getURLString(), e.toString() }, ERROR_LOG_CSV);
+				Utils.csvWr(new String[] { homepage.getURLString(), e.toString() }, ERROR_LOG_CSV);
 			}
 		}
 
@@ -257,7 +259,7 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 	// e una mappa che ha come chiave stringhe e come valori liste di stringhe,
 	// la chiave è il path che gli passo(file output) e il valore sono liste con
 	// il testo concatenato delle label di ogni source
-	public static List textParallel(String path, Lock errorLogLock, Page site) throws IOException {
+	public List textParallel(String path, Page homepage) throws IOException {
 
 		// lista ritornata dal metodo
 		List ret = new ArrayList();
@@ -267,7 +269,7 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 		List<String> files = new ArrayList<String>();
 
 		// lista con le label del file di output di RR
-		List<String> keyToUrls = new ArrayList<String>();
+		List<String> roadRunnerLabels = new ArrayList<String>();
 
 		Map<String, List<String>> keyToUrls2 = new HashMap<String, List<String>>();
 
@@ -282,55 +284,56 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 			XPath xPath = XPathFactory.newInstance().newXPath();
 
 			// query per sapere le label
-			String expression = "//attribute/@label";
-			NodeList nodeList = (NodeList) xPath.compile(expression).evaluate(xmlDocument, XPathConstants.NODESET);
+			String getLabelsXpath = "//attribute/@label";
+			NodeList labelNodes = (NodeList) xPath.compile(getLabelsXpath).evaluate(xmlDocument, XPathConstants.NODESET);
 
-			numLabel = nodeList.getLength();
+			numLabel = labelNodes.getLength();
 			// System.out.println(path+nodeList.getLength());
 
-			///// imponi condizione su lunghezza label,
+			// imponi condizione su lunghezza label,
 			// per ora num fisso, poi magari in funzione del numero dei tag
-			///// della coppia originaria, così vedi quanto rr ha
+			// della coppia originaria, così vedi quanto rr ha
 			// allineato sul totale allineabile
-			if (nodeList.getLength() < 1) {
-				ret.add(nodeList.getLength());
+			if (numLabel < 1) {
+				ret.add(numLabel);
 				return ret;
 			}
 
 			// itero sulle label per sapere su quali label iterare al ciclo
 			// successivo
-			for (int i = 0; i < nodeList.getLength(); i++) {
-				keyToUrls.add(nodeList.item(i).getFirstChild().getNodeValue());
+			for (int i = 0; i < numLabel; i++) {
+				String roadRunnerLabel = labelNodes.item(i).getFirstChild().getNodeValue();
+				roadRunnerLabels.add(roadRunnerLabel);
 			}
 
 			// mi faccio ritornare i path file, creo list Stringoni del numero
 			// di file che ho allineato
-			String expression3 = "//instance/@source";
-			NodeList nodeList3 = (NodeList) xPath.compile(expression3).evaluate(xmlDocument, XPathConstants.NODESET);
-			for (int j = 0; j < nodeList3.getLength(); j++) {
+			String getLocalFilenameXpath = "//instance/@source";
+			NodeList localFilenameNodes = (NodeList) xPath.compile(getLocalFilenameXpath).evaluate(xmlDocument, XPathConstants.NODESET);
+			for (int j = 0; j < localFilenameNodes.getLength(); j++) {
 				listStringoni.add(j, "");
-				files.add(nodeList3.item(j).getFirstChild().getNodeValue().toString());
+				files.add(localFilenameNodes.item(j).getFirstChild().getNodeValue().toString());
 			}
 
 			// itero su tutte le label, per andare a prendere il testo da tutte
 			// le label
-			for (String key : keyToUrls) {
+			for (String label : roadRunnerLabels) {
 				// query per sapere testo delle label
-				String expression2 = "//attribute[@label='" + key + "']//inputsamples";
-				NodeList nodeList2 = (NodeList) xPath.compile(expression2).evaluate(xmlDocument,
+				String getExtractedValuesXpath = "//attribute[@label='" + label + "']//inputsamples";
+				NodeList extractedValueNodes = (NodeList) xPath.compile(getExtractedValuesXpath).evaluate(xmlDocument,
 						XPathConstants.NODESET);
 
 				// per ogni risultato avuto dalla query appena sopra (dove
 				// chiedo testo per quella label)
 				// j rappresenta i vari source, quante label ho con stesso nome
 				// quindi quanti documenti ho allineato
-				for (int j = 0; j < nodeList2.getLength(); j++) {
+				for (int j = 0; j < extractedValueNodes.getLength(); j++) {
 
 					// se per doc j-esimo ho un risultato non null allora setta
 					// temp con result della query altrimenti setta temp=" "
 					String temp = " ";
-					if (nodeList2.item(j).getFirstChild().getNodeValue() != null)
-						temp = nodeList2.item(j).getFirstChild().getNodeValue();
+					if (extractedValueNodes.item(j).getFirstChild().getNodeValue() != null)
+						temp = extractedValueNodes.item(j).getFirstChild().getNodeValue();
 
 					// metodo remove rimuove elemento e lo restituisce
 					listStringoni.add(j, listStringoni.remove(j).concat(temp) + " ");
@@ -341,9 +344,9 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			synchronized (errorLogLock) {
+			synchronized(errorLogLock) {
 				// stampo nell'error log il sito che da il problema e l'errore
-				Utils.csvWr(new String[] { site.getURLString(), e.toString() }, ERROR_LOG_CSV);
+				Utils.csvWr(new String[] { homepage.getURLString(), e.toString() }, ERROR_LOG_CSV);
 			}
 			keyToUrls2.put(path, listStringoni);
 			ret.add(numLabel);

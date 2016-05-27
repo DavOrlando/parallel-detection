@@ -49,7 +49,7 @@ public class HomepageOutlinkDetector extends OutlinkDetector {
 		Map<String, String> localPath2url = detectOutlinkWithRR(homepage, outlinkToVisit, fileToVerify);
 
 		// controllo ora l'output di rr, se lingua pagine accoppiate è diversa e
-		// se hanno abbastanza label,
+		// se hanno abbastanza label
 		try {
 			// lista dei file accoppiabili
 			List<String> list = new LinkedList<String>();
