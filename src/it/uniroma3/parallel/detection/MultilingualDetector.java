@@ -6,7 +6,7 @@ import java.net.URL;
 import com.cybozu.labs.langdetect.LangDetectException;
 
 import it.uniroma3.parallel.model.GroupOfParallelUrls;
-import it.uniroma3.parallel.model.Page;
+import it.uniroma3.parallel.model.Homepage;
 
 /**
  * Classe che rappresenta un astrazione di un rilevatore di siti multilingua.
@@ -44,6 +44,6 @@ public abstract class MultilingualDetector {
 	 * @throws LangDetectException
 	 * @throws InterruptedException
 	 */
-	public abstract GroupOfParallelUrls detect(Page homepage)
+	public abstract GroupOfParallelUrls detect(Homepage homepage)
 			throws IOException, InterruptedException, LangDetectException;
 }

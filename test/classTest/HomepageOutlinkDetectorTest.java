@@ -12,16 +12,16 @@ import com.cybozu.labs.langdetect.LangDetectException;
 
 import it.uniroma3.parallel.detection.HomepageOutlinkDetector;
 import it.uniroma3.parallel.detection.OutlinkDetector;
-import it.uniroma3.parallel.model.Page;
+import it.uniroma3.parallel.model.Homepage;
 
 public class HomepageOutlinkDetectorTest {
 
-	private Page homepage;
+	private Homepage homepage;
 	private OutlinkDetector homepageOutlinkDetector;
 
 	@Before
 	public void setUp() throws Exception {
-		this.homepage = new Page("http://localhost:8080/testSenzaHreflang/homeIt.html");
+		this.homepage = new Homepage("http://localhost:8080/testSenzaHreflang/homeIt.html");
 		this.homepageOutlinkDetector = new HomepageOutlinkDetector(new ReentrantLock());
 	}
 

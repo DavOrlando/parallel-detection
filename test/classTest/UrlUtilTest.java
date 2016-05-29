@@ -2,10 +2,6 @@ package classTest;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import org.junit.Before;
 import org.junit.Test;
 

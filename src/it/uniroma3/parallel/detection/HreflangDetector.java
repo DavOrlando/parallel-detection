@@ -6,7 +6,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import it.uniroma3.parallel.model.GroupOfParallelUrls;
-import it.uniroma3.parallel.model.Page;
+import it.uniroma3.parallel.model.Homepage;
 
 /**
  * Classe che rappresenta un rilevatore di siti multilingua attraverso
@@ -32,7 +32,7 @@ public class HreflangDetector extends MultilingualDetector{
 	 * @throws IOException
 	 */
 	@Override
-	public GroupOfParallelUrls detect(Page homepage) throws IOException {
+	public GroupOfParallelUrls detect(Homepage homepage) throws IOException {
 		Elements linksInHomePage = homepage.getDocument().select("link[hreflang]");
 		if (linksInHomePage.isEmpty())
 			return null;

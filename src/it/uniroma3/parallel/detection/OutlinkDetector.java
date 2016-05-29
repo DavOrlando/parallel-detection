@@ -10,9 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -29,11 +26,9 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.commons.lang.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.junit.experimental.theories.Theories;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -41,7 +36,9 @@ import com.cybozu.labs.langdetect.Detector;
 import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.LangDetectException;
 
+import it.uniroma3.parallel.model.GroupOfHomepages;
 import it.uniroma3.parallel.model.Page;
+import it.uniroma3.parallel.model.PairOfHomepages;
 import it.uniroma3.parallel.utils.DownloadManager;
 import it.uniroma3.parallel.utils.RoadRunnerInvocator;
 import it.uniroma3.parallel.utils.Utils;
@@ -64,27 +61,31 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 
 	protected Lock errorLogLock;
 
-	public Map<String, String> detectOutlinkWithRR(Page homepage, List<String> outlinks, List<String> fileToVerify)
-			throws FileNotFoundException, IOException, InterruptedException {
-		Map<String, String> localPath2url = new HashMap<String, String>();
-		int pageNumber = 1;
-		DownloadManager downloadManager = new DownloadManager(homepage.getNameFolder());
-		downloadManager.makeDirectories(pageNumber);
-		downloadManager.download(homepage, pageNumber, true);
-		localPath2url.put(homepage.getLocalPath(), homepage.getURLString());
-		// scarico in locale tutto e su ogni coppia (homepage,pagina) lancio rr.
-		for (String linkPossible : outlinks) {
-			downloadManager.makeDirectories(pageNumber);
-			Page possiblePage = new Page(linkPossible);
-			String urlBase = downloadManager.getBasePath() + pageNumber;
-			fileToVerify.add(homepage.getNameFolder() + pageNumber);
-			downloadManager.download(possiblePage, pageNumber, false);
-			localPath2url.put(possiblePage.getLocalPath(), possiblePage.getURLString());
-			RoadRunnerInvocator.launchRR(homepage, pageNumber, errorLogLock, urlBase);
-			pageNumber++;
-		}
-		return localPath2url;
-	}
+	// public Map<String, String> detectOutlinkWithRR(Page homepage,
+	// List<String> outlinks, List<String> fileToVerify)
+	// throws FileNotFoundException, IOException, InterruptedException {
+	// Map<String, String> localPath2url = new HashMap<String, String>();
+	// int pageNumber = 1;
+	// DownloadManager downloadManager = new
+	// DownloadManager(homepage.getNameFolder());
+	// downloadManager.makeDirectories(pageNumber);
+	// downloadManager.download(homepage, pageNumber, true);
+	// localPath2url.put(homepage.getLocalPath(), homepage.getURLString());
+	// // scarico in locale tutto e su ogni coppia (homepage,pagina) lancio rr.
+	// for (String linkPossible : outlinks) {
+	// downloadManager.makeDirectories(pageNumber);
+	// Page possiblePage = new Page(linkPossible);
+	// String urlBase = downloadManager.getBasePath() + pageNumber;
+	// fileToVerify.add(homepage.getNameFolder() + pageNumber);
+	// downloadManager.download(possiblePage, pageNumber, false);
+	// localPath2url.put(possiblePage.getLocalPath(),
+	// possiblePage.getURLString());
+	// RoadRunnerInvocator.launchRR(homepage, pageNumber, errorLogLock,
+	// urlBase);//TODO qui gli va passata la coppia
+	// pageNumber++;
+	// }
+	// return localPath2url;
+	// }
 
 	// OK
 	// usato nella fase di detection
@@ -95,8 +96,8 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 	// e restituisce una lista di file(in locale) accoppiabili
 	// lavora su cartelle contententi molti output che sono sempre relativi a
 	// coppie(e non gruppi) di link allineati
-	public Collection<String> langDetectAndThresholdLabel(String folderRoot, List<String> fileToVerify,
-			Lock errLogLock, Page homepage) throws LangDetectException, IOException {
+	public Collection<String> langDetectAndThresholdLabel(String folderRoot, List<String> fileToVerify, Lock errLogLock,
+			Page homepage) throws LangDetectException, IOException {
 
 		List<String> nameFileParallel;
 		Map<String, List<String>> fileOutputRR2textParallel;
@@ -143,8 +144,7 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 					// metodo che restituisce una coppia formata da un booleano
 					// se lingue sono diverse e
 					String languagePage = detectLanguageListStringoniToDecidePreliminary(
-							fileOutputRR2textParallel.get(roadRunnerDataSet),
-							nameFileParallel, roadRunnerDataSet);
+							fileOutputRR2textParallel.get(roadRunnerDataSet), nameFileParallel, roadRunnerDataSet);
 
 					// mi serve la chiave che è un true banalmente
 
@@ -285,7 +285,8 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 
 			// query per sapere le label
 			String getLabelsXpath = "//attribute/@label";
-			NodeList labelNodes = (NodeList) xPath.compile(getLabelsXpath).evaluate(xmlDocument, XPathConstants.NODESET);
+			NodeList labelNodes = (NodeList) xPath.compile(getLabelsXpath).evaluate(xmlDocument,
+					XPathConstants.NODESET);
 
 			numLabel = labelNodes.getLength();
 			// System.out.println(path+nodeList.getLength());
@@ -309,7 +310,8 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 			// mi faccio ritornare i path file, creo list Stringoni del numero
 			// di file che ho allineato
 			String getLocalFilenameXpath = "//instance/@source";
-			NodeList localFilenameNodes = (NodeList) xPath.compile(getLocalFilenameXpath).evaluate(xmlDocument, XPathConstants.NODESET);
+			NodeList localFilenameNodes = (NodeList) xPath.compile(getLocalFilenameXpath).evaluate(xmlDocument,
+					XPathConstants.NODESET);
 			for (int j = 0; j < localFilenameNodes.getLength(); j++) {
 				listStringoni.add(j, "");
 				files.add(localFilenameNodes.item(j).getFirstChild().getNodeValue().toString());
@@ -344,7 +346,7 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			synchronized(errorLogLock) {
+			synchronized (errorLogLock) {
 				// stampo nell'error log il sito che da il problema e l'errore
 				Utils.csvWr(new String[] { homepage.getURLString(), e.toString() }, ERROR_LOG_CSV);
 			}
@@ -368,8 +370,8 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 	// e verifica che siano lingue diverse, in caso di lingue uguali rilancia rr
 	// sui soli documenti in lingue diverse
 	public static String detectLanguageListStringoniToDecidePreliminary(List<String> stringoni, List<String> li,
-			String file) throws LangDetectException, ParserConfigurationException, SAXException, IOException,
-					InterruptedException {
+			String file)
+			throws LangDetectException, ParserConfigurationException, SAXException, IOException, InterruptedException {
 		// carico i profili delle lingue
 		if (DetectorFactory.getLangList().size() == 0)
 			DetectorFactory.loadProfile("profiles.sm");
@@ -465,5 +467,32 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 		br.close();
 		scrivii.close();
 		return fileXmlNew;
+	}
+
+	/**
+	 * Chiede ad un DownloadManager di scaricare le pagine in locale.
+	 * 
+	 * @param groupOfHomepage
+	 */
+	protected void downloadPagesInLocal(GroupOfHomepages groupOfHomepage) {
+		DownloadManager downloadManager = new DownloadManager(groupOfHomepage.getHomepage().getNameFolder());
+		downloadManager.downloadGroupOfHomepage(groupOfHomepage);
+	}
+
+	/**
+	 * Lancia RoadRunner sul gruppo di homepage. Ovvero divide il gruppo in
+	 * coppie (HomepagePrimitiva,HomepageTrovata) e su questa coppia lancia
+	 * RoadRunner.
+	 * 
+	 * @param groupOfHomepage
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	protected void runRoadRunner(GroupOfHomepages groupOfHomepage)
+			throws FileNotFoundException, IOException, InterruptedException {
+		for (PairOfHomepages pair : groupOfHomepage.divideInPairs()) {
+			RoadRunnerInvocator.launchRR(pair, errorLogLock);
+		}
 	}
 }

@@ -1,22 +1,23 @@
 package it.uniroma3.parallel.detection;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.locks.Lock;
 
 import com.cybozu.labs.langdetect.LangDetectException;
 
+import it.uniroma3.parallel.model.GroupOfHomepages;
 import it.uniroma3.parallel.model.GroupOfParallelUrls;
-import it.uniroma3.parallel.model.Page;
+import it.uniroma3.parallel.model.Homepage;
+import it.uniroma3.parallel.model.PairOfHomepages;
 import it.uniroma3.parallel.utils.DownloadManager;
-import it.uniroma3.parallel.utils.UrlUtil;
+import it.uniroma3.parallel.utils.RoadRunnerInvocator;
 import it.uniroma3.parallel.utils.Utils;
 
 public class HomepageOutlinkDetector extends OutlinkDetector {
@@ -39,42 +40,41 @@ public class HomepageOutlinkDetector extends OutlinkDetector {
 	 * @throws IOException
 	 */
 
-	public GroupOfParallelUrls detect(Page homepage) throws IOException, InterruptedException, LangDetectException {
+	@Override
+	public GroupOfParallelUrls detect(Homepage homepage) throws IOException, InterruptedException, LangDetectException {
+		// da ritornare alla fine
 		GroupOfParallelUrls parallelHomepageUrl = new GroupOfParallelUrls();
-		// lista con link che andranno a fare coppia con la homepage
-		List<String> outlinkToVisit = homepage.getMultilingualOutlinks();
-
-		List<String> fileToVerify = new ArrayList<String>();
+		GroupOfHomepages groupOfHomepage = new GroupOfHomepages(homepage);
+		downloadPagesInLocal(groupOfHomepage);
+		runRoadRunner(groupOfHomepage);
 		// mappa link visitati e path locale dove risiedono in locale
-		Map<String, String> localPath2url = detectOutlinkWithRR(homepage, outlinkToVisit, fileToVerify);
-
+		Map<String, String> localPath2url = groupOfHomepage.getLocalPath2Url();
 		// controllo ora l'output di rr, se lingua pagine accoppiate è diversa e
 		// se hanno abbastanza label
 		try {
 			// lista dei file accoppiabili
 			List<String> list = new LinkedList<String>();
 			// lancio metodo che ritorna lista file (in locale) accoppiabili con
-			// la home
-			list.addAll(langDetectAndThresholdLabel(homepage.getNameFolder(), fileToVerify, errorLogLock, homepage));
-
+			// la home, sfoltisce ancora
+			list.addAll(langDetectAndThresholdLabel(homepage.getNameFolder(), groupOfHomepage.getFileToVerify(),
+					errorLogLock, homepage));
 			for (String outlink : list) {
 				parallelHomepageUrl.addURL(new URL(localPath2url.get(outlink)));
 			}
-
 		} catch (LangDetectException e) {
 			e.printStackTrace();
 			synchronized (errorLogLock) {
 				Utils.csvWr(new String[] { homepage.getUrl().toString(), e.toString() }, ERROR_LOG_CSV);
 			}
 		}
-
 		// delete dei file output RR creati con questo metodo
-		for (String ftv : fileToVerify)
+		for (String ftv : groupOfHomepage.getFileToVerify())
 			Utils.deleteDir("output/" + ftv);
-
 		// System.out.println("RPE " +resultsPageExploration);
 
 		return parallelHomepageUrl;
 	}
+
+
 
 }

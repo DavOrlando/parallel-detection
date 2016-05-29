@@ -1,6 +1,7 @@
 package it.uniroma3.parallel.detection;
 
 import it.uniroma3.parallel.model.GroupOfParallelUrls;
+import it.uniroma3.parallel.model.Homepage;
 import it.uniroma3.parallel.model.Page;
 import it.uniroma3.parallel.model.ParallelCollections;
 import it.uniroma3.parallel.utils.UrlUtil;
@@ -101,7 +102,7 @@ public class M2ltilingualSite {
 		MultilingualDetector multilingualDetector = new HreflangDetector();
 
 		// oggetto che rappresenta l'homepage su cui si fa la detection
-		Page homepageToDetect = new Page(homepageStringUrl);
+		Homepage homepageToDetect = new Homepage(homepageStringUrl);
 
 		// controllo per escludere alcuni siti falsi positivi multilingua
 		if (multilingualDetector.isInBlacklist(homepageToDetect.getUrlRedirect())) {

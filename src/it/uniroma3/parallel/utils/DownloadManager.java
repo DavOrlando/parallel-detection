@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
 
+import it.uniroma3.parallel.model.GroupOfHomepages;
 import it.uniroma3.parallel.model.Page;
 
 public class DownloadManager {
@@ -38,18 +39,24 @@ public class DownloadManager {
 		return basePath;
 	}
 
-	/***
-	 * Crea le cartelle per scaricare in locale le pagine. Bisogna ricordare che
-	 * viene creata una cartella per ogni sito e all'interno delle sottocartelle
-	 * per ogni pagina. In tutte le sottocartelle vi è solo una pagina tranne la
-	 * prima che contiene sia la homepage che la seconda pagina che verrà
-	 * accoppiata insieme alla homepage.
+	/**
+	 * Scarica in locale l'intero gruppo di pagine. Alla fine del metodo ogni
+	 * possibile homepage all'interno di questo gruppo conoscerà il suo percorso
+	 * in locale.
 	 * 
-	 * @param nameFolder
-	 * @param countEntryPoints
+	 * @param groupOfHomepage
 	 */
-	public void makeDirectories(int countEntryPoints) {
-		new File(basePath + countEntryPoints).mkdirs();
+	public void downloadGroupOfHomepage(GroupOfHomepages groupOfHomepage) {
+		int pageNumber = 1;
+		makeDirectories(pageNumber);
+		download(groupOfHomepage.getHomepage(), pageNumber, true);
+		// scarico tutte le altre possibili homepage
+		for (Page page : groupOfHomepage.getPossibleParallelHomepages()) {
+			makeDirectories(pageNumber);
+			download(page, pageNumber, false);
+			pageNumber++;
+		}
+	
 	}
 
 	/**
@@ -59,21 +66,21 @@ public class DownloadManager {
 	 * 
 	 * @param page
 	 * @param pageNumber
-	 * @param isHomepage 
+	 * @param isHomepage
 	 */
-	public void download(Page page, int pageNumber, boolean isHomepage) {
+	private void download(Page page, int pageNumber, boolean isHomepage) {
 		// cartella dove scaricare la pagina
 		String urlBase = this.getBasePath() + pageNumber;
 		try {
 			if (isHomepage)// E' l'homepage allora sarà la prima della
-								// coppia.
+							// coppia.
 				this.downloadPageInto(page, urlBase + "/" + HOME_PAGE + pageNumber + "-1" + HTML);
 			else// E' l'altra pagina allora sarà la seconda della coppia.
 				this.downloadPageInto(page, urlBase + "/" + HOME_PAGE + pageNumber + "-2" + HTML);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+	
 	}
 
 	/**
@@ -86,7 +93,7 @@ public class DownloadManager {
 	 *            path dove mettere la pagina.
 	 * @throws IOException
 	 */
-	public void downloadPageInto(Page page, String localFilename) throws IOException {
+	private void downloadPageInto(Page page, String localFilename) throws IOException {
 		InputStream is = null;
 		FileOutputStream fos = null;
 		try {
@@ -100,7 +107,7 @@ public class DownloadManager {
 			byte[] buffer = new byte[4096];
 			int len;
 			while ((len = is.read(buffer)) > 0) {
-
+	
 				fos.write(buffer, 0, len);
 			}
 			page.setLocalPath(localFilename);
@@ -114,5 +121,19 @@ public class DownloadManager {
 				}
 			}
 		}
+	}
+
+	/***
+	 * Crea le cartelle per scaricare in locale le pagine. Bisogna ricordare che
+	 * viene creata una cartella per ogni sito e all'interno delle sottocartelle
+	 * per ogni pagina. In tutte le sottocartelle vi è solo una pagina tranne la
+	 * prima che contiene sia la homepage che la seconda pagina che verrà
+	 * accoppiata insieme alla homepage.
+	 * 
+	 * @param nameFolder
+	 * @param countEntryPoints
+	 */
+	private void makeDirectories(int countEntryPoints) {
+		new File(basePath + countEntryPoints).mkdirs();
 	}
 }

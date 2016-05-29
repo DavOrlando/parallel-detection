@@ -5,14 +5,21 @@ import java.io.IOException;
 import java.util.concurrent.locks.Lock;
 
 import it.uniroma3.parallel.detection.OutlinkDetector;
-import it.uniroma3.parallel.model.Page;
+import it.uniroma3.parallel.model.Homepage;
+import it.uniroma3.parallel.model.PairOfHomepages;
 
 public class RoadRunnerInvocator {
 
-	public static void launchRR(Page homepage, int pageNumber, Lock errorLogLock, String urlBase)
+	private static final String HTML_PAGES_PRELIMINARY = "htmlPagesPreliminary";
+
+	public static void launchRR(PairOfHomepages pairOfHomepage, Lock errorLogLock)
 			throws FileNotFoundException, IOException, InterruptedException {
+		int pairNumber = pairOfHomepage.getPairNumber();
+		Homepage homepage = pairOfHomepage.getMainHomepage();
+		String urlBase = HTML_PAGES_PRELIMINARY + homepage.getNameFolder() + "/" + homepage.getNameFolder() + pairNumber;
+
 		// creo folder e file style per l'output di rr
-		OutlinkDetector.backupFile(homepage.getNameFolder() + pageNumber);
+		OutlinkDetector.backupFile(homepage.getNameFolder() + pairNumber);
 
 		// System.out.println("RRRRRR " + page1 + " "+
 		// urlBase+"/"+"HomePage"+countEntryPoints+"-2"+".html");
@@ -21,8 +28,8 @@ public class RoadRunnerInvocator {
 			@Override
 			public void run() {
 				try {
-					rr("-N:" + homepage.getNameFolder() + pageNumber, "-O:etc/flat-prefs.xml", homepage.getLocalPath(),
-							urlBase + "/" + "HomePage" + pageNumber + "-2" + ".html");
+					rr("-N:" + homepage.getNameFolder() + pairNumber, "-O:etc/flat-prefs.xml", homepage.getLocalPath(),
+							urlBase + "/" + "HomePage" + pairNumber + "-2" + ".html");
 				} catch (Exception e1) {
 					e1.printStackTrace();
 					synchronized (errorLogLock) {
