@@ -74,7 +74,6 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 	public Collection<String> langDetectAndThresholdLabel(GroupOfHomepages groupOfHomepage, Lock errLogLock)
 			throws LangDetectException, IOException {
 
-		List<String> nameFileParallel = new ArrayList<String>();
 		Map<String, List<String>> fileOutputRR2textParallel;
 
 		// mappa che conterrà come chiave la lingua e come valore la pagina
@@ -95,29 +94,19 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 			// scorro tutti le cartelle presenti nella folder di output di rr
 			try {
 
-				fileOutputRR2textParallel = new HashMap<String, List<String>>();
-
-
 				RoadRunnerDataSet roadRunnerDataSet = pair.getRoadRunnerDataSet();
 				Integer numberOfLabel = roadRunnerDataSet.getLabelNodes().getLength();
+				fileOutputRR2textParallel = new HashMap<String, List<String>>();
 				if (numberOfLabel < 1) {
-					nameFileParallel = null;
-					fileOutputRR2textParallel = null;
-				}
-				nameFileParallel = roadRunnerDataSet.getURIInputFileForRR();
-				fileOutputRR2textParallel = roadRunnerDataSet.getDatasetToTextExtracted();
-				if (numberOfLabel < 1)
 					continue;
-
-				// System.out.println("fuori dal tunnel "+currentObject);
-
+				}
+				fileOutputRR2textParallel = roadRunnerDataSet.getDatasetToTextExtracted();
 				if (fileOutputRR2textParallel.get(roadRunnerDataSet.getOutputPath()) != null) {
-
 					// metodo che restituisce una coppia formata da un booleano
 					// se lingue sono diverse e
-					String languagePage = detectLanguageListStringoniToDecidePreliminary(
-							fileOutputRR2textParallel.get(roadRunnerDataSet.getOutputPath()),
-							nameFileParallel, roadRunnerDataSet.getOutputPath());
+					String languagePage = pair.getOneHomepage(1).getLanguage();
+					boolean isDifferentLanguage = detectLanguageListStringoniToDecidePreliminary(
+							fileOutputRR2textParallel.get(roadRunnerDataSet.getOutputPath()));
 
 					// mi serve la chiave che è un true banalmente
 
@@ -125,12 +114,11 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 					// aggiungo file, altrimenti scelgo
 					// come entry point per una certa lingua la pagina più
 					// simile strutturalmente alla homepage
-					if (languagePage != null) {
+					if (isDifferentLanguage) {
 
 						// mi faccio restituire il nome del file su cui ho fatto
 						// la detect
-						String localPath = groupOfHomepage.getLocalPath() + pair.getPairNumber();
-						File folderR = new File(localPath);
+						File folderR = new File(groupOfHomepage.getLocalPath() + pair.getPairNumber());
 
 						File[] listOfFilesR = folderR.listFiles();
 
@@ -181,8 +169,6 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 			}
 		}
 
-		// System.out.println("candidati "+folderRoot+ " " +pathLocalCandidate);
-
 		return pathLocalCandidate.values();
 	}
 
@@ -225,63 +211,58 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 
 	}
 
-
-	// OK
-	// usato solo nella fase di detection
-	// metodo che prende in ingresso una lista con gli stringoni delle label
-	// concatenate per tutti i file accoppiati insieme
-	// e verifica che siano lingue diverse, in caso di lingue uguali rilancia rr
-	// sui soli documenti in lingue diverse
-	public static String detectLanguageListStringoniToDecidePreliminary(List<String> stringoni, List<String> li,
-			String file)
+	/**
+	 * Ritorna true se c'è abbastanza testo e se i testi sono in lingua differente.
+	 * 
+	 * @param testiConcatenati
+	 * @return
+	 * @throws LangDetectException
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	public static boolean detectLanguageListStringoniToDecidePreliminary(List<String> testiConcatenati)
 			throws LangDetectException, ParserConfigurationException, SAXException, IOException, InterruptedException {
+		// verifico che un set creato con i linguaggi dei testi abbia una
+		// cardinalitò uguale al numero di testi.Ovvero abbiamo tutte lingue
+		// differenti.
+		return !isEnoughText(testiConcatenati) && getLanguageSet(testiConcatenati).size() == testiConcatenati.size();
+	}
+
+	private static Set<String> getLanguageSet(List<String> testiConcatenati) throws LangDetectException {
+		Set<String> setOfLanguages = new HashSet<>();
 		// carico i profili delle lingue
 		if (DetectorFactory.getLangList().size() == 0)
 			DetectorFactory.loadProfile("profiles.sm");
-
-		// se ho poco testo e nn riesco quindi a fare accuratamente lang detect
-		// restituisco false
-		// coppie ok ma per gruppi??
-		for (String s : stringoni)
-			if (s.length() < 15 && stringoni.size() == 2)
-				return null;
-
-		// set e list con tutte le lingue rilevate
-		Set<String> set = new HashSet<String>();
-		List<String> ling = new ArrayList<String>();
-
-		String secondPage = "";
-
-		// aggiungo al set le lingue rilevate
-		for (String t : stringoni) {
-
-			// risultati della language detection(en, it, ...)
-			String langDetect = "";
-
-			// detect su stringone
-			Detector detector = DetectorFactory.create();
-			detector.append(t);
-			langDetect = detector.detect().toString();
-
-			secondPage = langDetect;
-
-			// aggiungo la lingua rilevata al set
-			set.add(langDetect);
-			ling.add(langDetect);
+		for (String testo : testiConcatenati) {
+			String langDetect = textLanguageDetection(testo);
+			setOfLanguages.add(langDetect);
 		}
+		return setOfLanguages;
+	}
 
-		// se non ho elementi nella lista su cui fare lang detect ritorno false
-		if (stringoni.size() == 0)
-			return null;
+	private static String textLanguageDetection(String testo) throws LangDetectException {
+		// risultati della language detection(en, it, ...)
+		String langDetect = "";
+		// detect su stringone
+		Detector detector = DetectorFactory.create();
+		detector.append(testo);
+		langDetect = detector.detect().toString();
+		// aggiungo la lingua rilevata al set
+		return langDetect;
+	}
 
-		// verifico che ogni stringone abbia lingua diversa, e quindi che la
-		// cardinalità di quei due insiemi sia la stessa
-		if (set.size() == stringoni.size()) {
-			return secondPage;
-		}
+	private static boolean isEnoughText(List<String> testiConcatenati) {
+		// se non ho elementi nella lista su cui fare lang detect ritorno null
+		if (testiConcatenati.size() == 0)
+			return false;
 
-		return null;
-
+		// se ho poco testo restituisco null
+		for (String testo : testiConcatenati)
+			if (testo.length() < 15 && testiConcatenati.size() == 2)
+				return false;
+		return true;
 	}
 
 	public static String generateNewPrefsXmlNew(String attribute, String nameSite, String pathFiles)
