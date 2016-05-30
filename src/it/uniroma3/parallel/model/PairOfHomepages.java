@@ -14,8 +14,17 @@ public class PairOfHomepages {
 
 	private int pairNumber;
 	private List<Page> homepages;
-	private RoadRunnerOutput roadRunnerOutput;
+	private RoadRunnerDataSet roadRunnerDataSet;
 
+	/**
+	 * Costruisce una coppia di due pagine. La prima è l'homepage del sito
+	 * mentre la seconda è una probabile homepage. Inoltre numeriamo la coppia
+	 * con un numero che è relativo alle coppie trovate per una sola detection.
+	 * 
+	 * @param homepage
+	 * @param page
+	 * @param pairNumber
+	 */
 	public PairOfHomepages(Homepage homepage, Page page, int pairNumber) {
 		this.pairNumber = pairNumber;
 		this.homepages = new ArrayList<>(2);
@@ -26,6 +35,8 @@ public class PairOfHomepages {
 	public int getPairNumber() {
 		return this.pairNumber;
 	}
+
+
 
 	/**
 	 * Ritorna la homepage principale. Ovvero il primo elemento della coppia
@@ -38,6 +49,14 @@ public class PairOfHomepages {
 		return (Homepage) this.getOneHomepage(0);
 	}
 
+	public RoadRunnerDataSet getRoadRunnerDataSet() {
+		return roadRunnerDataSet;
+	}
+
+	public void setRoadRunnerDataSet(RoadRunnerDataSet roadRunnerDataSet) {
+		this.roadRunnerDataSet = roadRunnerDataSet;
+	}
+
 	/**
 	 * Ritorna la pagina chiesta dal parametro.
 	 * 
@@ -48,13 +67,4 @@ public class PairOfHomepages {
 		return this.homepages.get(numberOfPage);
 	}
 
-	public RoadRunnerOutput getRoadRunnerOutput() {
-		return roadRunnerOutput;
-	}
-
-	public void setRoadRunnerOutput(RoadRunnerOutput roadRunnerOutput) {
-		this.roadRunnerOutput = roadRunnerOutput;
-	}
-
-	
 }

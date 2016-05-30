@@ -1,9 +1,7 @@
 package it.uniroma3.parallel.detection;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -15,9 +13,6 @@ import com.cybozu.labs.langdetect.LangDetectException;
 import it.uniroma3.parallel.model.GroupOfHomepages;
 import it.uniroma3.parallel.model.GroupOfParallelUrls;
 import it.uniroma3.parallel.model.Homepage;
-import it.uniroma3.parallel.model.PairOfHomepages;
-import it.uniroma3.parallel.utils.DownloadManager;
-import it.uniroma3.parallel.utils.RoadRunnerInvocator;
 import it.uniroma3.parallel.utils.Utils;
 
 public class HomepageOutlinkDetector extends OutlinkDetector {
@@ -56,8 +51,7 @@ public class HomepageOutlinkDetector extends OutlinkDetector {
 			List<String> list = new LinkedList<String>();
 			// lancio metodo che ritorna lista file (in locale) accoppiabili con
 			// la home, sfoltisce ancora
-			list.addAll(langDetectAndThresholdLabel(homepage.getNameFolder(), groupOfHomepage.getFileToVerify(),
-					errorLogLock, homepage));
+			list.addAll(langDetectAndThresholdLabel(groupOfHomepage,errorLogLock));
 			for (String outlink : list) {
 				parallelHomepageUrl.addURL(new URL(localPath2url.get(outlink)));
 			}

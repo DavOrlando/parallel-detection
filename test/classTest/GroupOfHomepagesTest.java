@@ -103,26 +103,27 @@ public class GroupOfHomepagesTest {
 			fail();
 		}
 	}
-	
-	
+
 	@Test
 	public void noGoodOutlinkDivideInPairsTest() {
 		try {
 			this.homepage = new Homepage(new URL(URL_FOR_TEST + "noOutlink.html"));
 			this.groupOfHomepages = new GroupOfHomepages(homepage);
-			assertEquals(0,this.groupOfHomepages.divideInPairs().size());
+			this.groupOfHomepages.divideInPairs();
+			assertEquals(0, this.groupOfHomepages.getListOfPairs().size());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
 		}
 	}
-	
+
 	@Test
 	public void oneGoodOutlinkDivideInPairsTest() {
 		try {
 			this.homepage = new Homepage(new URL(URL_FOR_TEST + "oneOutlink.html"));
 			this.groupOfHomepages = new GroupOfHomepages(homepage);
-			assertEquals(1,this.groupOfHomepages.divideInPairs().size());
+			this.groupOfHomepages.divideInPairs();
+			assertEquals(1, this.groupOfHomepages.getListOfPairs().size());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
@@ -134,7 +135,8 @@ public class GroupOfHomepagesTest {
 		try {
 			this.homepage = new Homepage(new URL(URL_FOR_TEST + "twoGoodOutlink.html"));
 			this.groupOfHomepages = new GroupOfHomepages(homepage);
-			assertEquals(2, groupOfHomepages.divideInPairs().size());
+			this.groupOfHomepages.divideInPairs();
+			assertEquals(2,this.groupOfHomepages.getListOfPairs().size());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();

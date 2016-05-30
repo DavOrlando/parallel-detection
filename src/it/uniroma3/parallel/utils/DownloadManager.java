@@ -47,6 +47,7 @@ public class DownloadManager {
 	 * @param groupOfHomepage
 	 */
 	public void downloadGroupOfHomepage(GroupOfHomepages groupOfHomepage) {
+		groupOfHomepage.setLocalPath(this.basePath);
 		int pageNumber = 1;
 		makeDirectories(pageNumber);
 		download(groupOfHomepage.getHomepage(), pageNumber, true);

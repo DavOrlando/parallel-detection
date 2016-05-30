@@ -7,6 +7,7 @@ import java.util.concurrent.locks.Lock;
 import it.uniroma3.parallel.detection.OutlinkDetector;
 import it.uniroma3.parallel.model.Homepage;
 import it.uniroma3.parallel.model.PairOfHomepages;
+import it.uniroma3.parallel.model.RoadRunnerDataSet;
 
 public class RoadRunnerInvocator {
 
@@ -16,7 +17,8 @@ public class RoadRunnerInvocator {
 			throws FileNotFoundException, IOException, InterruptedException {
 		int pairNumber = pairOfHomepage.getPairNumber();
 		Homepage homepage = pairOfHomepage.getMainHomepage();
-		String urlBase = HTML_PAGES_PRELIMINARY + homepage.getNameFolder() + "/" + homepage.getNameFolder() + pairNumber;
+		String urlBase = HTML_PAGES_PRELIMINARY + homepage.getNameFolder() + "/" + homepage.getNameFolder()
+				+ pairNumber;
 
 		// creo folder e file style per l'output di rr
 		OutlinkDetector.backupFile(homepage.getNameFolder() + pairNumber);
@@ -30,6 +32,10 @@ public class RoadRunnerInvocator {
 				try {
 					rr("-N:" + homepage.getNameFolder() + pairNumber, "-O:etc/flat-prefs.xml", homepage.getLocalPath(),
 							urlBase + "/" + "HomePage" + pairNumber + "-2" + ".html");
+					String ftv = pairOfHomepage.getMainHomepage().getNameFolder() + pairNumber;
+					//alla coppia associo il suo output
+					pairOfHomepage.setRoadRunnerDataSet(new RoadRunnerDataSet("output" +"/"+ ftv + "/" + ftv + "_DataSet.xml"));
+
 				} catch (Exception e1) {
 					e1.printStackTrace();
 					synchronized (errorLogLock) {
@@ -45,7 +51,8 @@ public class RoadRunnerInvocator {
 			}
 		};
 		t3.start();
-		t3.join(30000);//aspetta 30 secondi al massimo e chiude se ancora in esecuzione
+		t3.join(30000);// aspetta 30 secondi al massimo e chiude se ancora in
+						// esecuzione
 		if (t3.isAlive())
 			t3.stop();
 	}

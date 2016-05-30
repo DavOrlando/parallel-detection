@@ -9,11 +9,21 @@ import java.util.List;
 import java.util.Map;
 import com.cybozu.labs.langdetect.LangDetectException;
 
-//
+/**
+ * Classe che rappresenta un gruppo di prababili homepage parallele. Conosce
+ * l'homepage dal quale sono stati selezionati i probabili URL delle altre
+ * homepage. Inoltre è in grado di ritornare tutte le possibili coppie
+ * (homepagePrimitiva,homepageNuova).
+ * 
+ * @author davideorlando
+ *
+ */
 public class GroupOfHomepages {
 
 	private Homepage homepage;
 	private List<Page> possibleParallelHomepages;
+	private List<PairOfHomepages> listOfPair;
+	private String localPath;
 
 	/***
 	 * Crea e inizializza lo stato dell'oggetto GroupOfHomepages in base alle
@@ -30,6 +40,11 @@ public class GroupOfHomepages {
 		List<String> multilingualOutlinks = this.homepage.getMultilingualOutlinks();
 		for (String outlink : multilingualOutlinks)
 			possibleParallelHomepages.add(new Page(new URL(outlink)));
+		divideInPairs();
+	}
+
+	public List<PairOfHomepages> getListOfPairs() {
+		return this.listOfPair;
 	}
 
 	public Homepage getHomepage() {
@@ -40,13 +55,22 @@ public class GroupOfHomepages {
 		return possibleParallelHomepages;
 	}
 
+	public String getLocalPath() {
+		return this.localPath;
+	}
+
+	public void setLocalPath(String localPath) {
+		this.localPath = localPath;
+	}
+
 	/***
-	 * Ritorna una lista con tutte le coppie generate da
-	 * (firstHomepage,possibleParallelHomepages[i-esima]).
+	 * Crea una lista con tutte le coppie generate da
+	 * (firstHomepage,possibleParallelHomepages[i-esima]). E' possibile accedere
+	 * alla lista, dopo averla creata con questo metodo, grazie a getPair().
 	 * 
 	 * @return
 	 */
-	public List<PairOfHomepages> divideInPairs() {
+	public void divideInPairs() {
 		List<PairOfHomepages> listOfPairs = new LinkedList<>();
 		int i = 1;
 		for (Page page : possibleParallelHomepages) {
@@ -54,7 +78,7 @@ public class GroupOfHomepages {
 			listOfPairs.add(pair);
 			i++;
 		}
-		return listOfPairs;
+		this.listOfPair = listOfPairs;
 	}
 
 	/**
