@@ -85,7 +85,7 @@ public class M2ltilingualSite {
 
 	// main per debugging
 	public static void main(String[] argv) throws IOException, InterruptedException, LangDetectException {
-		multilingualDetection("localhost:8080/testSenzaHreflang/homeIt.html", 2, new ReentrantLock(), new ReentrantLock(),
+		multilingualDetection("www.toyota.com", 2, new ReentrantLock(), new ReentrantLock(),
 				new ReentrantLock(), new ReentrantLock());
 	}
 

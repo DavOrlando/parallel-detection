@@ -38,9 +38,9 @@ public class Page {
 	 * dell'URL dell'homepage.
 	 * 
 	 * @param homepageStringUrl
-	 * @throws MalformedURLException
+	 * @throws IOException 
 	 */
-	public Page(String homepageStringUrl) throws MalformedURLException {
+	public Page(String homepageStringUrl) throws IOException {
 		this(new URL(UrlUtil.addHttp(homepageStringUrl)));
 	}
 
@@ -54,16 +54,12 @@ public class Page {
 	 *            String nel formato "http://www.dominio.com/risorsa/"
 	 * @throws IOException
 	 */
-	public Page(URL url) {
+	public Page(URL url) throws IOException {
 		this.url = url;
-		try {
 			// get del document della pagina
 			this.document = Jsoup.connect(url.toString()).userAgent(USER_AGENT).timeout(8000).get();
 			// se c'è il redirect ci prendiamo l'URL finale.
 			this.urlRedirect = new URL(this.document.location());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	public URL getUrl() {

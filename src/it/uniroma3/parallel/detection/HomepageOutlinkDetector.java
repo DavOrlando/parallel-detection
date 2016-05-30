@@ -40,32 +40,12 @@ public class HomepageOutlinkDetector extends OutlinkDetector {
 		// da ritornare alla fine
 		GroupOfParallelUrls parallelHomepageUrl = new GroupOfParallelUrls();
 		GroupOfHomepages groupOfHomepage = new GroupOfHomepages(homepage);
-		downloadPagesInLocal(groupOfHomepage);
-		runRoadRunner(groupOfHomepage);
-		// mappa link visitati e path locale dove risiedono in locale
-		Map<String, String> localPath2url = groupOfHomepage.getLocalPath2Url();
-		// controllo ora l'output di rr, se lingua pagine accoppiate è diversa e
-		// se hanno abbastanza label
-		try {
-			// lista dei file accoppiabili
-			List<String> list = new LinkedList<String>();
-			// lancio metodo che ritorna lista file (in locale) accoppiabili con
-			// la home, sfoltisce ancora
-			list.addAll(langDetectAndThresholdLabel(groupOfHomepage,errorLogLock));
-			for (String outlink : list) {
-				parallelHomepageUrl.addURL(new URL(localPath2url.get(outlink)));
-			}
-		} catch (LangDetectException e) {
-			e.printStackTrace();
-			synchronized (errorLogLock) {
-				Utils.csvWr(new String[] { homepage.getUrl().toString(), e.toString() }, ERROR_LOG_CSV);
-			}
+		this.downloadPagesInLocal(groupOfHomepage);
+		this.runRoadRunner(groupOfHomepage);
+		for (URL verifiedURL : langDetectAndThresholdLabel(groupOfHomepage)) {
+			parallelHomepageUrl.addURL((verifiedURL));
 		}
-		// delete dei file output RR creati con questo metodo
-		for (String ftv : groupOfHomepage.getFileToVerify())
-			Utils.deleteDir("output/" + ftv);
-		// System.out.println("RPE " +resultsPageExploration);
-
+		deleteOutputRROfHomepages(groupOfHomepage);
 		return parallelHomepageUrl;
 	}
 

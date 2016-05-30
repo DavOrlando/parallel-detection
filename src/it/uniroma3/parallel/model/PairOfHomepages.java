@@ -46,9 +46,13 @@ public class PairOfHomepages {
 	 * @return
 	 */
 	public Homepage getMainHomepage() {
-		return (Homepage) this.getOneHomepage(0);
+		return (Homepage) this.getHomepageFromList(0);
 	}
 
+	/**
+	 * Restituisce il relativo DataSet se presente.
+	 * @return
+	 */
 	public RoadRunnerDataSet getRoadRunnerDataSet() {
 		return roadRunnerDataSet;
 	}
@@ -63,7 +67,7 @@ public class PairOfHomepages {
 	 * @param numberOfPage
 	 * @return
 	 */
-	public Page getOneHomepage(int numberOfPage) {
+	public Page getHomepageFromList(int numberOfPage) {
 		return this.homepages.get(numberOfPage);
 	}
 

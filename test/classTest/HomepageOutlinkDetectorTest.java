@@ -21,7 +21,7 @@ public class HomepageOutlinkDetectorTest {
 
 	@Before
 	public void setUp() throws Exception {
-		this.homepage = new Homepage("http://localhost:8080/testSenzaHreflang/homeIt.html");
+		this.homepage = new Homepage("www.toyota.com");
 		this.homepageOutlinkDetector = new HomepageOutlinkDetector(new ReentrantLock());
 	}
 

@@ -60,6 +60,15 @@ public class RoadRunnerDataSet {
 	}
 
 	/**
+	 * Ritorna il numero di label del dataset.
+	 * 
+	 * @return
+	 */
+	public int getNumberOfLabels() {
+		return this.labelNodes.getLength();
+	}
+
+	/**
 	 * Ritorna la lista di stringhe che corrispondono agli URI in input a Road
 	 * Runner.
 	 * 
@@ -88,23 +97,36 @@ public class RoadRunnerDataSet {
 		return localFilenameNodes;
 	}
 
+	// /**
+	// * Ritorna una mappa che ha come chiave il path del file Dataset di
+	// * RoadRunner e per valore una lista di testi. Ogni testo è la
+	// * concatenazione delle stringhe di ogni label per una lingua. Quindi con
+	// * due lingue avrò due testi, uno in linguaggio1 (testo delle label in
+	// * linguaggio1) e un altro in linguaggio2(testo delle label in
+	// linguaggio2).
+	// *
+	// * @return
+	// * @throws XPathExpressionException
+	// */
+	// public Map<String, List<String>> getMapDatasetToTextExtracted() throws
+	// XPathExpressionException {
+	// HashMap<String, List<String>> dataset2TextExtracted = new HashMap<>();
+	// dataset2TextExtracted.put(this.getOutputPath(),
+	// this.getTextFromAllLabels());
+	// return dataset2TextExtracted;
+	// }
+
 	/**
-	 * Ritorna una mappa che ha come chiave il path del file Dataset di
-	 * RoadRunner e per valore una lista di testi. Ogni testo è la
-	 * concatenazione delle stringhe di ogni label per una lingua. Quindi con
-	 * due lingue avrò due testi, uno in linguaggio1 (testo delle label in
-	 * linguaggio1) e un altro in linguaggio2(testo delle label in linguaggio2).
+	 * Ritorna una lista di testi. Ogni testo è la concatenazione delle
+	 * stringhe di ogni label per una lingua. Quindi con due lingue avrò
+	 * due testi, uno in linguaggio1 (testo delle label in linguaggio1) e
+	 * un altro in linguaggio2(testo delle label in linguaggio2).
 	 * 
 	 * @return
 	 * @throws XPathExpressionException
 	 */
-	public Map<String, List<String>> getDatasetToTextExtracted() throws XPathExpressionException {
-		HashMap<String, List<String>> dataset2TextExtracted = new HashMap<>();
-		dataset2TextExtracted.put(this.getOutputPath(), this.getTextFromAllLabels());
-		return dataset2TextExtracted;
-	}
 
-	private List<String> getTextFromAllLabels() throws XPathExpressionException {
+	public List<String> getTextFromAllLabels() throws XPathExpressionException {
 		List<String> listaStringoni = new ArrayList<>();
 
 		NodeList localFilenameNodes = this.getLocalFilename();
@@ -112,8 +134,7 @@ public class RoadRunnerDataSet {
 			listaStringoni.add(j, "");
 		}
 
-		// itero su tutte le label, per andare a prendere il testo da tutte
-		// le label
+		// prendo il testo da tutte le label
 		for (String label : getStringOfLabel()) {
 			// query per sapere testo delle label
 			String getExtractedValuesXpath = "//attribute[@label='" + label + "']//inputsamples";

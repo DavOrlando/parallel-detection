@@ -12,6 +12,7 @@ import org.jsoup.nodes.Element;
 
 import com.cybozu.labs.langdetect.LangDetectException;
 
+import it.uniroma3.parallel.filter.OutlinkFilter;
 import it.uniroma3.parallel.utils.UrlUtil;
 
 public class Homepage extends Page {
@@ -21,9 +22,9 @@ public class Homepage extends Page {
 	 * dell'URL dell'homepage.
 	 * 
 	 * @param homepageStringUrl
-	 * @throws MalformedURLException
+	 * @throws IOException 
 	 */
-	public Homepage(String homepageStringUrl) throws MalformedURLException {
+	public Homepage(String homepageStringUrl) throws IOException {
 		super(new URL(UrlUtil.addHttp(homepageStringUrl)));
 	}
 
@@ -37,7 +38,7 @@ public class Homepage extends Page {
 	 *            String nel formato "http://www.dominio.com/risorsa/"
 	 * @throws IOException
 	 */
-	public Homepage(URL url) {
+	public Homepage(URL url) throws IOException {
 		super(url);
 	}
 
@@ -47,10 +48,10 @@ public class Homepage extends Page {
 	 * 
 	 * @param homepage
 	 * @return
-	 * @throws MalformedURLException
 	 * @throws LangDetectException
+	 * @throws IOException 
 	 */
-	public List<String> getMultilingualOutlinks() throws MalformedURLException, LangDetectException {
+	public List<String> getMultilingualOutlinks() throws LangDetectException, IOException {
 		Set<Element> outlinks = new HashSet<Element>(this.getAllOutlinks());
 		List<String> filteredOutlinks = new ArrayList<>();
 		OutlinkFilter outlinkFilter = new OutlinkFilter();

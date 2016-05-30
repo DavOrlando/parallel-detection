@@ -1,5 +1,6 @@
 package it.uniroma3.parallel.model;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -31,15 +32,19 @@ public class GroupOfHomepages {
 	 * particolare popola la lista di possibili pagine parallele alla homepage.
 	 * 
 	 * @param homepage
-	 * @throws MalformedURLException
 	 * @throws LangDetectException
+	 * @throws IOException 
 	 */
-	public GroupOfHomepages(Homepage homepage) throws MalformedURLException, LangDetectException {
+	public GroupOfHomepages(Homepage homepage) throws LangDetectException {
 		this.possibleParallelHomepages = new LinkedList<>();
 		this.homepage = homepage;
-		List<String> multilingualOutlinks = this.homepage.getMultilingualOutlinks();
-		for (String outlink : multilingualOutlinks)
-			possibleParallelHomepages.add(new Page(new URL(outlink)));
+		try {
+			List<String> multilingualOutlinks = this.homepage.getMultilingualOutlinks();
+			for (String outlink : multilingualOutlinks)
+				possibleParallelHomepages.add(new Page(new URL(outlink)));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		divideInPairs();
 	}
 

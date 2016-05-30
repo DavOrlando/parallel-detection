@@ -1,11 +1,14 @@
-package it.uniroma3.parallel.model;
+package it.uniroma3.parallel.filter;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.commons.lang.StringUtils;
 
 import com.cybozu.labs.langdetect.LangDetectException;
+
+import it.uniroma3.parallel.model.Page;
 
 /**
  * Classe che rappresenta un filtro per gli outlink. Si filtra sulla base
@@ -25,9 +28,9 @@ public class OutlinkFilter {
 	 * @param outlinkString
 	 * @return
 	 * @throws LangDetectException
-	 * @throws MalformedURLException
+	 * @throws IOException 
 	 */
-	public boolean filter(Page homepage, String outlinkString) throws LangDetectException, MalformedURLException {
+	public boolean filter(Page homepage, String outlinkString) throws LangDetectException, IOException {
 		return !homepage.getURLString().equals(outlinkString) && isEditDistanceFine(homepage, outlinkString)
 				&& !isSameLanguage(homepage, outlinkString);
 	}
@@ -61,10 +64,10 @@ public class OutlinkFilter {
 	 * @param outlinkString
 	 * @return
 	 * @throws LangDetectException
-	 * @throws MalformedURLException
+	 * @throws IOException 
 	 */
 	private boolean isSameLanguage(Page homepage, String outlinkString)
-			throws LangDetectException, MalformedURLException {
+			throws LangDetectException, IOException {
 		Page differentLanguagePage = new Page(new URL(outlinkString));
 		return homepage.getLanguage().equals(differentLanguagePage.getLanguage());
 	}
