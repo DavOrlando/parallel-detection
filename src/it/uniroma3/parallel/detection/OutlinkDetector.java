@@ -85,11 +85,11 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 		// language2Url se e solo se troviamo per quel linguaggio una pagina con
 		// più label di quelle attuali
 		Map<String, Integer> language2NumberOfLabel = new HashMap<String, Integer>();
-		//per ogni coppia di homepage analizzo l'output di RR
+		// per ogni coppia di homepage analizzo l'output di RR
 		for (PairOfHomepages pair : groupOfHomepage.getListOfPairs()) {
 			try {
 				RoadRunnerDataSet roadRunnerDataSet = pair.getRoadRunnerDataSet();
-				if(roadRunnerDataSet == null)
+				if (roadRunnerDataSet == null)
 					continue;
 				if (roadRunnerDataSet.getNumberOfLabels() < 1)
 					continue;
@@ -288,9 +288,15 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 		}
 	}
 
+	/**
+	 * Cancella l'output di RoadRunner di un gruppo di pagine.
+	 * 
+	 * @param groupOfHomepage
+	 */
 	protected void deleteOutputRROfHomepages(GroupOfHomepages groupOfHomepage) {
 		// delete dei file output RR
-		for (String ftv : groupOfHomepage.getFileToVerify())
-			Utils.deleteDir("output/" + ftv);
+		Utils.deleteDir("output");
 	}
+	
+	
 }

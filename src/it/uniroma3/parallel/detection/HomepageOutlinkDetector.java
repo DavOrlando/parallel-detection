@@ -17,8 +17,8 @@ import it.uniroma3.parallel.utils.Utils;
 
 public class HomepageOutlinkDetector extends OutlinkDetector {
 
-	public HomepageOutlinkDetector(Lock errorLogLock) {
-		this.errorLogLock = errorLogLock;
+	public HomepageOutlinkDetector() {
+		
 	}
 
 	/**
@@ -45,7 +45,7 @@ public class HomepageOutlinkDetector extends OutlinkDetector {
 		for (URL verifiedURL : langDetectAndThresholdLabel(groupOfHomepage)) {
 			parallelHomepageUrl.addURL((verifiedURL));
 		}
-		deleteOutputRROfHomepages(groupOfHomepage);
+		this.deleteOutputRROfHomepages(groupOfHomepage);
 		return parallelHomepageUrl;
 	}
 

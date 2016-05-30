@@ -22,7 +22,7 @@ public class HomepageOutlinkDetectorTest {
 	@Before
 	public void setUp() throws Exception {
 		this.homepage = new Homepage("www.sea-advisor.com");
-		this.homepageOutlinkDetector = new HomepageOutlinkDetector(new ReentrantLock());
+		this.homepageOutlinkDetector = new HomepageOutlinkDetector();
 	}
 
 	@Test
