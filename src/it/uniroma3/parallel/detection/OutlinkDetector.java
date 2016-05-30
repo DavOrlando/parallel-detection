@@ -42,9 +42,9 @@ import it.uniroma3.parallel.model.GroupOfHomepages;
 import it.uniroma3.parallel.model.GroupOfParallelUrls;
 import it.uniroma3.parallel.model.Page;
 import it.uniroma3.parallel.model.PairOfHomepages;
-import it.uniroma3.parallel.model.RoadRunnerDataSet;
+import it.uniroma3.parallel.roadrunner.RoadRunnerDataSet;
+import it.uniroma3.parallel.roadrunner.RoadRunnerInvocator;
 import it.uniroma3.parallel.utils.DownloadManager;
-import it.uniroma3.parallel.utils.RoadRunnerInvocator;
 import it.uniroma3.parallel.utils.Utils;
 
 /**
@@ -89,6 +89,8 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 		for (PairOfHomepages pair : groupOfHomepage.getListOfPairs()) {
 			try {
 				RoadRunnerDataSet roadRunnerDataSet = pair.getRoadRunnerDataSet();
+				if(roadRunnerDataSet == null)
+					continue;
 				if (roadRunnerDataSet.getNumberOfLabels() < 1)
 					continue;
 				List<String> textFromAllLabels = roadRunnerDataSet.getTextFromAllLabels();

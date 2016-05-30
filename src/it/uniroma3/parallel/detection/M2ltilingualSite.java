@@ -68,8 +68,6 @@ http://www.bulthaup.com/
 //classe che permette di sapere se un sito è multilingua e avere coppie candidate di link paralleli (entry points)
 public class M2ltilingualSite {
 
-	private static final int PAIR_FOR_OUTLINK = 2;
-	private static final int MAX_LENGTH_GROUP_HREFLANG = 5;
 	private static final String OUTPUT = "output";
 	private static final String PRE_HOMEPAGE = "PreHomepage";
 	private static final String MULT_DETECTION_PREHOMEPAGE = "mult detection prehomepage";
@@ -140,7 +138,7 @@ public class M2ltilingualSite {
 				// elimino folder di output e di crawling TODO forse inutile
 				// Utils.deleteDir(HTML_PAGES_PRELIMINARY + nameFolder);
 				// su gruppi di 5 viene lanciata la visita ricorsiva
-				recursiveCrawler(parallelHomepageURLs, MAX_LENGTH_GROUP_HREFLANG, depthT, errorLogLock, nameFolder);
+				//recursiveCrawler(parallelHomepageURLs, MAX_LENGTH_GROUP_HREFLANG, depthT, errorLogLock, nameFolder);
 				return;
 			}
 			
@@ -176,7 +174,7 @@ public class M2ltilingualSite {
 							Long.toString(endDetectionTime - startDetectionTime) }, SITE_MULTILINGUAL_CSV);
 				}
 				// se ho coppie candidate lancio visita ricorsiva
-				recursiveCrawler(parallelHomepageURLs, PAIR_FOR_OUTLINK, depthT, errorLogLock, nameFolder);
+				//recursiveCrawler(parallelHomepageURLs, PAIR_FOR_OUTLINK, depthT, errorLogLock, nameFolder);
 				return;
 
 			}
@@ -574,7 +572,7 @@ public class M2ltilingualSite {
 			throws IOException, LangDetectException {
 		String langHp = homepage.getLanguage();
 		// select all link to search other half of candidate pair (hp, half)
-		List<Element> links = homepage.getAllOutlinks();
+		List<Element> links = homepage. ();
 		List<String> linkToExplore = new ArrayList<String>();
 		for (Element link : links) {
 			// show absolute url

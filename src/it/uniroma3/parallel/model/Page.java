@@ -38,7 +38,7 @@ public class Page {
 	 * dell'URL dell'homepage.
 	 * 
 	 * @param homepageStringUrl
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public Page(String homepageStringUrl) throws IOException {
 		this(new URL(UrlUtil.addHttp(homepageStringUrl)));
@@ -56,10 +56,11 @@ public class Page {
 	 */
 	public Page(URL url) throws IOException {
 		this.url = url;
-			// get del document della pagina
-			this.document = Jsoup.connect(url.toString()).userAgent(USER_AGENT).timeout(8000).get();
-			// se c'è il redirect ci prendiamo l'URL finale.
-			this.urlRedirect = new URL(this.document.location());
+		// get del document della pagina
+		this.document = Jsoup.connect(url.toString()).userAgent(USER_AGENT).timeout(8000).get();
+		// se c'è il redirect ci prendiamo l'URL finale.
+		this.urlRedirect = new URL(this.document.location());
+
 	}
 
 	public URL getUrl() {
@@ -162,6 +163,9 @@ public class Page {
 	 * @return
 	 */
 	private String getStringElement(String elementName) {
+		String a;
+		if (document == null)
+			a = "b";
 		Elements paragraphHtmlDocument = this.getDocument().select(elementName);
 		return paragraphHtmlDocument.text();
 	}

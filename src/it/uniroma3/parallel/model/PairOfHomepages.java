@@ -3,6 +3,8 @@ package it.uniroma3.parallel.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.uniroma3.parallel.roadrunner.RoadRunnerDataSet;
+
 /**
  * Classe che rappresenta una coppia di homepage. Necessaria perchè sarà l'input
  * per RoadRunner, infatti memorizza un riferimento al suo output.

@@ -51,13 +51,13 @@ public class Homepage extends Page {
 	 * @throws LangDetectException
 	 * @throws IOException 
 	 */
-	public List<String> getMultilingualOutlinks() throws LangDetectException, IOException {
+	public List<String> getMultilingualOutlinks(){
 		Set<Element> outlinks = new HashSet<Element>(this.getAllOutlinks());
 		List<String> filteredOutlinks = new ArrayList<>();
 		OutlinkFilter outlinkFilter = new OutlinkFilter();
 		for (Element link : outlinks) {
 			String urlString = link.absUrl("href");
-			if (outlinkFilter.filter(this, urlString))
+			if (!filteredOutlinks.contains(urlString) && outlinkFilter.filter(this, urlString))
 				filteredOutlinks.add(urlString);
 		}
 		return filteredOutlinks;

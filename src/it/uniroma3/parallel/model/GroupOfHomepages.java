@@ -33,17 +33,19 @@ public class GroupOfHomepages {
 	 * 
 	 * @param homepage
 	 * @throws LangDetectException
-	 * @throws IOException 
+	 * @throws MalformedURLException
+	 * @throws IOException
 	 */
-	public GroupOfHomepages(Homepage homepage) throws LangDetectException {
+	public GroupOfHomepages(Homepage homepage) throws LangDetectException, MalformedURLException {
 		this.possibleParallelHomepages = new LinkedList<>();
 		this.homepage = homepage;
-		try {
-			List<String> multilingualOutlinks = this.homepage.getMultilingualOutlinks();
-			for (String outlink : multilingualOutlinks)
+		List<String> multilingualOutlinks = this.homepage.getMultilingualOutlinks();
+		for (String outlink : multilingualOutlinks) {
+			try {
 				possibleParallelHomepages.add(new Page(new URL(outlink)));
-		} catch (IOException e) {
-			e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		divideInPairs();
 	}

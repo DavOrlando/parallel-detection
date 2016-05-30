@@ -1,5 +1,6 @@
-package it.uniroma3.parallel.utils;
+package it.uniroma3.parallel.roadrunner;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.concurrent.locks.Lock;
@@ -7,7 +8,7 @@ import java.util.concurrent.locks.Lock;
 import it.uniroma3.parallel.detection.OutlinkDetector;
 import it.uniroma3.parallel.model.Homepage;
 import it.uniroma3.parallel.model.PairOfHomepages;
-import it.uniroma3.parallel.model.RoadRunnerDataSet;
+import it.uniroma3.parallel.utils.Utils;
 
 public class RoadRunnerInvocator {
 
@@ -33,8 +34,10 @@ public class RoadRunnerInvocator {
 					rr("-N:" + homepage.getNameFolder() + pairNumber, "-O:etc/flat-prefs.xml", homepage.getLocalPath(),
 							urlBase + "/" + "HomePage" + pairNumber + "-2" + ".html");
 					String ftv = pairOfHomepage.getMainHomepage().getNameFolder() + pairNumber;
-					//alla coppia associo il suo output
-					pairOfHomepage.setRoadRunnerDataSet(new RoadRunnerDataSet("output" +"/"+ ftv + "/" + ftv + "_DataSet.xml"));
+					//alla coppia associo il suo output se esiste
+					if(new File("output" +"/"+ ftv + "/" + ftv + "_DataSet.xml").exists())
+						pairOfHomepage.setRoadRunnerDataSet(
+								new RoadRunnerDataSet("output" + "/" + ftv + "/" + ftv + "_DataSet.xml"));
 
 				} catch (Exception e1) {
 					e1.printStackTrace();

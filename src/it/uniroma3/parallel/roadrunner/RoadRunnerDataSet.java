@@ -1,7 +1,8 @@
-package it.uniroma3.parallel.model;
+package it.uniroma3.parallel.roadrunner;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,16 +40,22 @@ public class RoadRunnerDataSet {
 	 * @throws XPathExpressionException
 	 */
 	public RoadRunnerDataSet(String outputPath)
-			throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
+			throws ParserConfigurationException, SAXException, XPathExpressionException {
 		this.outputPath = outputPath;
 		// apro file e creo struttura per fare xpath query
-		FileInputStream file = new FileInputStream(new File(outputPath));
-		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = builderFactory.newDocumentBuilder();
-		this.xmlDocument = builder.parse(file);
-		this.xPath = XPathFactory.newInstance().newXPath();
-		// query per sapere le label
-		this.labelNodes = (NodeList) xPath.compile(ATTRIBUTE_LABEL).evaluate(xmlDocument, XPathConstants.NODESET);
+		FileInputStream file;
+		try {
+			file = new FileInputStream(new File(outputPath));
+			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = builderFactory.newDocumentBuilder();
+			this.xmlDocument = builder.parse(file);
+			this.xPath = XPathFactory.newInstance().newXPath();
+			// query per sapere le label
+			this.labelNodes = (NodeList) xPath.compile(ATTRIBUTE_LABEL).evaluate(xmlDocument, XPathConstants.NODESET);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	public String getOutputPath() {

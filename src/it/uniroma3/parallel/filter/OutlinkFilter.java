@@ -28,11 +28,16 @@ public class OutlinkFilter {
 	 * @param outlinkString
 	 * @return
 	 * @throws LangDetectException
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	public boolean filter(Page homepage, String outlinkString) throws LangDetectException, IOException {
-		return !homepage.getURLString().equals(outlinkString) && isEditDistanceFine(homepage, outlinkString)
-				&& !isSameLanguage(homepage, outlinkString);
+	public boolean filter(Page homepage, String outlinkString) {
+		try {
+			return !homepage.getURLString().equals(outlinkString) && isEditDistanceFine(homepage, outlinkString)
+					&& !isSameLanguage(homepage, outlinkString);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	/***
@@ -48,12 +53,11 @@ public class OutlinkFilter {
 		int homepageURLLength = homepage.getURLString().length();
 		int outlinkURLLength = outlinkString.length();
 		int levenshteinDistance = StringUtils.getLevenshteinDistance(homepage.getURLString(), outlinkString);
-		return ((outlinkURLLength >= homepageURLLength) &&
-				(levenshteinDistance < outlinkURLLength - homepageURLLength + 4 ||
-				 levenshteinDistance < outlinkURLLength - domainLength + 4) &&
-				 (outlinkURLLength < homepageURLLength * 2.7)) ||
-				((outlinkURLLength <= homepageURLLength) &&
-				 (levenshteinDistance < outlinkURLLength / 2));
+		return ((outlinkURLLength >= homepageURLLength)
+				&& (levenshteinDistance < outlinkURLLength - homepageURLLength + 4
+						|| levenshteinDistance < outlinkURLLength - domainLength + 4)
+				&& (outlinkURLLength < homepageURLLength * 2.7))
+				|| ((outlinkURLLength <= homepageURLLength) && (levenshteinDistance < outlinkURLLength / 2));
 	}
 
 	/***
@@ -64,10 +68,9 @@ public class OutlinkFilter {
 	 * @param outlinkString
 	 * @return
 	 * @throws LangDetectException
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	private boolean isSameLanguage(Page homepage, String outlinkString)
-			throws LangDetectException, IOException {
+	private boolean isSameLanguage(Page homepage, String outlinkString) throws LangDetectException, IOException {
 		Page differentLanguagePage = new Page(new URL(outlinkString));
 		return homepage.getLanguage().equals(differentLanguagePage.getLanguage());
 	}
