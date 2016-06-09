@@ -213,64 +213,6 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 		return true;
 	}
 
-	public static String generateNewPrefsXmlNew(String attribute, String nameSite, String pathFiles)
-			throws IOException {
-
-		String parseTagResult = "";
-		String[] files = pathFiles.split(" ");
-
-		for (String a : files) {
-			File input = new File(a);
-			org.jsoup.nodes.Document doc = Jsoup.parse(input, "UTF-8", "http://example.com/");
-			// Elements g = (doc.getElementsByAttribute(attribute));
-			Elements g = doc.getElementsByAttributeStarting(attribute);
-			for (Element e : g) {
-				String parseTag = e.toString().split(" ")[0].replaceAll("<", "").replaceAll(">", "");
-				parseTagResult = parseTagResult.concat(parseTag + ", ");
-			}
-		}
-		// System.out.println("step 2: tag extraction: "+parseTagResult);
-
-		// --------------------------------------------------
-
-		// file flat-prefs.xml di default
-		File file = new File("etc/flat-prefs.xml");
-		FileReader fr = new FileReader(file);
-		BufferedReader br = new BufferedReader(fr);
-		String line;
-
-		// file dove scrivo file prefs.xml che user� per questo sito
-		String fileXmlNew = "etc/flat-prefs" + nameSite + ".xml";
-		FileOutputStream provaa = new FileOutputStream(fileXmlNew);
-		PrintStream scrivii = new PrintStream(provaa);
-
-		// scandisco prefs.xml e riga da cambiare la cambio skippando il tag
-		// opportuno
-		while ((line = br.readLine()) != null) {
-			if (line.contains("<skipTags")) {
-				String[] split = line.split("=\"");
-				String skiptag = split[0].concat("=" + "\"" + parseTagResult).concat(split[1]);
-				scrivii.println(skiptag);
-			} else {
-				scrivii.println(line);
-			}
-		}
-
-		br.close();
-		scrivii.close();
-		return fileXmlNew;
-	}
-
-	/**
-	 * Chiede ad un DownloadManager di scaricare le pagine in locale.
-	 * 
-	 * @param groupOfHomepage
-	 */
-	protected void downloadPagesInLocal(GroupOfHomepages groupOfHomepage) {
-		DownloadManager downloadManager = new DownloadManager(groupOfHomepage.getHomepage().getNameFolder());
-		downloadManager.downloadGroupOfHomepage(groupOfHomepage);
-	}
-
 	/**
 	 * Lancia RoadRunner sul gruppo di homepage. Ovvero divide il gruppo in
 	 * coppie (HomepagePrimitiva,HomepageTrovata) e su questa coppia lancia

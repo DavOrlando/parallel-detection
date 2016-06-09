@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import com.cybozu.labs.langdetect.LangDetectException;
 
+import it.uniroma3.parallel.utils.DownloadManager;
+
 /**
  * Classe che rappresenta un gruppo di prababili homepage parallele. Conosce
  * l'homepage dal quale sono stati selezionati i probabili URL delle altre
@@ -39,7 +41,7 @@ public class GroupOfHomepages {
 	public GroupOfHomepages(Homepage homepage) throws LangDetectException, MalformedURLException {
 		this.possibleParallelHomepages = new LinkedList<>();
 		this.homepage = homepage;
-		List<String> multilingualOutlinks = this.homepage.selectMultilingualLinks();
+		List<String> multilingualOutlinks = this.homepage.getMultilingualLinks();
 		for (String outlink : multilingualOutlinks) {
 			try {
 				possibleParallelHomepages.add(new Page(new URL(outlink)));
@@ -97,7 +99,7 @@ public class GroupOfHomepages {
 	public Map<String, String> getLocalPath2Url() {
 		Map<String, String> localPath2Url = new HashMap<>();
 		for (Page page : this.possibleParallelHomepages) {
-			localPath2Url.put(page.getLocalPath(), page.getUrlRedirect().toString());
+			localPath2Url.put(DownloadManager.getInstance().findPageByURL(page.getUrlRedirect()), page.getUrlRedirect().toString());
 		}
 		return localPath2Url;
 	}
@@ -105,7 +107,7 @@ public class GroupOfHomepages {
 	public List<String> getFileToVerify() {
 		List<String> fileToVerify = new ArrayList<>();
 		for (int i = 1; i <= this.possibleParallelHomepages.size(); i++) {
-			fileToVerify.add(this.getHomepage().getNameFolder() + i);
+			fileToVerify.add(this.getHomepage().getName() + i);
 		}
 		return fileToVerify;
 	}

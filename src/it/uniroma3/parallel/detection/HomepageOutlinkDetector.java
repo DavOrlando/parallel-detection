@@ -13,6 +13,7 @@ import com.cybozu.labs.langdetect.LangDetectException;
 import it.uniroma3.parallel.model.GroupOfHomepages;
 import it.uniroma3.parallel.model.GroupOfParallelUrls;
 import it.uniroma3.parallel.model.Homepage;
+import it.uniroma3.parallel.utils.DownloadManager;
 import it.uniroma3.parallel.utils.Utils;
 
 public class HomepageOutlinkDetector extends OutlinkDetector {
@@ -40,7 +41,7 @@ public class HomepageOutlinkDetector extends OutlinkDetector {
 		// da ritornare alla fine
 		GroupOfParallelUrls parallelHomepageUrl = new GroupOfParallelUrls();
 		GroupOfHomepages groupOfHomepage = new GroupOfHomepages(homepage);
-		this.downloadPagesInLocal(groupOfHomepage);
+		DownloadManager.getInstance().persistGroupOfHomepage(groupOfHomepage);;
 		this.runRoadRunner(groupOfHomepage);
 		for (URL verifiedURL : langDetectAndThresholdLabel(groupOfHomepage)) {
 			parallelHomepageUrl.addURL((verifiedURL));
@@ -49,6 +50,10 @@ public class HomepageOutlinkDetector extends OutlinkDetector {
 		return parallelHomepageUrl;
 	}
 
+	public GroupOfHomepages detect2(Homepage homepage) {
+		List<String> multilingualLinks = homepage.getMultilingualLinks();
+		return null;
+	}
 
 
 }

@@ -51,7 +51,7 @@ public class Homepage extends Page {
 	 * @param outlinks
 	 * @return
 	 */
-	public List<String> selectMultilingualLinks() {
+	public List<String> getMultilingualLinks() {
 		List<String> filteredOutlinks = new ArrayList<>();
 		EditDistanceFilter editDistanceFilter = new EditDistanceFilter();
 		LanguageFilter languageFilter = new LanguageFilter();

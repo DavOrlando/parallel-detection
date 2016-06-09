@@ -27,8 +27,8 @@ public class Page {
 	private URL url;
 	private URL urlRedirect;
 	private Document document;
-	private String localPath;
 	private String language;
+	private String name;
 
 	public Page() {
 	}
@@ -75,18 +75,6 @@ public class Page {
 		return document;
 	}
 
-	/**
-	 * Ritorna se presente il percorso in locale della pagina.
-	 * 
-	 * @return
-	 */
-	public String getLocalPath() {
-		return this.localPath;
-	}
-
-	public void setLocalPath(String localPath) {
-		this.localPath = localPath;
-	}
 
 	/**
 	 * Ritorna la stringa che rappresenta l'URL della pagina.
@@ -116,9 +104,11 @@ public class Page {
 	 * 
 	 * @return
 	 */
-	public String getNameFolder() {
-		return this.getUrlRedirect().toString().replace("http://", "").replaceAll(":", "").replaceAll("/", "")
-				.replace("https://", "").replaceAll("/?", "");
+	public String getName() {
+		if (name == null)
+			this.name = this.getUrlRedirect().toString().replace("http://", "").replaceAll(":", "").replaceAll("/", "")
+					.replace("https://", "").replaceAll("/?", "");
+		return name;
 	}
 
 	/***

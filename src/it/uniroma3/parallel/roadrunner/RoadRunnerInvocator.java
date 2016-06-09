@@ -1,13 +1,22 @@
 package it.uniroma3.parallel.roadrunner;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.concurrent.locks.Lock;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import it.uniroma3.parallel.detection.OutlinkDetector;
 import it.uniroma3.parallel.model.Homepage;
 import it.uniroma3.parallel.model.PairOfHomepages;
+import it.uniroma3.parallel.utils.DownloadManager;
 import it.uniroma3.parallel.utils.Utils;
 
 public class RoadRunnerInvocator {
@@ -18,11 +27,11 @@ public class RoadRunnerInvocator {
 			throws FileNotFoundException, IOException, InterruptedException {
 		int pairNumber = pairOfHomepage.getPairNumber();
 		Homepage homepage = pairOfHomepage.getMainHomepage();
-		String urlBase = HTML_PAGES_PRELIMINARY + homepage.getNameFolder() + "/" + homepage.getNameFolder()
+		String urlBase = HTML_PAGES_PRELIMINARY + homepage.getName() + "/" + homepage.getName()
 				+ pairNumber;
 
 		// creo folder e file style per l'output di rr
-		OutlinkDetector.backupFile(homepage.getNameFolder() + pairNumber);
+		OutlinkDetector.backupFile(homepage.getName() + pairNumber);
 
 		// System.out.println("RRRRRR " + page1 + " "+
 		// urlBase+"/"+"HomePage"+countEntryPoints+"-2"+".html");
@@ -31,9 +40,10 @@ public class RoadRunnerInvocator {
 			@Override
 			public void run() {
 				try {
-					rr("-N:" + homepage.getNameFolder() + pairNumber, "-O:etc/flat-prefs.xml", homepage.getLocalPath(),
+					String localPath = DownloadManager.getInstance().findPageByURL(homepage.getUrlRedirect());
+					rr("-N:" + homepage.getName() + pairNumber, "-O:etc/flat-prefs.xml",localPath ,
 							urlBase + "/" + "HomePage" + pairNumber + "-2" + ".html");
-					String ftv = pairOfHomepage.getMainHomepage().getNameFolder() + pairNumber;
+					String ftv = pairOfHomepage.getMainHomepage().getName() + pairNumber;
 					//alla coppia associo il suo output se esiste
 					if(new File("output" +"/"+ ftv + "/" + ftv + "_DataSet.xml").exists())
 						pairOfHomepage.setRoadRunnerDataSet(
@@ -89,7 +99,7 @@ public class RoadRunnerInvocator {
 					pages = pages.concat(argv[i]).concat(" ");
 
 			System.out.println(pages);
-			String newXMLpref = OutlinkDetector.generateNewPrefsXmlNew(attribute, argv[0].substring(3), pages);
+			String newXMLpref = generateNewPrefsXmlNew(attribute, argv[0].substring(3), pages);
 			System.out.println(newXMLpref);
 			argv[1] = "-O:".concat(newXMLpref);
 			System.out.println("newwwwww " + argv[1]);
@@ -98,6 +108,54 @@ public class RoadRunnerInvocator {
 			it.uniroma3.dia.roadrunner.tokenizer.token.Tag.reset();
 		}
 
+	}
+	
+	public static String generateNewPrefsXmlNew(String attribute, String nameSite, String pathFiles)
+			throws IOException {
+
+		String parseTagResult = "";
+		String[] files = pathFiles.split(" ");
+
+		for (String a : files) {
+			File input = new File(a);
+			org.jsoup.nodes.Document doc = Jsoup.parse(input, "UTF-8", "http://example.com/");
+			// Elements g = (doc.getElementsByAttribute(attribute));
+			Elements g = doc.getElementsByAttributeStarting(attribute);
+			for (Element e : g) {
+				String parseTag = e.toString().split(" ")[0].replaceAll("<", "").replaceAll(">", "");
+				parseTagResult = parseTagResult.concat(parseTag + ", ");
+			}
+		}
+		// System.out.println("step 2: tag extraction: "+parseTagResult);
+
+		// --------------------------------------------------
+
+		// file flat-prefs.xml di default
+		File file = new File("etc/flat-prefs.xml");
+		FileReader fr = new FileReader(file);
+		BufferedReader br = new BufferedReader(fr);
+		String line;
+
+		// file dove scrivo file prefs.xml che user� per questo sito
+		String fileXmlNew = "etc/flat-prefs" + nameSite + ".xml";
+		FileOutputStream provaa = new FileOutputStream(fileXmlNew);
+		PrintStream scrivii = new PrintStream(provaa);
+
+		// scandisco prefs.xml e riga da cambiare la cambio skippando il tag
+		// opportuno
+		while ((line = br.readLine()) != null) {
+			if (line.contains("<skipTags")) {
+				String[] split = line.split("=\"");
+				String skiptag = split[0].concat("=" + "\"" + parseTagResult).concat(split[1]);
+				scrivii.println(skiptag);
+			} else {
+				scrivii.println(line);
+			}
+		}
+
+		br.close();
+		scrivii.close();
+		return fileXmlNew;
 	}
 
 }

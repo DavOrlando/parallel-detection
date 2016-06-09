@@ -4,7 +4,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.io.IOUtils;
 
 import it.uniroma3.parallel.model.GroupOfHomepages;
 import it.uniroma3.parallel.model.Page;
@@ -15,38 +20,38 @@ public class DownloadManager {
 	private static final String USER_AGENT = "Opera/9.63 (Windows NT 5.1; U; en) Presto/2.1.1";
 	private static final String HTML_PAGES_PRELIMINARY = "htmlPagesPreliminary";
 	private String basePath;
+	public static DownloadManager instance;
+	private Map<URL, String> url2LocalPath;
 
 	/**
 	 * Gestore dei download per questo Sistema.
 	 */
-	public DownloadManager() {
-		// TODO Auto-generated constructor stub
+	private DownloadManager() {
+		this.url2LocalPath = new HashMap<>();
 	}
 
-	/**
-	 * Costruisce un oggetto DownloadManager dandogli anche la base del percorso
-	 * in cui andrà a scaricare le pagine.
-	 * 
-	 * @param nameFolder
-	 *            per poi usarlo in questo modo: HTML_PAGES_PRELIMINARY +
-	 *            nameFolder + "/" + nameFolder
-	 */
-	public DownloadManager(String nameFolder) {
-		this.basePath = HTML_PAGES_PRELIMINARY + nameFolder + "/" + nameFolder;
+	public static DownloadManager getInstance() {
+		if (instance == null)
+			instance = new DownloadManager();
+		return instance;
 	}
 
 	public String getBasePath() {
 		return basePath;
 	}
 
+	public void setBasePath(String nameFolder) {
+		this.basePath = HTML_PAGES_PRELIMINARY + nameFolder + "/" + nameFolder;
+	}
+
 	/**
-	 * Scarica in locale l'intero gruppo di pagine. Alla fine del metodo ogni
-	 * possibile homepage all'interno di questo gruppo conoscerà il suo percorso
-	 * in locale.
+	 * Scarica in locale l'intero gruppo di pagine. Popola una mappa che mi dice
+	 * per ogni URL quale è il percorso in locale.
 	 * 
 	 * @param groupOfHomepage
 	 */
-	public void downloadGroupOfHomepage(GroupOfHomepages groupOfHomepage) {
+	public void persistGroupOfHomepage(GroupOfHomepages groupOfHomepage) {
+		setBasePath(groupOfHomepage.getHomepage().getName());
 		groupOfHomepage.setLocalPath(this.basePath);
 		int pageNumber = 1;
 		makeDirectories(pageNumber);
@@ -57,7 +62,7 @@ public class DownloadManager {
 			download(page, pageNumber, false);
 			pageNumber++;
 		}
-	
+
 	}
 
 	/**
@@ -81,7 +86,7 @@ public class DownloadManager {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	
+
 	}
 
 	/**
@@ -94,7 +99,7 @@ public class DownloadManager {
 	 *            path dove mettere la pagina.
 	 * @throws IOException
 	 */
-	private void downloadPageInto(Page page, String localFilename) throws IOException {
+	private void downloadPageIntoOldVersion(Page page, String localFilename) throws IOException {
 		InputStream is = null;
 		FileOutputStream fos = null;
 		try {
@@ -108,10 +113,9 @@ public class DownloadManager {
 			byte[] buffer = new byte[4096];
 			int len;
 			while ((len = is.read(buffer)) > 0) {
-	
 				fos.write(buffer, 0, len);
 			}
-			page.setLocalPath(localFilename);
+			//page.setLocalPath(localFilename);
 		} finally {
 			try {
 				if (is != null)
@@ -120,6 +124,29 @@ public class DownloadManager {
 				if (fos != null) {
 					fos.close();
 				}
+			}
+		}
+	}
+
+	/**
+	 * Scarica la pagina in locale, in particolare nel percorso indicato da
+	 * localFilename. Inoltre dato che ha scaricato la pagina ha la
+	 * responsabilità di impostare il percorso locale per quella pagina.
+	 * 
+	 * @param page
+	 * @param localFilename,
+	 *            path dove mettere la pagina.
+	 * @throws IOException
+	 */
+	private void downloadPageInto(Page page, String localFilename) throws IOException {
+		FileOutputStream fos = null;
+		try {
+			fos = new FileOutputStream(localFilename);
+			fos.write(page.getDocument().toString().getBytes());
+			this.url2LocalPath.put(page.getUrlRedirect(), localFilename);
+		} finally {
+			if (fos != null) {
+				fos.close();
 			}
 		}
 	}
@@ -136,5 +163,15 @@ public class DownloadManager {
 	 */
 	private void makeDirectories(int countEntryPoints) {
 		new File(basePath + countEntryPoints).mkdirs();
+	}
+
+	/**
+	 * Ritorna il percorso locale della pagina.
+	 * 
+	 * @param url
+	 * @return
+	 */
+	public String findPageByURL(URL url) {
+		return this.url2LocalPath.get(url);
 	}
 }
