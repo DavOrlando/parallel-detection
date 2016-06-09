@@ -1,14 +1,13 @@
 package it.uniroma3.parallel.model;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashSet;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
+import org.jsoup.nodes.Element;
 
-import com.cybozu.labs.langdetect.Detector;
-import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.LangDetectException;
 
 import it.uniroma3.parallel.utils.CybozuLanguageDetector;
@@ -29,7 +28,6 @@ public class Page {
 	private URL urlRedirect;
 	private Document document;
 	private String localPath;
-	private boolean multilingual;
 	private String language;
 
 	public Page() {
@@ -69,24 +67,12 @@ public class Page {
 		return url;
 	}
 
-	public void setUrl(URL url) {
-		this.url = url;
-	}
-
 	public URL getUrlRedirect() {
 		return urlRedirect;
 	}
 
-	public void setUrlRedirect(URL urlRedirect) {
-		this.urlRedirect = urlRedirect;
-	}
-
 	public Document getDocument() {
 		return document;
-	}
-
-	public void setDocument(Document document) {
-		this.document = document;
 	}
 
 	/**
@@ -149,19 +135,32 @@ public class Page {
 	}
 
 	/***
-	 * Ritorna una stringa con il contenuto degli elementi della pagina HTML che
-	 * si chiamano elementName.
+	 * Ritorna tutti gli elementi HTML della pagina che potrebbero essere dei
+	 * link uscenti dalla pagina stessa.
 	 * 
-	 * @param elementName
-	 *            nome del parametro HTML
 	 * @return
 	 */
-	private String getStringElement(String elementName) {
-		String a;
-		if (document == null)
-			a = "b";
-		Elements paragraphHtmlDocument = this.getDocument().select(elementName);
-		return paragraphHtmlDocument.text();
+
+	protected HashSet<Element> getAllOutlinks() {
+		HashSet<Element> elements = getHtmlElements("a");
+		elements.addAll(this.getHtmlElements("option"));
+		return elements;
+	}
+
+	/***
+	 * Ritorna un insieme di elementi HTML presenti nella pagina e che
+	 * corrispondono al tag elementName passato per parametro.
+	 * 
+	 * @param elementName
+	 *            nome dell'elemento HTML da cercare nella pagina.
+	 * @return
+	 */
+	private HashSet<Element> getHtmlElements(String elementName) {
+		HashSet<Element> elements = new HashSet<Element>();
+		for (Element element : this.getDocument().select(elementName)) {
+			elements.add(element);
+		}
+		return elements;
 	}
 
 }

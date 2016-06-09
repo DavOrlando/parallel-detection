@@ -21,7 +21,7 @@ public class HomepageOutlinkDetectorTest {
 
 	@Before
 	public void setUp() throws Exception {
-		this.homepage = new Homepage("www.sea-advisor.com");
+		this.homepage = new Homepage("localhost:8080/testSenzaHreflang/homeIt.html");
 		this.homepageOutlinkDetector = new HomepageOutlinkDetector();
 	}
 

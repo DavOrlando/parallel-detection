@@ -11,18 +11,20 @@ import java.util.Set;
 import org.jsoup.nodes.Element;
 
 import com.cybozu.labs.langdetect.LangDetectException;
+import com.cybozu.labs.langdetect.Language;
 
-import it.uniroma3.parallel.filter.OutlinkFilter;
+import it.uniroma3.parallel.filter.EditDistanceFilter;
+import it.uniroma3.parallel.filter.LanguageFilter;
 import it.uniroma3.parallel.utils.UrlUtil;
 
 public class Homepage extends Page {
-	
+
 	/***
 	 * Costruttore parametrico rispetto a una stringa che è la rappresentazione
 	 * dell'URL dell'homepage.
 	 * 
 	 * @param homepageStringUrl
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public Homepage(String homepageStringUrl) throws IOException {
 		super(new URL(UrlUtil.addHttp(homepageStringUrl)));
@@ -43,54 +45,23 @@ public class Homepage extends Page {
 	}
 
 	/**
-	 * Ritorna una lista di stringhe (gli outlink) che soddisfano le condizioni
-	 * sull'edit distance e portano a pagine con una lingua differente.
+	 * Seleziona solo i link che superano dei controlli sulla multilingua e
+	 * sull'edit distance.
 	 * 
-	 * @param homepage
+	 * @param outlinks
 	 * @return
-	 * @throws LangDetectException
-	 * @throws IOException 
 	 */
-	public List<String> getMultilingualOutlinks(){
-		Set<Element> outlinks = new HashSet<Element>(this.getAllOutlinks());
+	public List<String> selectMultilingualLinks() {
 		List<String> filteredOutlinks = new ArrayList<>();
-		OutlinkFilter outlinkFilter = new OutlinkFilter();
-		for (Element link : outlinks) {
+		EditDistanceFilter editDistanceFilter = new EditDistanceFilter();
+		LanguageFilter languageFilter = new LanguageFilter();
+		for (Element link : this.getAllOutlinks()) {
 			String urlString = link.absUrl("href");
-			if (!filteredOutlinks.contains(urlString) && outlinkFilter.filter(this, urlString))
+			if (!filteredOutlinks.contains(urlString) && editDistanceFilter.filter(this, urlString)
+					&& languageFilter.filter(this, urlString))
 				filteredOutlinks.add(urlString);
 		}
 		return filteredOutlinks;
 	}
-
-	/***
-	 * Ritorna tutti gli elementi HTML della pagina che potrebbero essere dei
-	 * link uscenti dalla pagina stessa.
-	 * 
-	 * @return
-	 */
-
-	private List<Element> getAllOutlinks() {
-		List<Element> elements = getHtmlElements("a");
-		elements.addAll(this.getHtmlElements("option"));
-		return elements;
-	}
-
-	/***
-	 * Ritorna una lista di elementi HTML presenti nella pagina e che
-	 * corrispondono al tag elementName passato per parametro.
-	 * 
-	 * @param elementName
-	 *            nome dell'elemento HTML da cercare nella pagina.
-	 * @return
-	 */
-	private List<Element> getHtmlElements(String elementName) {
-		ArrayList<Element> elements = new ArrayList<Element>();
-		for (Element element : this.getDocument().select(elementName)) {
-			elements.add(element);
-		}
-		return elements;
-	}
-
 
 }

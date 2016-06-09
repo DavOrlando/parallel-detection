@@ -8,7 +8,7 @@ import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.LangDetectException;
 
 public class CybozuLanguageDetector {
-	
+
 	private static CybozuLanguageDetector instance;
 	private Detector detector;
 
@@ -44,8 +44,8 @@ public class CybozuLanguageDetector {
 			detector.append(document.text());
 		} else
 			detector.append(paragraphHtmlDocument);
-		String language=detector.detect();
-		//una volta usato va ricreato
+		String language = detector.detect();
+		// una volta usato va ricreato
 		detector = DetectorFactory.create();
 		return language;
 	}
@@ -64,6 +64,11 @@ public class CybozuLanguageDetector {
 		return paragraphHtmlDocument.text();
 	}
 
+	/**
+	 * Ritorna un istanza di questo servizio.
+	 * 
+	 * @return
+	 */
 	public static CybozuLanguageDetector getInstance() {
 		if (instance == null)
 			instance = new CybozuLanguageDetector();

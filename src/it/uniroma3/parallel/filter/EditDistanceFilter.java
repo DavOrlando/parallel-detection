@@ -12,17 +12,16 @@ import it.uniroma3.parallel.model.Page;
 
 /**
  * Classe che rappresenta un filtro per gli outlink. Si filtra sulla base
- * dell'edit distance e sulla verifica del linguaggio diverso.
+ * dell'edit distance.
  * 
  * @author davideorlando
  *
  */
-public class OutlinkFilter {
+public class EditDistanceFilter implements Filter {
 
 	/**
 	 * Ritorna true se sono verificate le seguenti condizioni: -Gli URL non sono
-	 * uguali; -L'edit distance è ragionevole; -Il secondo link non porta ad una
-	 * pagina con lo stesso linguaggio della homepage;
+	 * uguali; -L'edit distance è ragionevole;
 	 * 
 	 * @param homepage
 	 * @param outlinkString
@@ -30,10 +29,10 @@ public class OutlinkFilter {
 	 * @throws LangDetectException
 	 * @throws IOException
 	 */
+	@Override
 	public boolean filter(Page homepage, String outlinkString) {
 		try {
-			return !homepage.getURLString().equals(outlinkString) && isEditDistanceFine(homepage, outlinkString)
-					&& !isSameLanguage(homepage, outlinkString);
+			return !homepage.getURLString().equals(outlinkString) && isEditDistanceFine(homepage, outlinkString);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -60,18 +59,5 @@ public class OutlinkFilter {
 				|| ((outlinkURLLength <= homepageURLLength) && (levenshteinDistance < outlinkURLLength / 2));
 	}
 
-	/***
-	 * Ritorna true se l'URL porta ad una pagina con lo stesso linguaggio della
-	 * homepage.
-	 * 
-	 * @param homepage
-	 * @param outlinkString
-	 * @return
-	 * @throws LangDetectException
-	 * @throws IOException
-	 */
-	private boolean isSameLanguage(Page homepage, String outlinkString) throws LangDetectException, IOException {
-		Page differentLanguagePage = new Page(new URL(outlinkString));
-		return homepage.getLanguage().equals(differentLanguagePage.getLanguage());
-	}
+
 }

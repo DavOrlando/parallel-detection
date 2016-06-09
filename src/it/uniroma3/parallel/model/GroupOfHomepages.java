@@ -39,7 +39,7 @@ public class GroupOfHomepages {
 	public GroupOfHomepages(Homepage homepage) throws LangDetectException, MalformedURLException {
 		this.possibleParallelHomepages = new LinkedList<>();
 		this.homepage = homepage;
-		List<String> multilingualOutlinks = this.homepage.getMultilingualOutlinks();
+		List<String> multilingualOutlinks = this.homepage.selectMultilingualLinks();
 		for (String outlink : multilingualOutlinks) {
 			try {
 				possibleParallelHomepages.add(new Page(new URL(outlink)));
