@@ -152,5 +152,15 @@ public class Page {
 		}
 		return elements;
 	}
+	
+	@Override
+	public int hashCode() {
+		return this.urlRedirect.hashCode();
+	}
+	@Override
+	public boolean equals(Object obj) {
+		Page page = (Page) obj;
+		return this.urlRedirect.equals(page.getUrlRedirect());
+	}
 
 }

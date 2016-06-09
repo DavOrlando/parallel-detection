@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,7 +25,7 @@ import it.uniroma3.parallel.utils.DownloadManager;
 public class GroupOfHomepages {
 
 	private Homepage homepage;
-	private List<Page> possibleParallelHomepages;
+	private Map<URL, Page> candidateParallelHomepages;
 	private List<PairOfHomepages> listOfPair;
 	private String localPath;
 
@@ -39,12 +40,13 @@ public class GroupOfHomepages {
 	 * @throws IOException
 	 */
 	public GroupOfHomepages(Homepage homepage) throws LangDetectException, MalformedURLException {
-		this.possibleParallelHomepages = new LinkedList<>();
+		this.candidateParallelHomepages = new HashMap<>();
 		this.homepage = homepage;
 		List<String> multilingualOutlinks = this.homepage.getMultilingualLinks();
 		for (String outlink : multilingualOutlinks) {
 			try {
-				possibleParallelHomepages.add(new Page(new URL(outlink)));
+				URL url = new URL(outlink);
+				candidateParallelHomepages.put(url, new Page(url));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -60,8 +62,8 @@ public class GroupOfHomepages {
 		return homepage;
 	}
 
-	public List<Page> getPossibleParallelHomepages() {
-		return possibleParallelHomepages;
+	public List<Page> getCandidateParallelHomepages() {
+		return new ArrayList<>(candidateParallelHomepages.values());
 	}
 
 	public String getLocalPath() {
@@ -82,7 +84,7 @@ public class GroupOfHomepages {
 	public void divideInPairs() {
 		List<PairOfHomepages> listOfPairs = new LinkedList<>();
 		int i = 1;
-		for (Page page : possibleParallelHomepages) {
+		for (Page page : candidateParallelHomepages.values()) {
 			PairOfHomepages pair = new PairOfHomepages(this.homepage, page, i);
 			listOfPairs.add(pair);
 			i++;
@@ -98,18 +100,34 @@ public class GroupOfHomepages {
 	 */
 	public Map<String, String> getLocalPath2Url() {
 		Map<String, String> localPath2Url = new HashMap<>();
-		for (Page page : this.possibleParallelHomepages) {
-			localPath2Url.put(DownloadManager.getInstance().findPageByURL(page.getUrlRedirect()), page.getUrlRedirect().toString());
+		for (Page page : this.candidateParallelHomepages.values()) {
+			localPath2Url.put(DownloadManager.getInstance().findPageByURL(page.getUrlRedirect()),
+					page.getUrlRedirect().toString());
 		}
 		return localPath2Url;
 	}
 
 	public List<String> getFileToVerify() {
 		List<String> fileToVerify = new ArrayList<>();
-		for (int i = 1; i <= this.possibleParallelHomepages.size(); i++) {
+		for (int i = 1; i <= this.candidateParallelHomepages.size(); i++) {
 			fileToVerify.add(this.getHomepage().getName() + i);
 		}
 		return fileToVerify;
 	}
+
+	/**
+	 * Rimuove tutte le pagine non multilingua dalla collezione di pagine
+	 * candidate ad essere multilingua lasciando solo quelle che possiedono un
+	 * URL fra quelli passati per parametro.
+	 * 
+	 * @param urls
+	 */
+	public void setParallelHomepagesByURL(Collection<URL> urls) {
+		HashMap<URL, Page> parallelHomepages = new HashMap<>();
+		for (URL url : urls)
+			parallelHomepages.put(url, this.candidateParallelHomepages.get(url));
+		this.candidateParallelHomepages = parallelHomepages;
+	}
+ 
 
 }

@@ -43,7 +43,8 @@ public class HomepageOutlinkDetector extends OutlinkDetector {
 		GroupOfHomepages groupOfHomepage = new GroupOfHomepages(homepage);
 		DownloadManager.getInstance().persistGroupOfHomepage(groupOfHomepage);;
 		this.runRoadRunner(groupOfHomepage);
-		for (URL verifiedURL : langDetectAndThresholdLabel(groupOfHomepage)) {
+		groupOfHomepage.setParallelHomepagesByURL(filterByLabel(groupOfHomepage));
+		for (URL verifiedURL : filterByLabel(groupOfHomepage)) {
 			parallelHomepageUrl.addURL((verifiedURL));
 		}
 		this.deleteOutputRROfHomepages(groupOfHomepage);

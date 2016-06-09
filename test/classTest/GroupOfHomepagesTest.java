@@ -25,7 +25,7 @@ public class GroupOfHomepagesTest {
 		try {
 			this.homepage = new Homepage(new URL(URL_FOR_TEST + "noOutlink.html"));
 			this.groupOfHomepages = new GroupOfHomepages(homepage);
-			assertTrue(this.groupOfHomepages.getPossibleParallelHomepages().isEmpty());
+			assertTrue(this.groupOfHomepages.getCandidateParallelHomepages().isEmpty());
 		} catch (Exception e) {
 			fail();
 			e.printStackTrace();
@@ -37,7 +37,7 @@ public class GroupOfHomepagesTest {
 		try {
 			this.homepage = new Homepage(new URL(URL_FOR_TEST + "oneOutlink.html"));
 			this.groupOfHomepages = new GroupOfHomepages(homepage);
-			assertEquals(1, groupOfHomepages.getPossibleParallelHomepages().size());
+			assertEquals(1, groupOfHomepages.getCandidateParallelHomepages().size());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
@@ -49,7 +49,7 @@ public class GroupOfHomepagesTest {
 		try {
 			this.homepage = new Homepage(new URL(URL_FOR_TEST + "oneOutlinkButNoEditDistance.html"));
 			this.groupOfHomepages = new GroupOfHomepages(homepage);
-			assertTrue(groupOfHomepages.getPossibleParallelHomepages().isEmpty());
+			assertTrue(groupOfHomepages.getCandidateParallelHomepages().isEmpty());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
@@ -61,7 +61,7 @@ public class GroupOfHomepagesTest {
 		try {
 			this.homepage = new Homepage(new URL(URL_FOR_TEST + "oneOutlinkButNoLanguage.html"));
 			this.groupOfHomepages = new GroupOfHomepages(homepage);
-			assertTrue(groupOfHomepages.getPossibleParallelHomepages().isEmpty());
+			assertTrue(groupOfHomepages.getCandidateParallelHomepages().isEmpty());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
@@ -73,7 +73,7 @@ public class GroupOfHomepagesTest {
 		try {
 			this.homepage = new Homepage(new URL(URL_FOR_TEST + "twoEqualsOutlink.html"));
 			this.groupOfHomepages = new GroupOfHomepages(homepage);
-			assertEquals(1, groupOfHomepages.getPossibleParallelHomepages().size());
+			assertEquals(1, groupOfHomepages.getCandidateParallelHomepages().size());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
@@ -85,7 +85,7 @@ public class GroupOfHomepagesTest {
 		try {
 			this.homepage = new Homepage(new URL(URL_FOR_TEST + "twoGoodOutlink.html"));
 			this.groupOfHomepages = new GroupOfHomepages(homepage);
-			assertEquals(2, groupOfHomepages.getPossibleParallelHomepages().size());
+			assertEquals(2, groupOfHomepages.getCandidateParallelHomepages().size());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
@@ -97,7 +97,7 @@ public class GroupOfHomepagesTest {
 		try {
 			this.homepage = new Homepage(new URL(URL_FOR_TEST + "oneGoodAndOneBadOutlink.html"));
 			this.groupOfHomepages = new GroupOfHomepages(homepage);
-			assertEquals(1, groupOfHomepages.getPossibleParallelHomepages().size());
+			assertEquals(1, groupOfHomepages.getCandidateParallelHomepages().size());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();

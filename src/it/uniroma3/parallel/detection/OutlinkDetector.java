@@ -78,7 +78,7 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 	 * @return
 	 * @throws IOException
 	 */
-	public Collection<URL> langDetectAndThresholdLabel(GroupOfHomepages groupOfHomepage) throws IOException {
+	public Collection<URL> filterByLabel(GroupOfHomepages groupOfHomepage) throws IOException {
 		// memorizzeremo solo l'URL con più label
 		Map<String, URL> language2Url = new HashMap<String, URL>();
 		// il valore è il num di label attuale e sostituiremo un URL in

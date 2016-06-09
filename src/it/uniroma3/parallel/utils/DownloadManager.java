@@ -57,7 +57,7 @@ public class DownloadManager {
 		makeDirectories(pageNumber);
 		download(groupOfHomepage.getHomepage(), pageNumber, true);
 		// scarico tutte le altre possibili homepage
-		for (Page page : groupOfHomepage.getPossibleParallelHomepages()) {
+		for (Page page : groupOfHomepage.getCandidateParallelHomepages()) {
 			makeDirectories(pageNumber);
 			download(page, pageNumber, false);
 			pageNumber++;
