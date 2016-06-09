@@ -3,6 +3,9 @@ package classTest;
 import static org.junit.Assert.*;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -131,12 +134,41 @@ public class GroupOfHomepagesTest {
 	}
 
 	@Test
-	public void twoGoodOutlinkDivideInPairsTestTest() {
+	public void twoGoodOutlinkDivideInPairsTest() {
 		try {
 			this.homepage = new Homepage(new URL(URL_FOR_TEST + "twoGoodOutlink.html"));
 			this.groupOfHomepages = new GroupOfHomepages(homepage);
 			this.groupOfHomepages.divideInPairs();
 			assertEquals(2,this.groupOfHomepages.getListOfPairs().size());
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+	
+	@Test
+	public void oneOutlinkGetParallelURL() {
+		try {
+			this.homepage = new Homepage(new URL(URL_FOR_TEST + "oneOutlink.html"));
+			this.groupOfHomepages = new GroupOfHomepages(homepage);
+			assertEquals(1,this.groupOfHomepages.getParallelURLs().size());
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+	
+	@Test
+	public void oneOutlinkRemoveOther() {
+		try {
+			this.homepage = new Homepage(new URL(URL_FOR_TEST + "twoGoodOutlink.html"));
+			this.groupOfHomepages = new GroupOfHomepages(homepage);
+			URL url = new URL(homepage.getMultilingualLinks().get(0));
+			HashSet<URL> urls = new HashSet<>();
+			urls.add(url);
+			assertEquals(2, this.groupOfHomepages.getCandidateParallelHomepages().size());
+			this.groupOfHomepages.setParallelHomepagesByURL(urls);
+			assertEquals(1,this.groupOfHomepages.getCandidateParallelHomepages().size());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();

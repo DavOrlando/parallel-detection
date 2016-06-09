@@ -44,7 +44,7 @@ import it.uniroma3.parallel.model.Page;
 import it.uniroma3.parallel.model.PairOfHomepages;
 import it.uniroma3.parallel.roadrunner.RoadRunnerDataSet;
 import it.uniroma3.parallel.roadrunner.RoadRunnerInvocator;
-import it.uniroma3.parallel.utils.DownloadManager;
+import it.uniroma3.parallel.utils.FetchManager;
 import it.uniroma3.parallel.utils.Utils;
 
 /**

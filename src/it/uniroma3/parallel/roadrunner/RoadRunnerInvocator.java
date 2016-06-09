@@ -16,7 +16,7 @@ import org.jsoup.select.Elements;
 import it.uniroma3.parallel.detection.OutlinkDetector;
 import it.uniroma3.parallel.model.Homepage;
 import it.uniroma3.parallel.model.PairOfHomepages;
-import it.uniroma3.parallel.utils.DownloadManager;
+import it.uniroma3.parallel.utils.FetchManager;
 import it.uniroma3.parallel.utils.Utils;
 
 public class RoadRunnerInvocator {
@@ -40,7 +40,7 @@ public class RoadRunnerInvocator {
 			@Override
 			public void run() {
 				try {
-					String localPath = DownloadManager.getInstance().findPageByURL(homepage.getUrlRedirect());
+					String localPath = FetchManager.getInstance().findPageByURL(homepage.getUrlRedirect());
 					rr("-N:" + homepage.getName() + pairNumber, "-O:etc/flat-prefs.xml",localPath ,
 							urlBase + "/" + "HomePage" + pairNumber + "-2" + ".html");
 					String ftv = pairOfHomepage.getMainHomepage().getName() + pairNumber;

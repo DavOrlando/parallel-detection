@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import com.cybozu.labs.langdetect.LangDetectException;
 
-import it.uniroma3.parallel.utils.DownloadManager;
+import it.uniroma3.parallel.utils.FetchManager;
 
 /**
  * Classe che rappresenta un gruppo di prababili homepage parallele. Conosce
@@ -101,7 +101,7 @@ public class GroupOfHomepages {
 	public Map<String, String> getLocalPath2Url() {
 		Map<String, String> localPath2Url = new HashMap<>();
 		for (Page page : this.candidateParallelHomepages.values()) {
-			localPath2Url.put(DownloadManager.getInstance().findPageByURL(page.getUrlRedirect()),
+			localPath2Url.put(FetchManager.getInstance().findPageByURL(page.getUrlRedirect()),
 					page.getUrlRedirect().toString());
 		}
 		return localPath2Url;
@@ -128,6 +128,15 @@ public class GroupOfHomepages {
 			parallelHomepages.put(url, this.candidateParallelHomepages.get(url));
 		this.candidateParallelHomepages = parallelHomepages;
 	}
- 
+
+	/**
+	 * Ritorna la collezione di URL provenienti dalle probabili homepage
+	 * parallele.
+	 * 
+	 * @return
+	 */
+	public Collection<URL> getParallelURLs() {
+		return this.candidateParallelHomepages.keySet();
+	}
 
 }

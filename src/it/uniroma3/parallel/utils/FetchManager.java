@@ -14,25 +14,25 @@ import org.apache.commons.io.IOUtils;
 import it.uniroma3.parallel.model.GroupOfHomepages;
 import it.uniroma3.parallel.model.Page;
 
-public class DownloadManager {
+public class FetchManager {
 	private static final String HTML = ".html";
 	private static final String HOME_PAGE = "HomePage";
 	private static final String USER_AGENT = "Opera/9.63 (Windows NT 5.1; U; en) Presto/2.1.1";
 	private static final String HTML_PAGES_PRELIMINARY = "htmlPagesPreliminary";
 	private String basePath;
-	public static DownloadManager instance;
+	public static FetchManager instance;
 	private Map<URL, String> url2LocalPath;
 
 	/**
 	 * Gestore dei download per questo Sistema.
 	 */
-	private DownloadManager() {
+	private FetchManager() {
 		this.url2LocalPath = new HashMap<>();
 	}
 
-	public static DownloadManager getInstance() {
+	public static FetchManager getInstance() {
 		if (instance == null)
-			instance = new DownloadManager();
+			instance = new FetchManager();
 		return instance;
 	}
 
