@@ -11,7 +11,6 @@ import java.util.concurrent.locks.Lock;
 import com.cybozu.labs.langdetect.LangDetectException;
 
 import it.uniroma3.parallel.model.GroupOfHomepages;
-import it.uniroma3.parallel.model.GroupOfParallelUrls;
 import it.uniroma3.parallel.model.Homepage;
 import it.uniroma3.parallel.utils.FetchManager;
 import it.uniroma3.parallel.utils.Utils;
@@ -37,18 +36,14 @@ public class HomepageOutlinkDetector extends OutlinkDetector {
 	 */
 
 	@Override
-	public GroupOfParallelUrls detect(Homepage homepage) throws IOException, InterruptedException, LangDetectException {
+	public GroupOfHomepages detect(Homepage homepage) throws IOException, InterruptedException, LangDetectException {
 		// da ritornare alla fine
-		GroupOfParallelUrls parallelHomepageUrl = new GroupOfParallelUrls();
 		GroupOfHomepages groupOfHomepage = new GroupOfHomepages(homepage);
 		FetchManager.getInstance().persistGroupOfHomepage(groupOfHomepage);;
 		this.runRoadRunner(groupOfHomepage);
-		groupOfHomepage.setParallelHomepagesByURL(filterByLabel(groupOfHomepage));
-		for (URL verifiedURL : filterByLabel(groupOfHomepage)) {
-			parallelHomepageUrl.addURL((verifiedURL));
-		}
+		groupOfHomepage.lasciaSoloQuestiURL(filterByLabel(groupOfHomepage));
 		this.deleteOutputRROfHomepages(groupOfHomepage);
-		return parallelHomepageUrl;
+		return groupOfHomepage;
 	}
 
 	public GroupOfHomepages detect2(Homepage homepage) {

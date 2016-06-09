@@ -39,7 +39,6 @@ import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.LangDetectException;
 
 import it.uniroma3.parallel.model.GroupOfHomepages;
-import it.uniroma3.parallel.model.GroupOfParallelUrls;
 import it.uniroma3.parallel.model.Page;
 import it.uniroma3.parallel.model.PairOfHomepages;
 import it.uniroma3.parallel.roadrunner.RoadRunnerDataSet;

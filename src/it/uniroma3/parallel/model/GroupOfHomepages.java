@@ -6,9 +6,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import com.cybozu.labs.langdetect.LangDetectException;
 
 import it.uniroma3.parallel.utils.FetchManager;
@@ -24,10 +27,12 @@ import it.uniroma3.parallel.utils.FetchManager;
  */
 public class GroupOfHomepages {
 
+	private static final int DEFAULT_ENTRY_POINT_NUMBER = 5;
 	private Homepage homepage;
 	private Map<URL, Page> candidateParallelHomepages;
 	private List<PairOfHomepages> listOfPair;
 	private String localPath;
+	private Set<URL> parallelURLs;
 
 	/***
 	 * Crea e inizializza lo stato dell'oggetto GroupOfHomepages in base alle
@@ -41,6 +46,7 @@ public class GroupOfHomepages {
 	 */
 	public GroupOfHomepages(Homepage homepage) throws LangDetectException, MalformedURLException {
 		this.candidateParallelHomepages = new HashMap<>();
+		this.parallelURLs = new HashSet<>();
 		this.homepage = homepage;
 		List<String> multilingualOutlinks = this.homepage.getMultilingualLinks();
 		for (String outlink : multilingualOutlinks) {
@@ -122,7 +128,7 @@ public class GroupOfHomepages {
 	 * 
 	 * @param urls
 	 */
-	public void setParallelHomepagesByURL(Collection<URL> urls) {
+	public void lasciaSoloQuestiURL(Collection<URL> urls) {
 		HashMap<URL, Page> parallelHomepages = new HashMap<>();
 		for (URL url : urls)
 			parallelHomepages.put(url, this.candidateParallelHomepages.get(url));
@@ -130,13 +136,87 @@ public class GroupOfHomepages {
 	}
 
 	/**
-	 * Ritorna la collezione di URL provenienti dalle probabili homepage
-	 * parallele.
+	 * Ritorna la collezione di URL composta dalla homepage primitiva e da URL
+	 * provenienti dalle probabili homepage parallele.
 	 * 
 	 * @return
 	 */
-	public Collection<URL> getParallelURLs() {
-		return this.candidateParallelHomepages.keySet();
+	public Set<URL> getParallelURLs() {
+		if (this.parallelURLs.isEmpty()) {
+			this.parallelURLs.addAll(candidateParallelHomepages.keySet());
+			this.parallelURLs.add(homepage.getUrlRedirect());
+		}
+		return parallelURLs;
+	}
+
+	/**
+	 * Aggiunge un URL alla collezione di URL paralleli. Utile per la prima
+	 * euristica.
+	 * 
+	 * @param url
+	 */
+	public void addURL(URL url) {
+		this.parallelURLs.add(url);
+	}
+
+	/***
+	 * Ritorna un insieme di liste in cui ciascuna ha al massimo un numero di
+	 * URL paralleli.
+	 * 
+	 * @return
+	 */
+	public Set<List<String>> getGroupOfEntryPoints() {
+		return this.getGroupOfEntryPoints(DEFAULT_ENTRY_POINT_NUMBER);
+	}
+
+	/***
+	 * Ritorna un insieme di liste in cui ciascuna ha al massimo un numero di
+	 * URL paralleli.
+	 * 
+	 * @param numberMaxOfEntryPoints
+	 *            il numero di entry points massimi che vogliamo in ciascuna
+	 *            lista.
+	 * @return
+	 */
+	public Set<List<String>> getGroupOfEntryPoints(int numberMaxOfEntryPoints) {
+		Set<List<String>> group = new HashSet<>();
+		List<String> listOfNumberedURL = new LinkedList<String>();
+		for (URL url : this.getParallelURLs()) {
+			if (listOfNumberedURL.size() == numberMaxOfEntryPoints) {
+				group.add(listOfNumberedURL);
+				listOfNumberedURL = new LinkedList<String>();
+			}
+			listOfNumberedURL.add(url.toString());
+		}
+		if (listOfNumberedURL.size() != 0)
+			group.add(listOfNumberedURL);
+		return group;
+
+	}
+
+	/***
+	 * Ritorna un insieme di coppie.
+	 * 
+	 * @return
+	 */
+	public Set<Set<String>> getPairOfStringEntryPoint() {
+		Set<Set<String>> group = new HashSet<>();
+		for (URL url : this.getParallelURLs()) {
+			Set<String> pairOfURL = new HashSet<String>();
+			pairOfURL.add(homepage.toString());
+			pairOfURL.add(url.toString());
+			group.add(pairOfURL);
+		}
+		return group;
+	}
+
+	/***
+	 * Ritorna true se non ci sono entry points, false altrimenti.
+	 * 
+	 * @return
+	 */
+	public boolean isEmpty() {
+		return this.candidateParallelHomepages.isEmpty();
 	}
 
 }

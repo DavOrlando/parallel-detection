@@ -151,7 +151,7 @@ public class GroupOfHomepagesTest {
 		try {
 			this.homepage = new Homepage(new URL(URL_FOR_TEST + "oneOutlink.html"));
 			this.groupOfHomepages = new GroupOfHomepages(homepage);
-			assertEquals(1,this.groupOfHomepages.getParallelURLs().size());
+			assertEquals(2,this.groupOfHomepages.getParallelURLs().size());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
@@ -167,7 +167,7 @@ public class GroupOfHomepagesTest {
 			HashSet<URL> urls = new HashSet<>();
 			urls.add(url);
 			assertEquals(2, this.groupOfHomepages.getCandidateParallelHomepages().size());
-			this.groupOfHomepages.setParallelHomepagesByURL(urls);
+			this.groupOfHomepages.lasciaSoloQuestiURL(urls);
 			assertEquals(1,this.groupOfHomepages.getCandidateParallelHomepages().size());
 		} catch (Exception e) {
 			e.printStackTrace();

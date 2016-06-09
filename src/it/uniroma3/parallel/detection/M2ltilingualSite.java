@@ -1,10 +1,9 @@
 package it.uniroma3.parallel.detection;
 
-import it.uniroma3.parallel.model.GroupOfParallelUrls;
+import it.uniroma3.parallel.model.GroupOfHomepages;
 import it.uniroma3.parallel.model.Homepage;
 import it.uniroma3.parallel.model.Page;
 import it.uniroma3.parallel.model.ParallelCollections;
-import it.uniroma3.parallel.utils.UrlUtil;
 import it.uniroma3.parallel.utils.Utils;
 
 import java.io.BufferedReader;
@@ -117,10 +116,10 @@ public class M2ltilingualSite {
 		try {
 			// Prendo il nome della cartella di output dall'URL della homepage
 			String nameFolder = homepageToDetect.getName();
-			GroupOfParallelUrls parallelHomepageURLs;
+			GroupOfHomepages groupOfHomepages;
 
 			long startTime = Utils.getTime();
-			parallelHomepageURLs = multilingualDetector.detect(homepageToDetect);
+			groupOfHomepages = multilingualDetector.detect(homepageToDetect);
 			long endTime = Utils.getTime();
 			
 			synchronized (timeLock) {
@@ -130,21 +129,21 @@ public class M2ltilingualSite {
 						java.lang.Thread.currentThread().toString() + TIME_CSV);
 			}
 
-			if (parallelHomepageURLs != null) {
+			if (groupOfHomepages != null) {
 				long endDetectionTime = Utils.getTime();
 				synchronized (multSiteLogLock) {
 					Utils.csvWr(new String[] { homepageStringUrl, HOMEPAGE_HREF_LANG,
 							Long.toString(endDetectionTime - startDetectionTime) }, SITE_MULTILINGUAL_CSV);
 				}
 				// su gruppi di 5 viene lanciata la visita ricorsiva
-				recursiveCrawler(parallelHomepageURLs, MAX_LENGTH_GROUP_HREFLANG, depthT, errorLogLock, nameFolder);
+				recursiveCrawler(groupOfHomepages, MAX_LENGTH_GROUP_HREFLANG, depthT, errorLogLock, nameFolder);
 				return;
 			}
 			//detection con euristica degli outlink
 			multilingualDetector = new HomepageOutlinkDetector();
 			
 			startTime = Utils.getTime();
-			parallelHomepageURLs = multilingualDetector.detect(homepageToDetect);
+			groupOfHomepages = multilingualDetector.detect(homepageToDetect);
 			endTime = Utils.getTime();
 
 			synchronized (timeLock) {
@@ -154,14 +153,14 @@ public class M2ltilingualSite {
 						java.lang.Thread.currentThread().toString() + TIME_CSV);
 			}
 
-			if (parallelHomepageURLs != null) {
+			if (groupOfHomepages != null) {
 				long endDetectionTime = Utils.getTime();
 				synchronized (multSiteLogLock) {
 					Utils.csvWr(new String[] { homepageStringUrl, VISIT_HOMEPAGE,
 							Long.toString(endDetectionTime - startDetectionTime) }, SITE_MULTILINGUAL_CSV);
 				}
 				// se ho coppie candidate lancio visita ricorsiva
-				recursiveCrawler(parallelHomepageURLs, PAIR_FOR_OUTLINK, depthT, errorLogLock, nameFolder);
+				recursiveCrawler(groupOfHomepages, PAIR_FOR_OUTLINK, depthT, errorLogLock, nameFolder);
 				return;
 
 			}
@@ -272,15 +271,15 @@ public class M2ltilingualSite {
 
 	}// fine main
 
-	private static void recursiveCrawler(GroupOfParallelUrls parallelHomepageURLs, int lengthGroupOfEntryPoint,
+	private static void recursiveCrawler(GroupOfHomepages groupOfHomepages, int lengthGroupOfEntryPoint,
 			int depthT, Lock errorLogLock, String nameFolder) throws IOException {
 		int countEntryPoints = 0;
-		for (List<String> currentGroupEP : parallelHomepageURLs.getGroupOfEntryPoints(lengthGroupOfEntryPoint)) {
+		for (List<String> currentGroupEP : groupOfHomepages.getGroupOfEntryPoints(lengthGroupOfEntryPoint)) {
 
 			// creo l'oggetto parallelCollection con il gruppetto di
 			// entry points paralleli corrente
 			ParallelCollections parallelColl = new ParallelCollections(nameFolder + countEntryPoints, currentGroupEP,
-					depthT, parallelHomepageURLs.getHomepageURL().toString());
+					depthT, groupOfHomepages.getHomepage().getURLString());
 
 			// incremento l'id della collezione di entry points
 			// corrente, per dare nomi diversi alle collezioni di file
@@ -292,7 +291,7 @@ public class M2ltilingualSite {
 			} catch (Exception e) {
 				e.printStackTrace();
 				synchronized (errorLogLock) {
-					Utils.csvWr(parallelHomepageURLs.getHomepageURL().toString(), e, ERROR_LOG_CSV);
+					Utils.csvWr(groupOfHomepages.getHomepage().getURLString(), e, ERROR_LOG_CSV);
 				}
 			}
 		}
