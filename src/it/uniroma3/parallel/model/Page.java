@@ -11,6 +11,7 @@ import com.cybozu.labs.langdetect.Detector;
 import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.LangDetectException;
 
+import it.uniroma3.parallel.utils.CybozuLanguageDetector;
 import it.uniroma3.parallel.utils.UrlUtil;
 
 /**
@@ -29,6 +30,7 @@ public class Page {
 	private Document document;
 	private String localPath;
 	private boolean multilingual;
+	private String language;
 
 	public Page() {
 	}
@@ -139,19 +141,11 @@ public class Page {
 	 * @return language
 	 * @throws LangDetectException
 	 */
-	// TODO selezionare gli elementi per fare lang detection : parametrico
-	// con una lista specificata in un file di properties
 	public String getLanguage() throws LangDetectException {
-		// caricamento dei profili per la language detection
-		if (DetectorFactory.getLangList().size() == 0)
-			DetectorFactory.loadProfile("profiles.sm");
-		Detector detector = DetectorFactory.create();
-		String paragraphHtmlDocument = getStringElement("p");
-		if (paragraphHtmlDocument.length() == 0) {
-			detector.append(this.getDocument().text());
-		} else
-			detector.append(paragraphHtmlDocument);
-		return detector.detect();
+		if (this.language == null) {
+			this.language = CybozuLanguageDetector.getInstance().detect(this.getDocument());
+		}
+		return language;
 	}
 
 	/***

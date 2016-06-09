@@ -173,10 +173,10 @@ public class M2ltilingualSite {
 			// eventuali preHomepage
 			// (con link uscenti paralleli tra loro, ciascuno che porta ad una
 			// lingua diversa)
-			multilingualDetector= new PrehomepageOutlinkDetector();
+			//multilingualDetector= new PrehomepageOutlinkDetector();
 			startTime = Utils.getTime();
 			Set<Set<String>> resultsPageExploration = preHomePage(homepageToDetect, nameFolder, errorLogLock);
-			parallelHomepageURLs = multilingualDetector.detect(homepageToDetect);
+			//parallelHomepageURLs = multilingualDetector.detect(homepageToDetect);
 			endTime = Utils.getTime();
 
 			synchronized (timeLock) {
