@@ -43,10 +43,8 @@ public class HreflangDetector extends MultilingualDetector{
 		if (linksInHomePage.isEmpty())
 			return null;
 		GroupOfHomepages groupOfHomepages = new GroupOfHomepages(homepage);
-		groupOfHomepages.addURL(homepage.getUrlRedirect());
 		for (Element link : linksInHomePage)
-			// TODO al posto di abs:href si toglieva l'ultimo slash manualmente
-			groupOfHomepages.addURL(new URL(link.attr("abs:href")));
+			groupOfHomepages.addCandidateHomepage(new URL(link.attr("abs:href")));
 		return groupOfHomepages;
 	}
 

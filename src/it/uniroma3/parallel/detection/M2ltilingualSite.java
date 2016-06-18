@@ -153,7 +153,7 @@ public class M2ltilingualSite {
 						java.lang.Thread.currentThread().toString() + TIME_CSV);
 			}
 
-			if (groupOfHomepages != null) {
+			if (groupOfHomepages.isEmpty()) {
 				long endDetectionTime = Utils.getTime();
 				synchronized (multSiteLogLock) {
 					Utils.csvWr(new String[] { homepageStringUrl, VISIT_HOMEPAGE,
@@ -279,7 +279,7 @@ public class M2ltilingualSite {
 			// creo l'oggetto parallelCollection con il gruppetto di
 			// entry points paralleli corrente
 			ParallelCollections parallelColl = new ParallelCollections(nameFolder + countEntryPoints, currentGroupEP,
-					depthT, groupOfHomepages.getHomepage().getURLString());
+					depthT, groupOfHomepages.getPrimaryHomepage().getURLString());
 
 			// incremento l'id della collezione di entry points
 			// corrente, per dare nomi diversi alle collezioni di file
@@ -291,7 +291,7 @@ public class M2ltilingualSite {
 			} catch (Exception e) {
 				e.printStackTrace();
 				synchronized (errorLogLock) {
-					Utils.csvWr(groupOfHomepages.getHomepage().getURLString(), e, ERROR_LOG_CSV);
+					Utils.csvWr(groupOfHomepages.getPrimaryHomepage().getURLString(), e, ERROR_LOG_CSV);
 				}
 			}
 		}

@@ -23,6 +23,7 @@ import it.uniroma3.parallel.utils.UrlUtil;
 
 public class Page {
 
+	private static final int TIMEOUT = 8000;
 	private static final String USER_AGENT = "Opera/9.63 (Windows NT 5.1; U; en) Presto/2.1.1";
 	private URL url;
 	private URL urlRedirect;
@@ -57,7 +58,7 @@ public class Page {
 	public Page(URL url) throws IOException {
 		this.url = url;
 		// get del document della pagina
-		this.document = Jsoup.connect(url.toString()).userAgent(USER_AGENT).timeout(8000).get();
+		this.document = Jsoup.connect(url.toString()).userAgent(USER_AGENT).timeout(TIMEOUT).get();
 		// se c'è il redirect ci prendiamo l'URL finale.
 		this.urlRedirect = new URL(this.document.location());
 

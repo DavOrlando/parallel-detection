@@ -51,11 +51,11 @@ public class FetchManager {
 	 * @param groupOfHomepage
 	 */
 	public void persistGroupOfHomepage(GroupOfHomepages groupOfHomepage) {
-		setBasePath(groupOfHomepage.getHomepage().getName());
+		setBasePath(groupOfHomepage.getPrimaryHomepage().getName());
 		groupOfHomepage.setLocalPath(this.basePath);
 		int pageNumber = 1;
 		makeDirectories(pageNumber);
-		download(groupOfHomepage.getHomepage(), pageNumber, true);
+		download(groupOfHomepage.getPrimaryHomepage(), pageNumber, true);
 		// scarico tutte le altre possibili homepage
 		for (Page page : groupOfHomepage.getCandidateParallelHomepages()) {
 			makeDirectories(pageNumber);
@@ -99,34 +99,34 @@ public class FetchManager {
 	 *            path dove mettere la pagina.
 	 * @throws IOException
 	 */
-	private void downloadPageIntoOldVersion(Page page, String localFilename) throws IOException {
-		InputStream is = null;
-		FileOutputStream fos = null;
-		try {
-			URLConnection urlConn = page.getUrlRedirect().openConnection();
-			urlConn.setReadTimeout(2000);
-			if (USER_AGENT != null) {
-				urlConn.setRequestProperty("User-Agent", USER_AGENT);
-			}
-			is = urlConn.getInputStream();
-			fos = new FileOutputStream(localFilename);
-			byte[] buffer = new byte[4096];
-			int len;
-			while ((len = is.read(buffer)) > 0) {
-				fos.write(buffer, 0, len);
-			}
-			//page.setLocalPath(localFilename);
-		} finally {
-			try {
-				if (is != null)
-					is.close();
-			} finally {
-				if (fos != null) {
-					fos.close();
-				}
-			}
-		}
-	}
+//	private void downloadPageIntoOldVersion(Page page, String localFilename) throws IOException {
+//		InputStream is = null;
+//		FileOutputStream fos = null;
+//		try {
+//			URLConnection urlConn = page.getUrlRedirect().openConnection();
+//			urlConn.setReadTimeout(2000);
+//			if (USER_AGENT != null) {
+//				urlConn.setRequestProperty("User-Agent", USER_AGENT);
+//			}
+//			is = urlConn.getInputStream();
+//			fos = new FileOutputStream(localFilename);
+//			byte[] buffer = new byte[4096];
+//			int len;
+//			while ((len = is.read(buffer)) > 0) {
+//				fos.write(buffer, 0, len);
+//			}
+//			//page.setLocalPath(localFilename);
+//		} finally {
+//			try {
+//				if (is != null)
+//					is.close();
+//			} finally {
+//				if (fos != null) {
+//					fos.close();
+//				}
+//			}
+//		}
+//	}
 
 	/**
 	 * Scarica la pagina in locale, in particolare nel percorso indicato da

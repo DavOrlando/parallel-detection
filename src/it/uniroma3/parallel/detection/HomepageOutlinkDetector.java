@@ -39,6 +39,8 @@ public class HomepageOutlinkDetector extends OutlinkDetector {
 	public GroupOfHomepages detect(Homepage homepage) throws IOException, InterruptedException, LangDetectException {
 		// da ritornare alla fine
 		GroupOfHomepages groupOfHomepage = new GroupOfHomepages(homepage);
+		groupOfHomepage.findCandidateParallelHomepages();
+		groupOfHomepage.organizeInPairs();
 		FetchManager.getInstance().persistGroupOfHomepage(groupOfHomepage);;
 		this.runRoadRunner(groupOfHomepage);
 		groupOfHomepage.lasciaSoloQuestiURL(filterByLabel(groupOfHomepage));
@@ -46,10 +48,6 @@ public class HomepageOutlinkDetector extends OutlinkDetector {
 		return groupOfHomepage;
 	}
 
-	public GroupOfHomepages detect2(Homepage homepage) {
-		List<String> multilingualLinks = homepage.getMultilingualLinks();
-		return null;
-	}
-
+	
 
 }

@@ -76,10 +76,12 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 	 * @param groupOfHomepage
 	 * @return
 	 * @throws IOException
+	 * @throws LangDetectException 
 	 */
-	public Collection<URL> filterByLabel(GroupOfHomepages groupOfHomepage) throws IOException {
+	public Collection<URL> filterByLabel(GroupOfHomepages groupOfHomepage) throws IOException, LangDetectException {
 		// memorizzeremo solo l'URL con più label
 		Map<String, URL> language2Url = new HashMap<String, URL>();
+		language2Url.put(groupOfHomepage.getPrimaryHomepage().getLanguage(), groupOfHomepage.getPrimaryHomepage().getUrlRedirect());
 		// il valore è il num di label attuale e sostituiremo un URL in
 		// language2Url se e solo se troviamo per quel linguaggio una pagina con
 		// più label di quelle attuali
