@@ -63,5 +63,16 @@ public class Homepage extends Page {
 		}
 		return filteredOutlinks;
 	}
-	
+	/***
+	 * Ritorna tutti gli elementi HTML della pagina che potrebbero essere dei
+	 * link uscenti dalla pagina stessa.
+	 * 
+	 * @return
+	 */
+
+	private HashSet<Element> getAllOutlinks() {
+		HashSet<Element> elements = getHtmlElements("a");
+		elements.addAll(this.getHtmlElements("option"));
+		return elements;
+	}
 }

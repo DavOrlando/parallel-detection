@@ -12,6 +12,7 @@ import com.cybozu.labs.langdetect.LangDetectException;
 
 import it.uniroma3.parallel.model.GroupOfHomepages;
 import it.uniroma3.parallel.model.Homepage;
+import it.uniroma3.parallel.model.Page;
 
 /**
  * Classe che rappresenta un rilevatore di siti multilingua attraverso
@@ -38,7 +39,8 @@ public class HreflangDetector extends MultilingualDetector{
 	 * @throws LangDetectException 
 	 */
 	@Override
-	public GroupOfHomepages detect(Homepage homepage) throws IOException, LangDetectException {
+	public GroupOfHomepages detect(Page page) throws IOException, LangDetectException {
+		Homepage homepage = (Homepage) page;
 		Elements linksInHomePage = homepage.getDocument().select("link[hreflang]");
 		if (linksInHomePage.isEmpty())
 			return null;

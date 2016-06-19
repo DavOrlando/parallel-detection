@@ -125,18 +125,7 @@ public class Page {
 		return language;
 	}
 
-	/***
-	 * Ritorna tutti gli elementi HTML della pagina che potrebbero essere dei
-	 * link uscenti dalla pagina stessa.
-	 * 
-	 * @return
-	 */
 
-	protected HashSet<Element> getAllOutlinks() {
-		HashSet<Element> elements = getHtmlElements("a");
-		elements.addAll(this.getHtmlElements("option"));
-		return elements;
-	}
 
 	/***
 	 * Ritorna un insieme di elementi HTML presenti nella pagina e che
@@ -146,7 +135,7 @@ public class Page {
 	 *            nome dell'elemento HTML da cercare nella pagina.
 	 * @return
 	 */
-	private HashSet<Element> getHtmlElements(String elementName) {
+	protected HashSet<Element> getHtmlElements(String elementName) {
 		HashSet<Element> elements = new HashSet<Element>();
 		for (Element element : this.getDocument().select(elementName)) {
 			elements.add(element);

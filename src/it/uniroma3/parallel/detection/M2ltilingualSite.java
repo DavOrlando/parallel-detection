@@ -98,7 +98,7 @@ public class M2ltilingualSite {
 		long startDetectionTime = Utils.getTime();
 		
 		//l'homepage su cui si fa la detection
-		Homepage homepageToDetect = new Homepage(homepageStringUrl);
+		Page homepageToDetect = new Page(homepageStringUrl);
 
 		//detector per Hreflang
 		MultilingualDetector multilingualDetector = new HreflangDetector();
@@ -117,7 +117,7 @@ public class M2ltilingualSite {
 			// Prendo il nome della cartella di output dall'URL della homepage
 			String nameFolder = homepageToDetect.getPageName();
 			GroupOfHomepages groupOfHomepages;
-
+			
 			long startTime = Utils.getTime();
 			groupOfHomepages = multilingualDetector.detect(homepageToDetect);
 			long endTime = Utils.getTime();
@@ -128,7 +128,6 @@ public class M2ltilingualSite {
 								Long.toString(endTime - startTime) },
 						java.lang.Thread.currentThread().toString() + TIME_CSV);
 			}
-
 			if (groupOfHomepages != null) {
 				long endDetectionTime = Utils.getTime();
 				synchronized (multSiteLogLock) {
@@ -153,7 +152,7 @@ public class M2ltilingualSite {
 						java.lang.Thread.currentThread().toString() + TIME_CSV);
 			}
 
-			if (groupOfHomepages.isEmpty()) {
+			if (!groupOfHomepages.isEmpty()) {
 				long endDetectionTime = Utils.getTime();
 				synchronized (multSiteLogLock) {
 					Utils.csvWr(new String[] { homepageStringUrl, VISIT_HOMEPAGE,
@@ -166,8 +165,9 @@ public class M2ltilingualSite {
 			}
 
 			// pulisco le folder di output e di crawling
+			Utils.deleteDir(OUTPUT);
 			Utils.deleteDir(HTML_PAGES_PRELIMINARY + nameFolder);
-			
+
 			// se ancora non ho reperito entry points, provo a rilevare
 			// eventuali preHomepage
 			// (con link uscenti paralleli tra loro, ciascuno che porta ad una
@@ -297,7 +297,7 @@ public class M2ltilingualSite {
 		}
 	}
 
-	private static Set<Set<String>> preHomePage(Page site, String nameFolder, Lock errorLogLock)
+	private static Set<Set<String>> preHomePage(Page prehomepage, String nameFolder, Lock errorLogLock)
 			throws IOException, LangDetectException {
 		// creo set dove mettere coppie trovate
 		Set<Set<String>> parallelEntryPoints = null;
@@ -310,21 +310,21 @@ public class M2ltilingualSite {
 		// System.out.println("IN PREHOMEPAGE ");
 
 		// langauge homepage
-		Elements ps = site.getDocument().select("p");
+		Elements ps = prehomepage.getDocument().select("p");
 		String stringLangHP = (ps.text());
 		if (DetectorFactory.getLangList().size() == 0)
 			DetectorFactory.loadProfile("profiles.sm");
 
 		Detector detector = DetectorFactory.create();
 		if (ps.text().length() == 0) { // DAVIDE: se non ci sono <p>∆
-			detector.append(site.getDocument().text());
+			detector.append(prehomepage.getDocument().text());
 		} else
 			detector.append(stringLangHP);
 
 		List<ArrayList<String>> linkPairToExplore = new ArrayList<ArrayList<String>>();
 
 		// select all link to search other half of candidate pair (hp, half)
-		Elements links = site.getDocument().select("a");
+		Elements links = prehomepage.getDocument().select("a");
 
 		// var per verifica su numero lingue diverse
 		boolean firstTime = true;
@@ -347,7 +347,7 @@ public class M2ltilingualSite {
 
 				for (Element link2 : links) {
 					String linkPossible2 = link2.absUrl("href");
-					if (linkPossible2.compareTo(linkPossible1) < 0)
+					if (linkPossible2.compareTo(linkPossible1) < 0)//TODO far vedere per dire se è vero che lo fa per verificare una sola volta
 						continue;
 					if (!linkPossible1.equals(linkPossible2)) {
 						try {
@@ -373,7 +373,7 @@ public class M2ltilingualSite {
 						} catch (Exception e) {
 							e.printStackTrace();
 							synchronized (errorLogLock) {
-								Utils.csvWr(new String[] { site.getUrl().toString(), e.toString() }, ERROR_LOG_CSV);
+								Utils.csvWr(new String[] { prehomepage.getUrl().toString(), e.toString() }, ERROR_LOG_CSV);
 							}
 						}
 					}
@@ -399,7 +399,7 @@ public class M2ltilingualSite {
 			fileToVerify.add(nameFolder + countPotentialEntryPoints);
 			localPath2url.putAll(launchRRDownloadPagesToDecideIfMultilingual(nameFolder, linkPossible.get(0),
 					linkPossible.get(1), countPotentialEntryPoints, errorLogLock, true, errorLogLock,
-					site.getUrlRedirect().toString()));
+					prehomepage.getUrlRedirect().toString()));
 
 		}
 
@@ -412,12 +412,12 @@ public class M2ltilingualSite {
 
 			// lancio metodo che ritorna lista file accoppiabili
 			parallelEntryPoints.addAll(langDetectAndThresholdLabelPreHomepage(nameFolder, fileToVerify, errorLogLock,
-					site, localPath2url));
+					prehomepage, localPath2url));
 
 		} catch (LangDetectException e) {
 			synchronized (errorLogLock) {
 				e.printStackTrace();
-				Utils.csvWr(new String[] { site.getUrl().toString(), e.toString() }, ERROR_LOG_CSV);
+				Utils.csvWr(new String[] { prehomepage.getUrl().toString(), e.toString() }, ERROR_LOG_CSV);
 
 			}
 		}

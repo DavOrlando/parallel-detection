@@ -7,6 +7,7 @@ import com.cybozu.labs.langdetect.LangDetectException;
 
 import it.uniroma3.parallel.model.GroupOfHomepages;
 import it.uniroma3.parallel.model.Homepage;
+import it.uniroma3.parallel.model.Page;
 
 /**
  * Classe che rappresenta un astrazione di un rilevatore di siti multilingua.
@@ -44,6 +45,6 @@ public abstract class MultilingualDetector {
 	 * @throws LangDetectException
 	 * @throws InterruptedException
 	 */
-	public abstract GroupOfHomepages detect(Homepage homepage)
+	public abstract GroupOfHomepages detect(Page page)
 			throws IOException, InterruptedException, LangDetectException;
 }

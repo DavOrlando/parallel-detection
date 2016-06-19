@@ -231,15 +231,6 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 		}
 	}
 
-	/**
-	 * Cancella l'output di RoadRunner di un gruppo di pagine.
-	 * 
-	 * @param groupOfHomepage
-	 */
-	protected void deleteOutputRROfHomepages(GroupOfHomepages groupOfHomepage) {
-		// delete dei file output RR
-		Utils.deleteDir("output");
-	}
 	
 	
 }
