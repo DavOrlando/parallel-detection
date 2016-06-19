@@ -89,7 +89,7 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 		// per ogni coppia di homepage analizzo l'output di RR
 		for (PairOfHomepages pair : groupOfHomepage.getListOfPairs()) {
 			try {
-				RoadRunnerDataSet roadRunnerDataSet = pair.getRoadRunnerDataSet();
+				RoadRunnerDataSet roadRunnerDataSet = FetchManager.getInstance().getRoadRunnerDataSet(pair);
 				if (roadRunnerDataSet == null)
 					continue;
 				if (roadRunnerDataSet.getNumberOfLabels() < 1)

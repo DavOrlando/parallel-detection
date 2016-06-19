@@ -13,35 +13,30 @@ import org.apache.commons.io.IOUtils;
 
 import it.uniroma3.parallel.model.GroupOfHomepages;
 import it.uniroma3.parallel.model.Page;
+import it.uniroma3.parallel.model.PairOfHomepages;
+import it.uniroma3.parallel.roadrunner.RoadRunnerDataSet;
 
 public class FetchManager {
 	private static final String HTML = ".html";
 	private static final String HOME_PAGE = "HomePage";
 	private static final String USER_AGENT = "Opera/9.63 (Windows NT 5.1; U; en) Presto/2.1.1";
 	private static final String HTML_PAGES_PRELIMINARY = "htmlPagesPreliminary";
-	private String basePath;
 	public static FetchManager instance;
 	private Map<URL, String> url2LocalPath;
+	private Map<PairOfHomepages,RoadRunnerDataSet> pair2RRDataSet;
 
 	/**
 	 * Gestore dei download per questo Sistema.
 	 */
 	private FetchManager() {
 		this.url2LocalPath = new HashMap<>();
+		this.pair2RRDataSet = new HashMap<>();
 	}
 
 	public static FetchManager getInstance() {
 		if (instance == null)
 			instance = new FetchManager();
 		return instance;
-	}
-
-	public String getBasePath() {
-		return basePath;
-	}
-
-	public void setBasePath(String nameFolder) {
-		this.basePath = HTML_PAGES_PRELIMINARY + nameFolder + "/" + nameFolder;
 	}
 
 	/**
@@ -51,19 +46,19 @@ public class FetchManager {
 	 * @param groupOfHomepage
 	 */
 	public void persistGroupOfHomepage(GroupOfHomepages groupOfHomepage) {
-		setBasePath(groupOfHomepage.getPrimaryHomepage().getName());
-		groupOfHomepage.setLocalPath(this.basePath);
+		String nameFolder=groupOfHomepage.getPrimaryHomepage().getPageName() ;
+		String basePath = HTML_PAGES_PRELIMINARY + nameFolder + "/" + nameFolder;
 		int pageNumber = 1;
 		boolean isHomepage = true;
 		// scarico le possibili homepage
 		for (Page page : groupOfHomepage.getCandidateParallelHomepages()) {
-			makeDirectories(pageNumber);
+			makeDirectories(pageNumber,basePath);
 			// segno l'homepage
 			if (isHomepage) {
-				download(groupOfHomepage.getPrimaryHomepage(), pageNumber, true);
+				download(groupOfHomepage.getPrimaryHomepage(),basePath, pageNumber, true);
 				isHomepage = false;
 			} else {
-				download(page, pageNumber, false);
+				download(page,basePath, pageNumber, false);
 				pageNumber++;
 			}
 		}
@@ -76,12 +71,13 @@ public class FetchManager {
 	 * pagina accoppiabile con la homepage(altro valore di pageNumber).
 	 * 
 	 * @param page
+	 * @param basePath 
 	 * @param pageNumber
 	 * @param isHomepage
 	 */
-	private void download(Page page, int pageNumber, boolean isHomepage) {
+	private void download(Page page, String basePath, int pageNumber, boolean isHomepage) {
 		// cartella dove scaricare la pagina
-		String urlBase = this.getBasePath() + pageNumber;
+		String urlBase = basePath + pageNumber;
 		try {
 			if (isHomepage)// E' l'homepage allora sarà la prima della
 							// coppia.
@@ -166,8 +162,9 @@ public class FetchManager {
 	 * 
 	 * @param nameFolder
 	 * @param countEntryPoints
+	 * @param basePath 
 	 */
-	private void makeDirectories(int countEntryPoints) {
+	private void makeDirectories(int countEntryPoints, String basePath) {
 		new File(basePath + countEntryPoints).mkdirs();
 	}
 
@@ -179,5 +176,23 @@ public class FetchManager {
 	 */
 	public String findPageByURL(URL url) {
 		return this.url2LocalPath.get(url);
+	}
+
+	/**
+	 * Aggiunge un dataset di RoadRunner relativo ad una coppia di homepage alla mappa (coppieDiHomepage,RRDataSet).
+	 * @param pairOfHomepage
+	 * @param roadRunnerDataSet
+	 */
+	public void addRRDataSet(PairOfHomepages pairOfHomepage, RoadRunnerDataSet roadRunnerDataSet) {
+		this.pair2RRDataSet.put(pairOfHomepage, roadRunnerDataSet);
+	}
+	
+	/**
+	 * Ritorna il dataset di RoadRunner relativo alla pair di homepage.
+	 * @param pairOfHomepages
+	 * @return
+	 */
+	public RoadRunnerDataSet getRoadRunnerDataSet(PairOfHomepages pairOfHomepages){
+		return this.pair2RRDataSet.get(pairOfHomepages);
 	}
 }

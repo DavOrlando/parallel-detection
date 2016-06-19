@@ -27,11 +27,11 @@ public class RoadRunnerInvocator {
 			throws FileNotFoundException, IOException, InterruptedException {
 		int pairNumber = pairOfHomepage.getPairNumber();
 		Homepage homepage = pairOfHomepage.getMainHomepage();
-		String urlBase = HTML_PAGES_PRELIMINARY + homepage.getName() + "/" + homepage.getName()
+		String urlBase = HTML_PAGES_PRELIMINARY + homepage.getPageName() + "/" + homepage.getPageName()
 				+ pairNumber;
 
 		// creo folder e file style per l'output di rr
-		OutlinkDetector.backupFile(homepage.getName() + pairNumber);
+		OutlinkDetector.backupFile(homepage.getPageName() + pairNumber);
 
 		// System.out.println("RRRRRR " + page1 + " "+
 		// urlBase+"/"+"HomePage"+countEntryPoints+"-2"+".html");
@@ -41,14 +41,12 @@ public class RoadRunnerInvocator {
 			public void run() {
 				try {
 					String localPath = FetchManager.getInstance().findPageByURL(homepage.getUrlRedirect());
-					rr("-N:" + homepage.getName() + pairNumber, "-O:etc/flat-prefs.xml",localPath ,
+					rr("-N:" + homepage.getPageName() + pairNumber, "-O:etc/flat-prefs.xml",localPath ,
 							urlBase + "/" + "HomePage" + pairNumber + "-2" + ".html");
-					String ftv = pairOfHomepage.getMainHomepage().getName() + pairNumber;
+					String ftv = pairOfHomepage.getMainHomepage().getPageName() + pairNumber;
 					//alla coppia associo il suo output se esiste
 					if(new File("output" +"/"+ ftv + "/" + ftv + "_DataSet.xml").exists())
-						pairOfHomepage.setRoadRunnerDataSet(
-								new RoadRunnerDataSet("output" + "/" + ftv + "/" + ftv + "_DataSet.xml"));
-
+						FetchManager.getInstance().addRRDataSet(pairOfHomepage,new RoadRunnerDataSet("output" + "/" + ftv + "/" + ftv + "_DataSet.xml"));
 				} catch (Exception e1) {
 					e1.printStackTrace();
 					synchronized (errorLogLock) {

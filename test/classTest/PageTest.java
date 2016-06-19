@@ -58,7 +58,7 @@ public class PageTest {
 	@Test
 	public void getNameFolder_removeSlash() {
 		String folderNameSite = "localhost8080testMinimalehomeIt.html";
-		assertEquals(folderNameSite, page.getName());
+		assertEquals(folderNameSite, page.getPageName());
 
 	}
 	

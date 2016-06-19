@@ -95,6 +95,7 @@ public class HreflangDetectorTest {
 		try {
 			homepage = new Homepage(new URL(URL_FOR_TEST+"duplicateHreflang.html"));
 			GroupOfHomepages detectByHreflang = this.homepageDetector.detect(homepage);
+			//2 perchè cè la homepage
 			assertEquals(2,detectByHreflang.getParallelURLs().size());
 		} catch (IOException | LangDetectException e) {
 			fail();

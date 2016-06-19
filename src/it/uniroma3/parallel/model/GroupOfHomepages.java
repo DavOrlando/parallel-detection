@@ -36,7 +36,6 @@ public class GroupOfHomepages {
 	private Homepage primaryHomepage;
 	private Map<URL, Page> candidateParallelHomepages;
 	private List<PairOfHomepages> listOfPair;
-	private String localPath;
 
 	/***
 	 * Crea e inizializza lo stato dell'oggetto GroupOfHomepages in base alle
@@ -54,9 +53,9 @@ public class GroupOfHomepages {
 	}
 
 	/**
-	 * Popola la mappa di pagine candidate parallele attraverso la ricerca di
+	 * Trova le pagine candidate ad essere parallele. Lo fa attraverso la ricerca di
 	 * URL di pagine multilingua all'interno della homepage. Il primo elemento
-	 * della mappa sarò l'homepage primitiva.
+	 * della mappa sarà l'homepage primitiva.
 	 */
 	public void findCandidateParallelHomepages() {
 		List<String> multilingualOutlinks = this.primaryHomepage.getMultilingualLinks();
@@ -82,14 +81,6 @@ public class GroupOfHomepages {
 		return new ArrayList<>(candidateParallelHomepages.values());
 	}
 
-	public String getLocalPath() {
-		return this.localPath;
-	}
-
-	public void setLocalPath(String localPath) {
-		this.localPath = localPath;
-	}
-
 	/***
 	 * Crea una lista con tutte le coppie generate da
 	 * (firstHomepage,possibleParallelHomepages[i-esima]). E' possibile accedere
@@ -111,6 +102,30 @@ public class GroupOfHomepages {
 	}
 
 	/**
+	 * Rimuove tutte le pagine non multilingua dalla collezione di pagine
+	 * candidate ad essere multilingua lasciando solo quelle che possiedono un
+	 * URL fra quelli passati per parametro.
+	 * 
+	 * @param urls
+	 */
+	public void lasciaSoloQuestiURL(Collection<URL> urls) {
+		HashMap<URL, Page> parallelHomepages = new HashMap<>();
+		for (URL url : urls)
+			parallelHomepages.put(url, this.candidateParallelHomepages.get(url));
+		this.candidateParallelHomepages = parallelHomepages;
+	}
+
+	/***
+	 * Ritorna true se non ci sono entry points, false altrimenti.
+	 * 
+	 * @return
+	 */
+	public boolean isEmpty() {
+		//perchè la homepage c'è sempre
+		return this.candidateParallelHomepages.size()==1;
+	}
+
+	/**
 	 * Ritorna la mappa che serve per far funzionare ancora tutto. PROVVISORIO
 	 * TODO
 	 * 
@@ -128,23 +143,9 @@ public class GroupOfHomepages {
 	public List<String> getFileToVerify() {
 		List<String> fileToVerify = new ArrayList<>();
 		for (int i = 1; i <= this.candidateParallelHomepages.size(); i++) {
-			fileToVerify.add(this.getPrimaryHomepage().getName() + i);
+			fileToVerify.add(this.getPrimaryHomepage().getPageName() + i);
 		}
 		return fileToVerify;
-	}
-
-	/**
-	 * Rimuove tutte le pagine non multilingua dalla collezione di pagine
-	 * candidate ad essere multilingua lasciando solo quelle che possiedono un
-	 * URL fra quelli passati per parametro.
-	 * 
-	 * @param urls
-	 */
-	public void lasciaSoloQuestiURL(Collection<URL> urls) {
-		HashMap<URL, Page> parallelHomepages = new HashMap<>();
-		for (URL url : urls)
-			parallelHomepages.put(url, this.candidateParallelHomepages.get(url));
-		this.candidateParallelHomepages = parallelHomepages;
 	}
 
 	/**
@@ -219,15 +220,6 @@ public class GroupOfHomepages {
 			group.add(pairOfURL);
 		}
 		return group;
-	}
-
-	/***
-	 * Ritorna true se non ci sono entry points, false altrimenti.
-	 * 
-	 * @return
-	 */
-	public boolean isEmpty() {
-		return this.candidateParallelHomepages.size()>1;
 	}
 
 }

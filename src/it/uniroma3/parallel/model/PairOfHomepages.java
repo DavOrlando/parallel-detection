@@ -16,7 +16,6 @@ public class PairOfHomepages {
 
 	private int pairNumber;
 	private List<Page> homepages;
-	private RoadRunnerDataSet roadRunnerDataSet;
 
 	/**
 	 * Costruisce una coppia di due pagine. La prima è l'homepage del sito
@@ -38,8 +37,6 @@ public class PairOfHomepages {
 		return this.pairNumber;
 	}
 
-
-
 	/**
 	 * Ritorna la homepage principale. Ovvero il primo elemento della coppia
 	 * dato che pensiamo sempre a coppie (Homepage di partenza, Homepage in
@@ -52,18 +49,6 @@ public class PairOfHomepages {
 	}
 
 	/**
-	 * Restituisce il relativo DataSet se presente.
-	 * @return
-	 */
-	public RoadRunnerDataSet getRoadRunnerDataSet() {
-		return roadRunnerDataSet;
-	}
-
-	public void setRoadRunnerDataSet(RoadRunnerDataSet roadRunnerDataSet) {
-		this.roadRunnerDataSet = roadRunnerDataSet;
-	}
-
-	/**
 	 * Ritorna la pagina chiesta dal parametro.
 	 * 
 	 * @param numberOfPage
@@ -71,6 +56,21 @@ public class PairOfHomepages {
 	 */
 	public Page getHomepageFromList(int numberOfPage) {
 		return this.homepages.get(numberOfPage);
+	}
+
+	@Override
+	public int hashCode() {
+		int code = 0;
+		for (Page page : this.homepages) {
+			code += page.hashCode();
+		}
+		return code;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		PairOfHomepages pairOfHomepages = (PairOfHomepages) obj;
+		return this.homepages.equals(pairOfHomepages.homepages);
 	}
 
 }

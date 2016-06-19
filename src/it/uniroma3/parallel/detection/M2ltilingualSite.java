@@ -115,7 +115,7 @@ public class M2ltilingualSite {
 		// blocco try in cui ci sono le tre euristiche
 		try {
 			// Prendo il nome della cartella di output dall'URL della homepage
-			String nameFolder = homepageToDetect.getName();
+			String nameFolder = homepageToDetect.getPageName();
 			GroupOfHomepages groupOfHomepages;
 
 			long startTime = Utils.getTime();

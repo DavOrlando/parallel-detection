@@ -29,7 +29,7 @@ public class Page {
 	private URL urlRedirect;
 	private Document document;
 	private String language;
-	private String name;
+	private String pageName;
 
 	public Page() {
 	}
@@ -105,11 +105,11 @@ public class Page {
 	 * 
 	 * @return
 	 */
-	public String getName() {
-		if (name == null)
-			this.name = this.getUrlRedirect().toString().replace("http://", "").replaceAll(":", "").replaceAll("/", "")
+	public String getPageName() {
+		if (pageName == null)
+			this.pageName = this.getUrlRedirect().toString().replace("http://", "").replaceAll(":", "").replaceAll("/", "")
 					.replace("https://", "").replaceAll("/?", "");
-		return name;
+		return pageName;
 	}
 
 	/***
