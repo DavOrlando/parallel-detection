@@ -28,7 +28,7 @@ public class HomepageTest {
 	public void noOutlinkTest() {
 		try {
 			this.homepage = new Homepage(new URL(URL_FOR_TEST + "noOutlink.html"));
-			assertTrue(homepage.getMultilingualLinks().isEmpty());
+			assertTrue(homepage.getMultilingualPage().isEmpty());
 		} catch (Exception e) {
 			fail();
 			e.printStackTrace();
@@ -39,7 +39,7 @@ public class HomepageTest {
 	public void oneGoodOutlinkTest() {
 		try {
 			this.homepage = new Homepage(new URL(URL_FOR_TEST + "oneOutlink.html"));
-			assertEquals(1, homepage.getMultilingualLinks().size());
+			assertEquals(1, homepage.getMultilingualPage().size());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
@@ -50,7 +50,7 @@ public class HomepageTest {
 	public void oneBadOutlinkEditDistanceFailTest() {
 		try {
 			this.homepage = new Homepage(new URL(URL_FOR_TEST + "oneOutlinkButNoEditDistance.html"));
-			assertTrue(homepage.getMultilingualLinks().isEmpty());
+			assertTrue(homepage.getMultilingualPage().isEmpty());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
@@ -61,7 +61,7 @@ public class HomepageTest {
 	public void oneBadOutlinkLanguageFailTest() {
 		try {
 			this.homepage = new Homepage(new URL(URL_FOR_TEST + "oneOutlinkButNoLanguage.html"));
-			assertTrue(homepage.getMultilingualLinks().isEmpty());
+			assertTrue(homepage.getMultilingualPage().isEmpty());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
@@ -72,7 +72,7 @@ public class HomepageTest {
 	public void twoEqualsOutlinkTest() {
 		try {
 			this.homepage = new Homepage(new URL(URL_FOR_TEST + "twoEqualsOutlink.html"));
-			assertEquals(1, homepage.getMultilingualLinks().size());
+			assertEquals(1, homepage.getMultilingualPage().size());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
@@ -83,7 +83,7 @@ public class HomepageTest {
 	public void twoGoodOutlink() {
 		try {
 			this.homepage = new Homepage(new URL(URL_FOR_TEST + "twoGoodOutlink.html"));
-			assertEquals(2, homepage.getMultilingualLinks().size());
+			assertEquals(2, homepage.getMultilingualPage().size());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
@@ -94,7 +94,7 @@ public class HomepageTest {
 	public void oneGoodAndOneBadOutlink() {
 		try {
 			this.homepage = new Homepage(new URL(URL_FOR_TEST + "oneGoodAndOneBadOutlink.html"));
-			assertEquals(1, homepage.getMultilingualLinks().size());
+			assertEquals(1, homepage.getMultilingualPage().size());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();

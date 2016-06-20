@@ -10,7 +10,8 @@ import java.util.concurrent.locks.Lock;
 
 import com.cybozu.labs.langdetect.LangDetectException;
 
-import it.uniroma3.parallel.model.GroupOfHomepages;
+import it.uniroma3.parallel.model.ParallelPages;
+import it.uniroma3.parallel.filter.LabelFilter;
 import it.uniroma3.parallel.model.Homepage;
 import it.uniroma3.parallel.model.Page;
 import it.uniroma3.parallel.utils.FetchManager;
@@ -37,15 +38,14 @@ public class HomepageOutlinkDetector extends OutlinkDetector {
 	 */
 
 	@Override
-	public GroupOfHomepages detect(Page page) throws IOException, InterruptedException, LangDetectException {
+	public ParallelPages detect(Page page) throws IOException, InterruptedException, LangDetectException {
 		Homepage homepage = (Homepage) page;
 		// da ritornare alla fine
-		GroupOfHomepages groupOfHomepage = new GroupOfHomepages(homepage);
-		groupOfHomepage.findCandidateParallelHomepages();
-		groupOfHomepage.organizeInPairs();
+		ParallelPages groupOfHomepage = new ParallelPages(homepage);
 		FetchManager.getInstance().persistGroupOfHomepage(groupOfHomepage);;
 		this.runRoadRunner(groupOfHomepage);
-		groupOfHomepage.lasciaSoloQuestiURL(filterByLabel(groupOfHomepage));
+		LabelFilter labelFilter = new LabelFilter();
+		groupOfHomepage.lasciaSoloQuestiURL(labelFilter.filter(groupOfHomepage));
 		return groupOfHomepage;
 	}
 

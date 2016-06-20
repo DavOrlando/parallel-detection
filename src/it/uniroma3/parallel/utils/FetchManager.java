@@ -7,23 +7,29 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
-import it.uniroma3.parallel.model.GroupOfHomepages;
+import it.uniroma3.parallel.model.ParallelPages;
 import it.uniroma3.parallel.model.Page;
-import it.uniroma3.parallel.model.PairOfHomepages;
+import it.uniroma3.parallel.model.PairOfPages;
 import it.uniroma3.parallel.roadrunner.RoadRunnerDataSet;
 
 public class FetchManager {
+	private static final String DATA_COUNTRIES_ENGLISH_TXT = "data/countriesEnglish.txt";
+	private static final String DATA_COUNTRIES_ORIGINAL_TXT = "data/countriesOriginal.txt";
+	private static final String DATA_LANGUAGES_ENGLISH_TXT = "data/languagesEnglish.txt";
 	private static final String HTML = ".html";
 	private static final String HOME_PAGE = "HomePage";
 	private static final String USER_AGENT = "Opera/9.63 (Windows NT 5.1; U; en) Presto/2.1.1";
 	private static final String HTML_PAGES_PRELIMINARY = "htmlPagesPreliminary";
 	public static FetchManager instance;
 	private Map<URL, String> url2LocalPath;
-	private Map<PairOfHomepages,RoadRunnerDataSet> pair2RRDataSet;
+	private Map<PairOfPages, RoadRunnerDataSet> pair2RRDataSet;
 
 	/**
 	 * Gestore dei download per questo Sistema.
@@ -45,24 +51,36 @@ public class FetchManager {
 	 * 
 	 * @param groupOfHomepage
 	 */
-	public void persistGroupOfHomepage(GroupOfHomepages groupOfHomepage) {
-		String nameFolder=groupOfHomepage.getPrimaryHomepage().getPageName() ;
+	public void persistGroupOfHomepage(ParallelPages groupOfHomepage) {
+		String nameFolder = groupOfHomepage.getStarterPage().getPageName();
 		String basePath = HTML_PAGES_PRELIMINARY + nameFolder + "/" + nameFolder;
 		int pageNumber = 1;
 		boolean isHomepage = true;
 		// scarico le possibili homepage
 		for (Page page : groupOfHomepage.getCandidateParallelHomepages()) {
-			makeDirectories(pageNumber,basePath);
+			makeDirectories(pageNumber, basePath);
 			// segno l'homepage
 			if (isHomepage) {
-				download(groupOfHomepage.getPrimaryHomepage(),basePath, pageNumber, true);
+				download(groupOfHomepage.getStarterPage(), basePath, pageNumber, true);
 				isHomepage = false;
 			} else {
-				download(page,basePath, pageNumber, false);
+				download(page, basePath, pageNumber, false);
 				pageNumber++;
 			}
 		}
+	}
 
+	/**
+	 * Scarica in locale le coppie di pagine che derivano dall'analisi della
+	 * prehomepage.
+	 * 
+	 * @param groupOfHomepage
+	 */
+	public void persistPairOfHomepage(PairOfPages pairOfPages, String nameOfPreHomepage) {
+		String basePath = HTML_PAGES_PRELIMINARY + nameOfPreHomepage + "/" + nameOfPreHomepage;
+		makeDirectories(pairOfPages.getPairNumber(), basePath);
+		download(pairOfPages.getMainHomepage(), basePath, pairOfPages.getPairNumber(), true);
+		download(pairOfPages.getHomepageFromList(1), basePath, pairOfPages.getPairNumber(), false);
 	}
 
 	/**
@@ -71,7 +89,7 @@ public class FetchManager {
 	 * pagina accoppiabile con la homepage(altro valore di pageNumber).
 	 * 
 	 * @param page
-	 * @param basePath 
+	 * @param basePath
 	 * @param pageNumber
 	 * @param isHomepage
 	 */
@@ -162,7 +180,7 @@ public class FetchManager {
 	 * 
 	 * @param nameFolder
 	 * @param countEntryPoints
-	 * @param basePath 
+	 * @param basePath
 	 */
 	private void makeDirectories(int countEntryPoints, String basePath) {
 		new File(basePath + countEntryPoints).mkdirs();
@@ -179,20 +197,69 @@ public class FetchManager {
 	}
 
 	/**
-	 * Aggiunge un dataset di RoadRunner relativo ad una coppia di homepage alla mappa (coppieDiHomepage,RRDataSet).
+	 * Aggiunge un dataset di RoadRunner relativo ad una coppia di homepage alla
+	 * mappa (coppieDiHomepage,RRDataSet).
+	 * 
 	 * @param pairOfHomepage
 	 * @param roadRunnerDataSet
 	 */
-	public void addRRDataSet(PairOfHomepages pairOfHomepage, RoadRunnerDataSet roadRunnerDataSet) {
+	public void addRRDataSet(PairOfPages pairOfHomepage, RoadRunnerDataSet roadRunnerDataSet) {
 		this.pair2RRDataSet.put(pairOfHomepage, roadRunnerDataSet);
 	}
-	
+
 	/**
 	 * Ritorna il dataset di RoadRunner relativo alla pair di homepage.
+	 * 
 	 * @param pairOfHomepages
 	 * @return
 	 */
-	public RoadRunnerDataSet getRoadRunnerDataSet(PairOfHomepages pairOfHomepages){
+	public RoadRunnerDataSet getRoadRunnerDataSet(PairOfPages pairOfHomepages) {
 		return this.pair2RRDataSet.get(pairOfHomepages);
 	}
+
+	/**
+	 * Crea un insieme di stringhe, ognuna delle quali è una linea del file
+	 * specificato dalla stringa passata per parametro.
+	 * 
+	 * @param fileName
+	 * @return
+	 */
+	public Set<String> makeSetOf(String fileName) {
+		Set<String> fileContent = new HashSet<>();
+		try {
+			fileContent = new HashSet<String>(FileUtils.readLines(new File(fileName)));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return fileContent;
+	}
+
+	/**
+	 * Crea l'insieme delle stringhe rappresentanti le lingue
+	 * 
+	 * @return
+	 */
+	public Set<String> makeSetOfLanguages() {
+		return this.makeSetOf(DATA_LANGUAGES_ENGLISH_TXT);
+	}
+
+	/**
+	 * Crea l'insieme delle stringhe rappresentanti i nomi dei paesi in inglese.
+	 * 
+	 * @return
+	 */
+	public Set<String> makeSetOfCountriesInEnglish() {
+		return this.makeSetOf(DATA_COUNTRIES_ENGLISH_TXT);
+	}
+
+	/**
+	 * Crea l'insieme delle stringhe rappresentanti i nomi dei paesi in lingua
+	 * nativa.
+	 * 
+	 * @return
+	 */
+	public Set<String> makeSetOfCountriesInNative() {
+		return this.makeSetOf(DATA_COUNTRIES_ORIGINAL_TXT);
+	}
+
 }

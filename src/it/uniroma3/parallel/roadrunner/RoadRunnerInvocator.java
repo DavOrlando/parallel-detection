@@ -15,7 +15,8 @@ import org.jsoup.select.Elements;
 
 import it.uniroma3.parallel.detection.OutlinkDetector;
 import it.uniroma3.parallel.model.Homepage;
-import it.uniroma3.parallel.model.PairOfHomepages;
+import it.uniroma3.parallel.model.Page;
+import it.uniroma3.parallel.model.PairOfPages;
 import it.uniroma3.parallel.utils.FetchManager;
 import it.uniroma3.parallel.utils.Utils;
 
@@ -23,15 +24,15 @@ public class RoadRunnerInvocator {
 
 	private static final String HTML_PAGES_PRELIMINARY = "htmlPagesPreliminary";
 
-	public static void launchRR(PairOfHomepages pairOfHomepage, Lock errorLogLock)
+	public static void launchRR(PairOfPages pairOfHomepage, Lock errorLogLock, Page primaryPage)
 			throws FileNotFoundException, IOException, InterruptedException {
 		int pairNumber = pairOfHomepage.getPairNumber();
-		Homepage homepage = pairOfHomepage.getMainHomepage();
-		String urlBase = HTML_PAGES_PRELIMINARY + homepage.getPageName() + "/" + homepage.getPageName()
+	
+		String urlBase = HTML_PAGES_PRELIMINARY + primaryPage.getPageName() + "/" + primaryPage.getPageName()
 				+ pairNumber;
 
 		// creo folder e file style per l'output di rr
-		OutlinkDetector.backupFile(homepage.getPageName() + pairNumber);
+		OutlinkDetector.backupFile(primaryPage.getPageName() + pairNumber);
 
 		// System.out.println("RRRRRR " + page1 + " "+
 		// urlBase+"/"+"HomePage"+countEntryPoints+"-2"+".html");
@@ -40,10 +41,10 @@ public class RoadRunnerInvocator {
 			@Override
 			public void run() {
 				try {
-					String localPath = FetchManager.getInstance().findPageByURL(homepage.getUrlRedirect());
-					rr("-N:" + homepage.getPageName() + pairNumber, "-O:etc/flat-prefs.xml",localPath ,
+					String localPath = FetchManager.getInstance().findPageByURL(primaryPage.getUrlRedirect());
+					rr("-N:" + primaryPage.getPageName() + pairNumber, "-O:etc/flat-prefs.xml",localPath ,
 							urlBase + "/" + "HomePage" + pairNumber + "-2" + ".html");
-					String ftv = pairOfHomepage.getMainHomepage().getPageName() + pairNumber;
+					String ftv = primaryPage.getPageName() + pairNumber;
 					//alla coppia associo il suo output se esiste
 					if(new File("output" +"/"+ ftv + "/" + ftv + "_DataSet.xml").exists())
 						FetchManager.getInstance().addRRDataSet(pairOfHomepage,new RoadRunnerDataSet("output" + "/" + ftv + "/" + ftv + "_DataSet.xml"));
@@ -53,7 +54,7 @@ public class RoadRunnerInvocator {
 						// stampo nell'error log il sito che da il
 						// problema e l'errore
 						try {
-							Utils.csvWr(new String[] { homepage.getURLString(), e1.toString() }, "ErrorLog.csv");
+							Utils.csvWr(new String[] { primaryPage.getURLString(), e1.toString() }, "ErrorLog.csv");
 						} catch (IOException e) {
 							e.printStackTrace();
 						}

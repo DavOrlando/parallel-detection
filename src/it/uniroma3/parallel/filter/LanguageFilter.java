@@ -21,14 +21,15 @@ public class LanguageFilter implements Filter {
 	 * non porta ad una pagina con lo stesso linguaggio della homepage;
 	 * 
 	 * @param homepage
-	 * @param outlinkString
+	 * @param outlinkPage
 	 * @return
 	 * @throws LangDetectException
 	 * @throws IOException
 	 */
 	@Override
-	public boolean filter(Page homepage, String outlinkString) {
-		return !isSameLanguage(homepage, outlinkString);
+	
+	public boolean filter(Page homepage, Page outlinkPage) {
+		return !isSameLanguage(homepage, outlinkPage);
 	}
 
 	/***
@@ -41,14 +42,13 @@ public class LanguageFilter implements Filter {
 	 * @throws LangDetectException
 	 * @throws IOException
 	 */
-	private boolean isSameLanguage(Page homepage, String outlinkString) {
+	private boolean isSameLanguage(Page homepage, Page outlinkPage) {
 		// nel caso di un exception allora torno il valore che mi fa fallire il
 		// filtraggio
 		boolean stessoLinguaggio = true;
 		try {
-			Page differentLanguagePage = new Page(new URL(outlinkString));
-			stessoLinguaggio = homepage.getLanguage().equals(differentLanguagePage.getLanguage());
-		} catch (LangDetectException | IOException e) {
+			stessoLinguaggio = homepage.getLanguage().equals(outlinkPage.getLanguage());
+		} catch (LangDetectException e) {
 			e.printStackTrace();
 		}
 		return stessoLinguaggio;

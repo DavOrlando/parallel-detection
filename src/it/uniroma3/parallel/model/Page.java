@@ -76,7 +76,6 @@ public class Page {
 		return document;
 	}
 
-
 	/**
 	 * Ritorna la stringa che rappresenta l'URL della pagina.
 	 * 
@@ -107,8 +106,8 @@ public class Page {
 	 */
 	public String getPageName() {
 		if (pageName == null)
-			this.pageName = this.getUrlRedirect().toString().replace("http://", "").replaceAll(":", "").replaceAll("/", "")
-					.replace("https://", "").replaceAll("/?", "");
+			this.pageName = this.getUrlRedirect().toString().replace("http://", "").replaceAll(":", "")
+					.replaceAll("/", "").replace("https://", "").replaceAll("/?", "");
 		return pageName;
 	}
 
@@ -125,8 +124,6 @@ public class Page {
 		return language;
 	}
 
-
-
 	/***
 	 * Ritorna un insieme di elementi HTML presenti nella pagina e che
 	 * corrispondono al tag elementName passato per parametro.
@@ -138,19 +135,21 @@ public class Page {
 	protected HashSet<Element> getHtmlElements(String elementName) {
 		HashSet<Element> elements = new HashSet<Element>();
 		for (Element element : this.getDocument().select(elementName)) {
-			elements.add(element);
+			if (!element.toString().contains("com#"))
+				elements.add(element);
 		}
 		return elements;
 	}
-	
+
 	@Override
 	public int hashCode() {
-		return this.urlRedirect.hashCode();
+		return this.getURLString().hashCode();
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		Page page = (Page) obj;
-		return this.urlRedirect.equals(page.getUrlRedirect());
+		return this.getURLString().equals(page.getURLString());
 	}
 
 }

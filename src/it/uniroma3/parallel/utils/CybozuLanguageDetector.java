@@ -1,5 +1,9 @@
 package it.uniroma3.parallel.utils;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
@@ -73,6 +77,29 @@ public class CybozuLanguageDetector {
 		if (instance == null)
 			instance = new CybozuLanguageDetector();
 		return instance;
+	}
+	
+	public Set<String> getLanguagesOfStrings(List<String> testiConcatenati) throws LangDetectException {
+		Set<String> setOfLanguages = new HashSet<>();
+		// carico i profili delle lingue
+		if (DetectorFactory.getLangList().size() == 0)
+			DetectorFactory.loadProfile("profiles.sm");
+		for (String testo : testiConcatenati) {
+			String langDetect = textLanguageDetection(testo);
+			setOfLanguages.add(langDetect);
+		}
+		return setOfLanguages;
+	}
+
+	public static String textLanguageDetection(String testo) throws LangDetectException {
+		// risultati della language detection(en, it, ...)
+		String langDetect = "";
+		// detect su stringone
+		Detector detector = DetectorFactory.create();
+		detector.append(testo);
+		langDetect = detector.detect().toString();
+		// aggiungo la lingua rilevata al set
+		return langDetect;
 	}
 
 }

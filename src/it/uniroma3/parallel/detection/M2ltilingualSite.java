@@ -1,6 +1,7 @@
 package it.uniroma3.parallel.detection;
 
-import it.uniroma3.parallel.model.GroupOfHomepages;
+import it.uniroma3.parallel.model.ParallelPages;
+import it.uniroma3.parallel.model.PreHomepage;
 import it.uniroma3.parallel.model.Homepage;
 import it.uniroma3.parallel.model.Page;
 import it.uniroma3.parallel.model.ParallelCollections;
@@ -84,7 +85,7 @@ public class M2ltilingualSite {
 
 	// main per debugging
 	public static void main(String[] argv) throws IOException, InterruptedException, LangDetectException {
-		multilingualDetection("www.toyota.com", 2, new ReentrantLock(), new ReentrantLock(),
+		multilingualDetection("www.bulthaup.com/", 2, new ReentrantLock(), new ReentrantLock(),
 				new ReentrantLock(), new ReentrantLock());
 	}
 
@@ -98,7 +99,7 @@ public class M2ltilingualSite {
 		long startDetectionTime = Utils.getTime();
 		
 		//l'homepage su cui si fa la detection
-		Page homepageToDetect = new Page(homepageStringUrl);
+		Page homepageToDetect = new Homepage(homepageStringUrl);
 
 		//detector per Hreflang
 		MultilingualDetector multilingualDetector = new HreflangDetector();
@@ -116,7 +117,7 @@ public class M2ltilingualSite {
 		try {
 			// Prendo il nome della cartella di output dall'URL della homepage
 			String nameFolder = homepageToDetect.getPageName();
-			GroupOfHomepages groupOfHomepages;
+			ParallelPages groupOfHomepages;
 			
 			long startTime = Utils.getTime();
 			groupOfHomepages = multilingualDetector.detect(homepageToDetect);
@@ -172,10 +173,9 @@ public class M2ltilingualSite {
 			// eventuali preHomepage
 			// (con link uscenti paralleli tra loro, ciascuno che porta ad una
 			// lingua diversa)
-			//multilingualDetector= new PrehomepageOutlinkDetector();
 			startTime = Utils.getTime();
-			Set<Set<String>> resultsPageExploration = preHomePage(homepageToDetect, nameFolder, errorLogLock);
-			//parallelHomepageURLs = multilingualDetector.detect(homepageToDetect);
+			PreHomepageOutlinkDetector preHomepageOutlinkDetector = new PreHomepageOutlinkDetector();
+			groupOfHomepages = preHomepageOutlinkDetector.detect(new PreHomepage(homepageStringUrl));
 			endTime = Utils.getTime();
 
 			synchronized (timeLock) {
@@ -185,39 +185,16 @@ public class M2ltilingualSite {
 						java.lang.Thread.currentThread().toString() + TIME_CSV);
 			}
 
-			if (resultsPageExploration.size() != 0) {
+			if (groupOfHomepages.getListOfPairs().size() != 0) {
+				synchronized (multSiteLogLock) {
+					long endDetectionTime = Utils.getTime();
+					Utils.csvWr(new String[] { homepageStringUrl, PRE_HOMEPAGE,
+							Long.toString(endDetectionTime - startDetectionTime) }, SITE_MULTILINGUAL_CSV);
+				}
 				// elimino folder di output e di crawling
 				Utils.deleteDir(HTML_PAGES_PRELIMINARY + nameFolder);
-
-				int countGroupEP = 0;
-				for (Set<String> currentPairEP : resultsPageExploration) {
-
-					List<String> entryPoints = new ArrayList<String>();
-					entryPoints.addAll(currentPairEP);
-					ParallelCollections parallelColl = new ParallelCollections(nameFolder + countGroupEP, entryPoints,
-							(depthT), homepageStringUrl);
-					countGroupEP++;
-
-					try {
-						// R2cursiveCrawling.recursiveCrawling(parallelColl,depthT,errorLogLock,productivityLock,timeLock);
-					} catch (Exception e) {
-						e.printStackTrace();
-						synchronized (errorLogLock) {
-							Utils.csvWr(homepageStringUrl, e, ERROR_LOG_CSV);
-						}
-					}
-				}
-				{
-					synchronized (multSiteLogLock) {
-						long endDetectionTime = Utils.getTime();
-
-						Utils.csvWr(new String[] { homepageStringUrl, PRE_HOMEPAGE,
-								Long.toString(endDetectionTime - startDetectionTime) }, SITE_MULTILINGUAL_CSV);
-					}
-
-				}
-				// System.out.println("FINE STEP 3 PREHOMEPAGE");
-
+				Utils.deleteDir(OUTPUT);
+				recursiveCrawler(groupOfHomepages, PAIR_FOR_OUTLINK, depthT, errorLogLock, nameFolder);
 				return;
 			}
 
@@ -271,7 +248,7 @@ public class M2ltilingualSite {
 
 	}// fine main
 
-	private static void recursiveCrawler(GroupOfHomepages groupOfHomepages, int lengthGroupOfEntryPoint,
+	private static void recursiveCrawler(ParallelPages groupOfHomepages, int lengthGroupOfEntryPoint,
 			int depthT, Lock errorLogLock, String nameFolder) throws IOException {
 		int countEntryPoints = 0;
 		for (List<String> currentGroupEP : groupOfHomepages.getGroupOfEntryPoints(lengthGroupOfEntryPoint)) {
@@ -279,7 +256,7 @@ public class M2ltilingualSite {
 			// creo l'oggetto parallelCollection con il gruppetto di
 			// entry points paralleli corrente
 			ParallelCollections parallelColl = new ParallelCollections(nameFolder + countEntryPoints, currentGroupEP,
-					depthT, groupOfHomepages.getPrimaryHomepage().getURLString());
+					depthT, groupOfHomepages.getStarterPage().getURLString());
 
 			// incremento l'id della collezione di entry points
 			// corrente, per dare nomi diversi alle collezioni di file
@@ -291,7 +268,7 @@ public class M2ltilingualSite {
 			} catch (Exception e) {
 				e.printStackTrace();
 				synchronized (errorLogLock) {
-					Utils.csvWr(groupOfHomepages.getPrimaryHomepage().getURLString(), e, ERROR_LOG_CSV);
+					Utils.csvWr(groupOfHomepages.getStarterPage().getURLString(), e, ERROR_LOG_CSV);
 				}
 			}
 		}

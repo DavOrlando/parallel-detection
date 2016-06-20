@@ -12,7 +12,7 @@ import it.uniroma3.parallel.roadrunner.RoadRunnerDataSet;
  * @author davideorlando
  *
  */
-public class PairOfHomepages {
+public class PairOfPages {
 
 	private int pairNumber;
 	private List<Page> homepages;
@@ -22,15 +22,15 @@ public class PairOfHomepages {
 	 * mentre la seconda è una probabile homepage. Inoltre numeriamo la coppia
 	 * con un numero che è relativo alle coppie trovate per una sola detection.
 	 * 
-	 * @param homepage
-	 * @param page
+	 * @param firstPage
+	 * @param secondPage
 	 * @param pairNumber
 	 */
-	public PairOfHomepages(Homepage homepage, Page page, int pairNumber) {
+	public PairOfPages(Page firstPage, Page secondPage, int pairNumber) {
 		this.pairNumber = pairNumber;
 		this.homepages = new ArrayList<>(2);
-		this.homepages.add(homepage);
-		this.homepages.add(page);
+		this.homepages.add(firstPage);
+		this.homepages.add(secondPage);
 	}
 
 	public int getPairNumber() {
@@ -44,8 +44,8 @@ public class PairOfHomepages {
 	 * 
 	 * @return
 	 */
-	public Homepage getMainHomepage() {
-		return (Homepage) this.getHomepageFromList(0);
+	public Page getMainHomepage() {
+		return this.getHomepageFromList(0);
 	}
 
 	/**
@@ -69,7 +69,7 @@ public class PairOfHomepages {
 	
 	@Override
 	public boolean equals(Object obj) {
-		PairOfHomepages pairOfHomepages = (PairOfHomepages) obj;
+		PairOfPages pairOfHomepages = (PairOfPages) obj;
 		return this.homepages.equals(pairOfHomepages.homepages);
 	}
 

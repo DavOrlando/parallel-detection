@@ -10,7 +10,7 @@ import org.jsoup.select.Elements;
 
 import com.cybozu.labs.langdetect.LangDetectException;
 
-import it.uniroma3.parallel.model.GroupOfHomepages;
+import it.uniroma3.parallel.model.ParallelPages;
 import it.uniroma3.parallel.model.Homepage;
 import it.uniroma3.parallel.model.Page;
 
@@ -39,12 +39,12 @@ public class HreflangDetector extends MultilingualDetector{
 	 * @throws LangDetectException 
 	 */
 	@Override
-	public GroupOfHomepages detect(Page page) throws IOException, LangDetectException {
+	public ParallelPages detect(Page page) throws IOException, LangDetectException {
 		Homepage homepage = (Homepage) page;
 		Elements linksInHomePage = homepage.getDocument().select("link[hreflang]");
 		if (linksInHomePage.isEmpty())
 			return null;
-		GroupOfHomepages groupOfHomepages = new GroupOfHomepages(homepage);
+		ParallelPages groupOfHomepages = new ParallelPages(homepage);
 		for (Element link : linksInHomePage)
 			groupOfHomepages.addCandidateHomepage(new URL(link.attr("abs:href")));
 		return groupOfHomepages;

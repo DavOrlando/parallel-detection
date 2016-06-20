@@ -14,6 +14,7 @@ import java.util.Set;
 
 import com.cybozu.labs.langdetect.LangDetectException;
 
+import it.uniroma3.parallel.filter.PreHomepageFilter;
 import it.uniroma3.parallel.utils.FetchManager;
 
 /**
@@ -25,56 +26,99 @@ import it.uniroma3.parallel.utils.FetchManager;
  * @author davideorlando
  *
  */
-public class GroupOfHomepages {
+public class ParallelPages {
 
 	private static final int DEFAULT_ENTRY_POINT_NUMBER = 5;
 
-	public void setHomepage(Homepage homepage) {
-		this.primaryHomepage = homepage;
+	private Page starterPage;
+	private Map<URL, Page> candidateParallelHomepages;
+	private List<PairOfPages> listOfPair;
+
+	/**
+	 * Costruttore di ParallelPages data una Page. Inserisce la pagina passata
+	 * per parametro nella mappa di possibili pagine parallele candidate.
+	 * 
+	 * @param starterPage
+	 * @throws LangDetectException
+	 * @throws MalformedURLException
+	 */
+	public ParallelPages(Page starterPage) throws LangDetectException, MalformedURLException {
+		this.candidateParallelHomepages = new HashMap<>();
+		this.starterPage = starterPage;
+		this.candidateParallelHomepages.put(starterPage.getUrlRedirect(), starterPage);
 	}
 
-	private Homepage primaryHomepage;
-	private Map<URL, Page> candidateParallelHomepages;
-	private List<PairOfHomepages> listOfPair;
-
-	/***
-	 * Crea e inizializza lo stato dell'oggetto GroupOfHomepages in base alle
-	 * informazioni che trova nella homepage passata per parametro.
+	/**
+	 * Crea e inizializza lo stato dell'oggetto ParallelPages in base alle
+	 * informazioni che trova nella homepage passata per parametro. Popolando le
+	 * coppie in questo modo (HPPrimitiva,CandidatoPossibile).
 	 * 
 	 * @param primaryHomepage
 	 * @throws LangDetectException
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 */
-	public GroupOfHomepages(Homepage primaryHomepage) throws LangDetectException, MalformedURLException {
-		this.candidateParallelHomepages = new HashMap<>();
-		this.primaryHomepage = primaryHomepage;
-		this.candidateParallelHomepages.put(primaryHomepage.getUrlRedirect(), primaryHomepage);
+	public ParallelPages(Homepage primaryHomepage) throws LangDetectException, MalformedURLException {
+		this((Page) primaryHomepage);
+		this.findCandidateParallelHomepagesFromHomepage();
+		this.organizeInPairsFromHomepage();
 	}
 
 	/**
-	 * Trova le pagine candidate ad essere parallele. Lo fa attraverso la ricerca di
-	 * URL di pagine multilingua all'interno della homepage. Il primo elemento
-	 * della mappa sarà l'homepage primitiva.
+	 * Costruttore per ParallelPages data una PreHomepage. Popola le coppie con
+	 * i link che ci sono all'interno della prehomepage.
+	 * 
+	 * @param preHomepage
+	 * @throws MalformedURLException
+	 * @throws LangDetectException
 	 */
-	public void findCandidateParallelHomepages() {
-		List<String> multilingualOutlinks = this.primaryHomepage.getMultilingualLinks();
-		for (String outlink : multilingualOutlinks) {
-			try {
-				URL url = new URL(outlink);
-				candidateParallelHomepages.put(url, new Page(url));
-			} catch (IOException e) {
-				e.printStackTrace();
+	public ParallelPages(PreHomepage preHomepage) throws MalformedURLException, LangDetectException {
+		this((Page) preHomepage);
+		this.organizeInPairsFromPreHomepage();
+	}
+
+	private void organizeInPairsFromPreHomepage() throws LangDetectException {
+		PreHomepage preHomepage = (PreHomepage) this.starterPage;
+		this.listOfPair = new ArrayList<>();
+		int i = 1;
+		for (Page firstPage : preHomepage.getPossibleHomepages()) {
+			for (Page secondPage : preHomepage.getPossibleHomepages()) {
+				if (!firstPage.equals(secondPage) && firstPage.getURLString().compareTo(secondPage.getURLString()) >= 0
+						&& !firstPage.getLanguage().equals(secondPage.getLanguage())) {
+					this.listOfPair.add(new PairOfPages(firstPage, secondPage, i));
+					i++;
+				}
 			}
 		}
 	}
 
-	public List<PairOfHomepages> getListOfPairs() {
+	public void setHomepage(Homepage homepage) {
+		this.starterPage = homepage;
+	}
+
+	public void setListOfPair(List<PairOfPages> listOfPair) {
+		this.listOfPair = listOfPair;
+	}
+
+	/**
+	 * Trova le pagine candidate ad essere parallele. Lo fa attraverso la
+	 * ricerca di URL di pagine multilingua all'interno della homepage. Il primo
+	 * elemento della mappa sarà l'homepage primitiva.
+	 */
+	public void findCandidateParallelHomepagesFromHomepage() {
+		List<Page> multilingualPages;
+		multilingualPages = ((Homepage) this.starterPage).getMultilingualPage();
+		for (Page page : multilingualPages) {
+			candidateParallelHomepages.put(page.getUrlRedirect(), page);
+		}
+	}
+
+	public List<PairOfPages> getListOfPairs() {
 		return this.listOfPair;
 	}
 
-	public Homepage getPrimaryHomepage() {
-		return primaryHomepage;
+	public Page getStarterPage() {
+		return starterPage;
 	}
 
 	public List<Page> getCandidateParallelHomepages() {
@@ -88,12 +132,12 @@ public class GroupOfHomepages {
 	 * 
 	 * @return
 	 */
-	public void organizeInPairs() {
-		List<PairOfHomepages> listOfPairs = new LinkedList<>();
+	public void organizeInPairsFromHomepage() {
+		List<PairOfPages> listOfPairs = new LinkedList<>();
 		int i = 1;
 		for (Page page : candidateParallelHomepages.values()) {
-			if (page != primaryHomepage) {
-				PairOfHomepages pair = new PairOfHomepages(this.primaryHomepage, page, i);
+			if (!page.equals(starterPage)) {
+				PairOfPages pair = new PairOfPages(this.starterPage, page, i);
 				listOfPairs.add(pair);
 				i++;
 			}
@@ -121,8 +165,8 @@ public class GroupOfHomepages {
 	 * @return
 	 */
 	public boolean isEmpty() {
-		//perchè la homepage c'è sempre
-		return this.candidateParallelHomepages.size()==1;
+		// perchè la homepage c'è sempre
+		return this.candidateParallelHomepages.size() == 1;
 	}
 
 	/**
@@ -143,7 +187,7 @@ public class GroupOfHomepages {
 	public List<String> getFileToVerify() {
 		List<String> fileToVerify = new ArrayList<>();
 		for (int i = 1; i <= this.candidateParallelHomepages.size(); i++) {
-			fileToVerify.add(this.getPrimaryHomepage().getPageName() + i);
+			fileToVerify.add(this.getStarterPage().getPageName() + i);
 		}
 		return fileToVerify;
 	}
@@ -215,7 +259,7 @@ public class GroupOfHomepages {
 		Set<Set<String>> group = new HashSet<>();
 		for (URL url : this.getParallelURLs()) {
 			Set<String> pairOfURL = new HashSet<String>();
-			pairOfURL.add(primaryHomepage.toString());
+			pairOfURL.add(starterPage.toString());
 			pairOfURL.add(url.toString());
 			group.add(pairOfURL);
 		}

@@ -50,18 +50,25 @@ public class Homepage extends Page {
 	 * 
 	 * @param outlinks
 	 * @return
+	 * @throws IOException 
 	 */
-	public List<String> getMultilingualLinks() {
-		List<String> filteredOutlinks = new ArrayList<>();
+	public List<Page> getMultilingualPage(){
+		List<Page> filteredPages = new ArrayList<>();
 		EditDistanceFilter editDistanceFilter = new EditDistanceFilter();
 		LanguageFilter languageFilter = new LanguageFilter();
 		for (Element link : this.getAllOutlinks()) {
-			String urlString = link.absUrl("href");
-			if (!filteredOutlinks.contains(urlString) && editDistanceFilter.filter(this, urlString)
-					&& languageFilter.filter(this, urlString))
-				filteredOutlinks.add(urlString);
+			Page outlinkPage;
+			try {
+				outlinkPage = new Page(link.absUrl("href"));
+				if (!filteredPages.contains(outlinkPage) && editDistanceFilter.filter(this, outlinkPage)
+						&& languageFilter.filter(this,outlinkPage))
+					filteredPages.add(outlinkPage);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		return filteredOutlinks;
+		return filteredPages;
 	}
 	/***
 	 * Ritorna tutti gli elementi HTML della pagina che potrebbero essere dei

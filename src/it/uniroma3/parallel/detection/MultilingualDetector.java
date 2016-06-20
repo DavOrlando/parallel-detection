@@ -5,7 +5,7 @@ import java.net.URL;
 
 import com.cybozu.labs.langdetect.LangDetectException;
 
-import it.uniroma3.parallel.model.GroupOfHomepages;
+import it.uniroma3.parallel.model.ParallelPages;
 import it.uniroma3.parallel.model.Homepage;
 import it.uniroma3.parallel.model.Page;
 
@@ -45,6 +45,6 @@ public abstract class MultilingualDetector {
 	 * @throws LangDetectException
 	 * @throws InterruptedException
 	 */
-	public abstract GroupOfHomepages detect(Page page)
+	public abstract ParallelPages detect(Page page)
 			throws IOException, InterruptedException, LangDetectException;
 }

@@ -9,6 +9,6 @@ import it.uniroma3.parallel.model.Page;
  */
 public interface Filter {
 
-	public boolean filter(Page homepage, String outlinkString);
+	public boolean filter(Page homepage, Page outlinkPage);
 
 }

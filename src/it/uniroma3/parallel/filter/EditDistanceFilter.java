@@ -24,15 +24,15 @@ public class EditDistanceFilter implements Filter {
 	 * uguali; -L'edit distance è ragionevole;
 	 * 
 	 * @param homepage
-	 * @param outlinkString
+	 * @param outlinkPage
 	 * @return
 	 * @throws LangDetectException
 	 * @throws IOException
 	 */
 	@Override
-	public boolean filter(Page homepage, String outlinkString) {
+	public boolean filter(Page homepage, Page outlinkPage) {
 		try {
-			return !homepage.getURLString().equals(outlinkString) && isEditDistanceFine(homepage, outlinkString);
+			return !homepage.getURLString().equals(outlinkPage) && isEditDistanceFine(homepage, outlinkPage);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -43,15 +43,15 @@ public class EditDistanceFilter implements Filter {
 	 * Ritorna true se l'edit distance è ragionevole.
 	 * 
 	 * @param homepage
-	 * @param outlinkString
+	 * @param outlinkPage
 	 * @param domainLength
 	 * @return
 	 */
-	private boolean isEditDistanceFine(Page homepage, String outlinkString) {
+	private boolean isEditDistanceFine(Page homepage, Page outlinkPage) {
 		int domainLength = homepage.getDomain().length();
 		int homepageURLLength = homepage.getURLString().length();
-		int outlinkURLLength = outlinkString.length();
-		int levenshteinDistance = StringUtils.getLevenshteinDistance(homepage.getURLString(), outlinkString);
+		int outlinkURLLength = outlinkPage.getURLString().length();
+		int levenshteinDistance = StringUtils.getLevenshteinDistance(homepage.getURLString(), outlinkPage.getURLString());
 		return ((outlinkURLLength >= homepageURLLength)
 				&& (levenshteinDistance < outlinkURLLength - homepageURLLength + 4
 						|| levenshteinDistance < outlinkURLLength - domainLength + 4)
