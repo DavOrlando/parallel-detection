@@ -25,11 +25,11 @@ public class FetchManager {
 	private static final String DATA_LANGUAGES_ENGLISH_TXT = "data/languagesEnglish.txt";
 	private static final String HTML = ".html";
 	private static final String HOME_PAGE = "HomePage";
-	private static final String USER_AGENT = "Opera/9.63 (Windows NT 5.1; U; en) Presto/2.1.1";
 	private static final String HTML_PAGES_PRELIMINARY = "htmlPagesPreliminary";
 	public static FetchManager instance;
 	private Map<URL, String> url2LocalPath;
 	private Map<PairOfPages, RoadRunnerDataSet> pair2RRDataSet;
+	private Set<String> setOfAllMultilingualValues;
 
 	/**
 	 * Gestore dei download per questo Sistema.
@@ -107,46 +107,6 @@ public class FetchManager {
 		}
 
 	}
-
-	/**
-	 * Scarica la pagina in locale, in particolare nel percorso indicato da
-	 * localFilename. Inoltre dato che ha scaricato la pagina ha la
-	 * responsabilità di impostare il percorso locale per quella pagina.
-	 * 
-	 * @param page
-	 * @param localFilename,
-	 *            path dove mettere la pagina.
-	 * @throws IOException
-	 */
-	// private void downloadPageIntoOldVersion(Page page, String localFilename)
-	// throws IOException {
-	// InputStream is = null;
-	// FileOutputStream fos = null;
-	// try {
-	// URLConnection urlConn = page.getUrlRedirect().openConnection();
-	// urlConn.setReadTimeout(2000);
-	// if (USER_AGENT != null) {
-	// urlConn.setRequestProperty("User-Agent", USER_AGENT);
-	// }
-	// is = urlConn.getInputStream();
-	// fos = new FileOutputStream(localFilename);
-	// byte[] buffer = new byte[4096];
-	// int len;
-	// while ((len = is.read(buffer)) > 0) {
-	// fos.write(buffer, 0, len);
-	// }
-	// //page.setLocalPath(localFilename);
-	// } finally {
-	// try {
-	// if (is != null)
-	// is.close();
-	// } finally {
-	// if (fos != null) {
-	// fos.close();
-	// }
-	// }
-	// }
-	// }
 
 	/**
 	 * Scarica la pagina in locale, in particolare nel percorso indicato da
@@ -260,6 +220,22 @@ public class FetchManager {
 	 */
 	public Set<String> makeSetOfCountriesInNative() {
 		return this.makeSetOf(DATA_COUNTRIES_ORIGINAL_TXT);
+	}
+
+	/**
+	 * Ritorna un insieme contenente tutte le stringhe rappresentanti i valori
+	 * che si ritrovano nelle ancore (o negli altri elementi del DOM) di un sito
+	 * multilingua. Un esempio sono i linguaggi: Italian, English, ecc..
+	 * 
+	 * @return
+	 */
+	public Set<String> makeSetOfAllMultilingualProperties() {
+		if (setOfAllMultilingualValues == null) {
+			setOfAllMultilingualValues = new HashSet<String>(makeSetOfLanguages());
+			setOfAllMultilingualValues.addAll(makeSetOfCountriesInEnglish());
+			setOfAllMultilingualValues.addAll(makeSetOfCountriesInNative());
+		}
+		return setOfAllMultilingualValues;
 	}
 
 }

@@ -17,8 +17,8 @@ import it.uniroma3.parallel.model.Page;
 public class LanguageFilter implements Filter {
 
 	/**
-	 * Ritorna true se sono verificate le seguenti condizioni: -Il secondo link
-	 * non porta ad una pagina con lo stesso linguaggio della homepage;
+	 * Ritorna false se sono verificate le seguenti condizioni: -Il secondo link
+	 * porta ad una pagina con lo stesso linguaggio della homepage;
 	 * 
 	 * @param homepage
 	 * @param outlinkPage

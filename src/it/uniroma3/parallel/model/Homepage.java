@@ -14,6 +14,7 @@ import com.cybozu.labs.langdetect.LangDetectException;
 import com.cybozu.labs.langdetect.Language;
 
 import it.uniroma3.parallel.filter.EditDistanceFilter;
+import it.uniroma3.parallel.filter.LinkValueFilter;
 import it.uniroma3.parallel.filter.LanguageFilter;
 import it.uniroma3.parallel.utils.UrlUtil;
 
@@ -44,32 +45,61 @@ public class Homepage extends Page {
 		super(url);
 	}
 
+	// /**
+	// * Seleziona solo le pagine che superano i controlli sui vari filtri.
+	// *
+	// * @param outlinks
+	// * @return
+	// * @throws IOException
+	// */
+	// public List<Page> getMultilingualPage() {
+	// List<Page> filteredPages = new ArrayList<>();
+	// EditDistanceFilter editDistanceFilter = new EditDistanceFilter();
+	// LanguageFilter languageFilter = new LanguageFilter();
+	// for (Element link : this.getAllOutlinks()) {
+	// Page outlinkPage;
+	// try {
+	// outlinkPage = new Page(link.absUrl("href"));
+	// if (!filteredPages.contains(outlinkPage) &&
+	// editDistanceFilter.filter(this, outlinkPage)
+	// && languageFilter.filter(this, outlinkPage))
+	// filteredPages.add(outlinkPage);
+	// } catch (IOException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// }
+	// return filteredPages;
+	// }
+
 	/**
-	 * Seleziona solo i link che superano dei controlli sulla multilingua e
-	 * sull'edit distance.
+	 * Seleziona solo le pagine che superano i controlli sui vari filtri.
 	 * 
 	 * @param outlinks
 	 * @return
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	public List<Page> getMultilingualPage(){
+	public List<Page> getMultilingualPage() {
 		List<Page> filteredPages = new ArrayList<>();
-		EditDistanceFilter editDistanceFilter = new EditDistanceFilter();
 		LanguageFilter languageFilter = new LanguageFilter();
-		for (Element link : this.getAllOutlinks()) {
-			Page outlinkPage;
+		LinkValueFilter linkValueFilter = new LinkValueFilter();
+		HashSet<Element> allOutlinks = this.getAllOutlinks();
+		for (Element link : allOutlinks) {
 			try {
-				outlinkPage = new Page(link.absUrl("href"));
-				if (!filteredPages.contains(outlinkPage) && editDistanceFilter.filter(this, outlinkPage)
-						&& languageFilter.filter(this,outlinkPage))
-					filteredPages.add(outlinkPage);
-			} catch (IOException e) {
+				Page outlinkPage;
+				if (linkValueFilter.filter(link.text())) {
+					outlinkPage = new Page(link.absUrl("href"));
+					if (languageFilter.filter(this, outlinkPage))
+						filteredPages.add(outlinkPage);
+				}
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		return filteredPages;
 	}
+
 	/***
 	 * Ritorna tutti gli elementi HTML della pagina che potrebbero essere dei
 	 * link uscenti dalla pagina stessa.
