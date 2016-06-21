@@ -1,14 +1,19 @@
 package it.uniroma3.parallel.utils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
@@ -20,9 +25,8 @@ import it.uniroma3.parallel.model.PairOfPages;
 import it.uniroma3.parallel.roadrunner.RoadRunnerDataSet;
 
 public class FetchManager {
-	private static final String DATA_COUNTRIES_ENGLISH_TXT = "data/countriesEnglish.txt";
-	private static final String DATA_COUNTRIES_ORIGINAL_TXT = "data/countriesOriginal.txt";
-	private static final String DATA_LANGUAGES_ENGLISH_TXT = "data/languagesEnglish.txt";
+	private static final String FILTRO_INSIEME = "filtro.insieme";
+	private static final String CONF_PROPERTIES = "resources/conf.properties";
 	private static final String HTML = ".html";
 	private static final String HOME_PAGE = "HomePage";
 	private static final String HTML_PAGES_PRELIMINARY = "htmlPagesPreliminary";
@@ -194,32 +198,28 @@ public class FetchManager {
 		return fileContent;
 	}
 
-	/**
-	 * Crea l'insieme delle stringhe rappresentanti le lingue
-	 * 
-	 * @return
-	 */
-	public Set<String> makeSetOfLanguages() {
-		return this.makeSetOf(DATA_LANGUAGES_ENGLISH_TXT);
+	public List<String> getFilesToCreateSets(){
+		try {
+			System.getProperties().load(new FileInputStream(CONF_PROPERTIES));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return getPropertyList(System.getProperties(), FILTRO_INSIEME);
 	}
 
 	/**
-	 * Crea l'insieme delle stringhe rappresentanti i nomi dei paesi in inglese.
+	 * Ritorna una lista contenente i valori presi dalla proprietà name nel file
+	 * di proprietà properties.
 	 * 
+	 * @param properties
+	 * @param name
 	 * @return
 	 */
-	public Set<String> makeSetOfCountriesInEnglish() {
-		return this.makeSetOf(DATA_COUNTRIES_ENGLISH_TXT);
-	}
-
-	/**
-	 * Crea l'insieme delle stringhe rappresentanti i nomi dei paesi in lingua
-	 * nativa.
-	 * 
-	 * @return
-	 */
-	public Set<String> makeSetOfCountriesInNative() {
-		return this.makeSetOf(DATA_COUNTRIES_ORIGINAL_TXT);
+	public static List<String> getPropertyList(Properties properties, String name) {
+		List<String> result = new LinkedList<String>();
+		for (String s : properties.getProperty(name).split(","))
+			result.add(s);
+		return result;
 	}
 
 	/**
@@ -231,9 +231,9 @@ public class FetchManager {
 	 */
 	public Set<String> makeSetOfAllMultilingualProperties() {
 		if (setOfAllMultilingualValues == null) {
-			setOfAllMultilingualValues = new HashSet<String>(makeSetOfLanguages());
-			setOfAllMultilingualValues.addAll(makeSetOfCountriesInEnglish());
-			setOfAllMultilingualValues.addAll(makeSetOfCountriesInNative());
+			setOfAllMultilingualValues = new HashSet<>();
+			for(String file : getFilesToCreateSets())
+				setOfAllMultilingualValues.addAll(makeSetOf(file));
 		}
 		return setOfAllMultilingualValues;
 	}

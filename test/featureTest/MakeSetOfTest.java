@@ -15,7 +15,7 @@ import org.junit.Test;
 import it.uniroma3.parallel.utils.FetchManager;
 
 public class MakeSetOfTest {
-	private static final int NUMBER_OF_LANGUAGES = 98;
+	private static final int NUMBER_OF_LANGUAGES = 859;
 	private File file;
 
 	@Before
@@ -45,7 +45,7 @@ public class MakeSetOfTest {
 	
 	@Test
 	public void fileContenteAltoNumeroDiLineetest() throws IOException {
-		assertEquals(NUMBER_OF_LANGUAGES, FetchManager.getInstance().makeSetOfLanguages().size());
+		assertEquals(NUMBER_OF_LANGUAGES, FetchManager.getInstance().makeSetOfAllMultilingualProperties().size());
 	}
 
 

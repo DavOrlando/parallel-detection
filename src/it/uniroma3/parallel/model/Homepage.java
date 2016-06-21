@@ -87,7 +87,7 @@ public class Homepage extends Page {
 		for (Element link : allOutlinks) {
 			try {
 				Page outlinkPage;
-				if (linkValueFilter.filter(link.text())) {
+				if (linkValueFilter.filter(link.text().toLowerCase())) {
 					outlinkPage = new Page(link.absUrl("href"));
 					if (languageFilter.filter(this, outlinkPage))
 						filteredPages.add(outlinkPage);

@@ -85,7 +85,7 @@ public class M2ltilingualSite {
 
 	// main per debugging
 	public static void main(String[] argv) throws IOException, InterruptedException, LangDetectException {
-		multilingualDetection("http://nato.int/", 2, new ReentrantLock(), new ReentrantLock(), new ReentrantLock(),
+		multilingualDetection("http://www.vmware.com/", 2, new ReentrantLock(), new ReentrantLock(), new ReentrantLock(),
 				new ReentrantLock());
 	}
 

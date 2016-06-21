@@ -1,241 +1,241 @@
-Afghanistan
-Albania
-Algeria
-American Samoa
-Andorra
-Angola
-Anguilla
-Antarctica
-Antigua And Barbuda
-Argentina
-Armenia
-Aruba
-Australia
-Austria
-Azerbaijan
-Bahamas
-Bahrain
-Bangladesh
-Barbados
-Belarus
-Belgium
-Belize
-Benin
-Bermuda
-Bhutan
-Bolivia
-Bosnia And Herzegovina
-Botswana
-Bouvet Island
-Brazil
-British Indian Ocean Territory
-Brunei Darussalam
-Bulgaria
-Burkina Faso
-Burundi
-Cambodia
-Cameroon
-Canada
-Cape Verde
-Cayman Islands
-Central African Republic
-Chad
-Chile
-China
-Christmas Island
-Cocos (keeling) Islands
-Colombia
-Comoros
-Congo
-Congo, The Democratic Republic Of The
-Cook Islands
-Costa Rica
-Cote D'ivoire
-Croatia
-Cuba
-Cyprus
-Czech Republic
-Denmark
-Djibouti
-Dominica
-Dominican Republic
-East Timor
-Ecuador
-Egypt
-El Salvador
-Equatorial Guinea
-Eritrea
-Estonia
-Ethiopia
-Falkland Islands (malvinas)
-Faroe Islands
-Fiji
-Finland
-France
-French Guiana
-French Polynesia
-French Southern Territories
-Gabon
-Gambia
-Georgia
-Germany
-Ghana
-Gibraltar
-Greece
-Greenland
-Grenada
-Guadeloupe
-Guam
-Guatemala
-Guinea
-Guinea-bissau
-Guyana
-Haiti
-Heard Island And Mcdonald Islands
-Holy See (vatican City State)
-Honduras
-Hong Kong
-Hungary
-Iceland
-India
-Indonesia
-Iran, Islamic Republic Of
-Iraq
-Ireland
-Israel
-Italy
-Jamaica
-Japan
-Jordan
-Kazakstan
-Kenya
-Kiribati
-Korea, Democratic People's Republic Of
-Korea, Republic Of
-Kosovo
-Kuwait
-Kyrgyzstan
-Lao People's Democratic Republic
-Latvia
-Lebanon
-Lesotho
-Liberia
-Libyan Arab Jamahiriya
-Liechtenstein
-Lithuania
-Luxembourg
-Macau
-Macedonia, The Former Yugoslav Republic Of
-Madagascar
-Malawi
-Malaysia
-Maldives
-Mali
-Malta
-Marshall Islands
-Martinique
-Mauritania
-Mauritius
-Mayotte
-Mexico
-Micronesia, Federated States Of
-Moldova, Republic Of
-Monaco
-Mongolia
-Montserrat
-Montenegro
-Morocco
-Mozambique
-Myanmar
-Namibia
-Nauru
-Nepal
-Netherlands
-Netherlands Antilles
-New Caledonia
-New Zealand
-Nicaragua
-Niger
-Nigeria
-Niue
-Norfolk Island
-Northern Mariana Islands
-Norway
-Oman
-Pakistan
-Palau
-Palestinian Territory, Occupied
-Panama
-Papua New Guinea
-Paraguay
-Peru
-Philippines
-Pitcairn
-Poland
-Portugal
-Puerto Rico
-Qatar
-Reunion
-Romania
-Russian Federation
-Rwanda
-Saint Helena
-Saint Kitts And Nevis
-Saint Lucia
-Saint Pierre And Miquelon
-Saint Vincent And The Grenadines
-Samoa
-San Marino
-Sao Tome And Principe
-Saudi Arabia
-Senegal
-Serbia
-Seychelles
-Sierra Leone
-Singapore
-Slovakia
-Slovenia
-Solomon Islands
-Somalia
-South Africa
-South Georgia And The South Sandwich Islands
-Spain
-Sri Lanka
-Sudan
-Suriname
-Svalbard And Jan Mayen
-Swaziland
-Sweden
-Switzerland
-Syrian Arab Republic
-Taiwan, Province Of China
-Tajikistan
-Tanzania, United Republic Of
-Thailand
-Togo
-Tokelau
-Tonga
-Trinidad And Tobago
-Tunisia
-Turkey
-Turkmenistan
-Turks And Caicos Islands
-Tuvalu
-Uganda
-Ukraine
-United Arab Emirates
-United Kingdom
-United States
-United States Minor Outlying Islands
-Uruguay
-Uzbekistan
-Vanuatu
-Venezuela
-Viet Nam
-Virgin Islands, British
-Virgin Islands, U.s.
-Wallis And Futuna
-Western Sahara
-Yemen
-Zambia
-Zimbabwe
+afghanistan
+albania
+algeria
+american samoa
+andorra
+angola
+anguilla
+antarctica
+antigua and barbuda
+argentina
+armenia
+aruba
+australia
+austria
+azerbaijan
+bahamas
+bahrain
+bangladesh
+barbados
+belarus
+belgium
+belize
+benin
+bermuda
+bhutan
+bolivia
+bosnia and herzegovina
+botswana
+bouvet island
+brazil
+british indian ocean territory
+brunei darussalam
+bulgaria
+burkina faso
+burundi
+cambodia
+cameroon
+canada
+cape verde
+cayman islands
+central african republic
+chad
+chile
+china
+christmas island
+cocos (keeling) islands
+colombia
+comoros
+congo
+congo, the democratic republic of the
+cook islands
+costa rica
+cote d'ivoire
+croatia
+cuba
+cyprus
+czech republic
+denmark
+djibouti
+dominica
+dominican republic
+east timor
+ecuador
+egypt
+el salvador
+equatorial guinea
+eritrea
+estonia
+ethiopia
+falkland islands (malvinas)
+faroe islands
+fiji
+finland
+france
+french guiana
+french polynesia
+french southern territories
+gabon
+gambia
+georgia
+germany
+ghana
+gibraltar
+greece
+greenland
+grenada
+guadeloupe
+guam
+guatemala
+guinea
+guinea-bissau
+guyana
+haiti
+heard island and mcdonald islands
+holy see (vatican city state)
+honduras
+hong kong
+hungary
+iceland
+india
+indonesia
+iran, islamic republic of
+iraq
+ireland
+israel
+italy
+jamaica
+japan
+jordan
+kazakstan
+kenya
+kiribati
+korea, democratic people's republic of
+korea, republic of
+kosovo
+kuwait
+kyrgyzstan
+lao people's democratic republic
+latvia
+lebanon
+lesotho
+liberia
+libyan arab jamahiriya
+liechtenstein
+lithuania
+luxembourg
+macau
+macedonia, the former yugoslav republic of
+madagascar
+malawi
+malaysia
+maldives
+mali
+malta
+marshall islands
+martinique
+mauritania
+mauritius
+mayotte
+mexico
+micronesia, federated states of
+moldova, republic of
+monaco
+mongolia
+montserrat
+montenegro
+morocco
+mozambique
+myanmar
+namibia
+nauru
+nepal
+netherlands
+netherlands antilles
+new caledonia
+new zealand
+nicaragua
+niger
+nigeria
+niue
+norfolk island
+northern mariana islands
+norway
+oman
+pakistan
+palau
+palestinian territory, occupied
+panama
+papua new guinea
+paraguay
+peru
+philippines
+pitcairn
+poland
+portugal
+puerto rico
+qatar
+reunion
+romania
+russian federation
+rwanda
+saint helena
+saint kitts and nevis
+saint lucia
+saint pierre and miquelon
+saint vincent and the grenadines
+samoa
+san marino
+sao tome and principe
+saudi arabia
+senegal
+serbia
+seychelles
+sierra leone
+singapore
+slovakia
+slovenia
+solomon islands
+somalia
+south africa
+south georgia and the south sandwich islands
+spain
+sri lanka
+sudan
+suriname
+svalbard and jan mayen
+swaziland
+sweden
+switzerland
+syrian arab republic
+taiwan, province of china
+tajikistan
+tanzania, united republic of
+thailand
+togo
+tokelau
+tonga
+trinidad and tobago
+tunisia
+turkey
+turkmenistan
+turks and caicos islands
+tuvalu
+uganda
+ukraine
+united arab emirates
+united kingdom
+united states
+united states minor outlying islands
+uruguay
+uzbekistan
+vanuatu
+venezuela
+viet nam
+virgin islands, british
+virgin islands, u.s.
+wallis and futuna
+western sahara
+yemen
+zambia
+zimbabwe
