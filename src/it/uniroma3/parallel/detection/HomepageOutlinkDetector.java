@@ -1,12 +1,7 @@
 package it.uniroma3.parallel.detection;
 
 import java.io.IOException;
-import java.net.URL;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.locks.Lock;
+import java.net.URISyntaxException;
 
 import com.cybozu.labs.langdetect.LangDetectException;
 
@@ -15,7 +10,6 @@ import it.uniroma3.parallel.filter.LabelFilter;
 import it.uniroma3.parallel.model.Homepage;
 import it.uniroma3.parallel.model.Page;
 import it.uniroma3.parallel.utils.FetchManager;
-import it.uniroma3.parallel.utils.Utils;
 
 public class HomepageOutlinkDetector extends OutlinkDetector {
 
@@ -35,10 +29,11 @@ public class HomepageOutlinkDetector extends OutlinkDetector {
 	 *            la pagina che rappresenta l'homepage del sito
 	 * @return GroupOfParallelUrls
 	 * @throws IOException
+	 * @throws URISyntaxException 
 	 */
 
 	@Override
-	public ParallelPages detect(Page page) throws IOException, InterruptedException, LangDetectException {
+	public ParallelPages detect(Page page) throws IOException, InterruptedException, LangDetectException, URISyntaxException {
 		Homepage homepage = (Homepage) page;
 		// da ritornare alla fine
 		ParallelPages groupOfHomepage = new ParallelPages(homepage);

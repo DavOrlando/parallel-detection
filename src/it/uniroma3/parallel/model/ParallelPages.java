@@ -2,6 +2,8 @@ package it.uniroma3.parallel.model;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,9 +15,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cybozu.labs.langdetect.LangDetectException;
-
-import it.uniroma3.parallel.filter.PreHomepageFilter;
-import it.uniroma3.parallel.utils.FetchManager;
 
 /**
  * Classe che rappresenta un gruppo di prababili homepage parallele. Conosce
@@ -31,8 +30,8 @@ public class ParallelPages {
 	private static final int DEFAULT_ENTRY_POINT_NUMBER = 5;
 
 	private Page starterPage;
-	private Map<URL, Page> candidateParallelHomepages;
-	private List<PairOfPages> listOfPair;
+	private Map<URI, Page> candidateParallelHomepages;
+	private List<PairOfPages> listOfPairs;
 
 	/**
 	 * Costruttore di ParallelPages data una Page. Inserisce la pagina passata
@@ -41,11 +40,12 @@ public class ParallelPages {
 	 * @param starterPage
 	 * @throws LangDetectException
 	 * @throws MalformedURLException
+	 * @throws URISyntaxException 
 	 */
-	public ParallelPages(Page starterPage) throws LangDetectException, MalformedURLException {
+	public ParallelPages(Page starterPage) throws LangDetectException, MalformedURLException, URISyntaxException {
 		this.candidateParallelHomepages = new HashMap<>();
 		this.starterPage = starterPage;
-		this.candidateParallelHomepages.put(starterPage.getUrlRedirect(), starterPage);
+		this.candidateParallelHomepages.put(starterPage.getUrlRedirect().toURI(), starterPage);
 	}
 
 	/**
@@ -56,9 +56,10 @@ public class ParallelPages {
 	 * @param primaryHomepage
 	 * @throws LangDetectException
 	 * @throws MalformedURLException
+	 * @throws URISyntaxException 
 	 * @throws IOException
 	 */
-	public ParallelPages(Homepage primaryHomepage) throws LangDetectException, MalformedURLException {
+	public ParallelPages(Homepage primaryHomepage) throws LangDetectException, MalformedURLException, URISyntaxException {
 		this((Page) primaryHomepage);
 		this.findCandidateParallelHomepagesFromHomepage();
 		this.organizeInPairsFromHomepage();
@@ -71,25 +72,28 @@ public class ParallelPages {
 	 * @param preHomepage
 	 * @throws MalformedURLException
 	 * @throws LangDetectException
+	 * @throws URISyntaxException 
 	 */
-	public ParallelPages(PreHomepage preHomepage) throws MalformedURLException, LangDetectException {
+	public ParallelPages(PreHomepage preHomepage) throws MalformedURLException, LangDetectException, URISyntaxException {
 		this((Page) preHomepage);
 		this.organizeInPairsFromPreHomepage();
 	}
 
 	private void organizeInPairsFromPreHomepage() throws LangDetectException {
 		PreHomepage preHomepage = (PreHomepage) this.starterPage;
-		this.listOfPair = new ArrayList<>();
+		this.listOfPairs = new ArrayList<>();
 		int i = 1;
 		for (Page firstPage : preHomepage.getPossibleHomepages()) {
 			for (Page secondPage : preHomepage.getPossibleHomepages()) {
-				if (!firstPage.equals(secondPage) && firstPage.getURLString().compareTo(secondPage.getURLString()) >= 0
-						&& !firstPage.getLanguage().equals(secondPage.getLanguage())) {
-					this.listOfPair.add(new PairOfPages(firstPage, secondPage, i));
+				if (firstPage.getURLString().compareTo(secondPage.getURLString()) >= 0 &&
+						!firstPage.equals(secondPage) && 
+						!firstPage.getLanguage().equals(secondPage.getLanguage())) {
+					this.listOfPairs.add(new PairOfPages(firstPage, secondPage, i));
 					i++;
 				}
 			}
 		}
+		int a = 2;
 	}
 
 	public void setHomepage(Homepage homepage) {
@@ -97,24 +101,24 @@ public class ParallelPages {
 	}
 
 	public void setListOfPair(List<PairOfPages> listOfPair) {
-		this.listOfPair = listOfPair;
+		this.listOfPairs = listOfPair;
 	}
 
 	/**
 	 * Trova le pagine candidate ad essere parallele. Lo fa attraverso la
 	 * ricerca di URL di pagine multilingua all'interno della homepage. Il primo
 	 * elemento della mappa sarà l'homepage primitiva.
+	 * @throws URISyntaxException 
 	 */
-	public void findCandidateParallelHomepagesFromHomepage() {
-		List<Page> multilingualPages;
-		multilingualPages = ((Homepage) this.starterPage).getMultilingualPage();
+	public void findCandidateParallelHomepagesFromHomepage() throws URISyntaxException {
+		 List<Page> multilingualPages = ((Homepage) this.starterPage).getMultilingualPage();
 		for (Page page : multilingualPages) {
-			candidateParallelHomepages.put(page.getUrlRedirect(), page);
+			candidateParallelHomepages.put(page.getUrlRedirect().toURI(), page);
 		}
 	}
 
 	public List<PairOfPages> getListOfPairs() {
-		return this.listOfPair;
+		return this.listOfPairs;
 	}
 
 	public Page getStarterPage() {
@@ -133,7 +137,7 @@ public class ParallelPages {
 	 * @return
 	 */
 	public void organizeInPairsFromHomepage() {
-		List<PairOfPages> listOfPairs = new LinkedList<>();
+		this.listOfPairs = new LinkedList<>();
 		int i = 1;
 		for (Page page : candidateParallelHomepages.values()) {
 			if (!page.equals(starterPage)) {
@@ -142,7 +146,6 @@ public class ParallelPages {
 				i++;
 			}
 		}
-		this.listOfPair = listOfPairs;
 	}
 
 	/**
@@ -151,11 +154,12 @@ public class ParallelPages {
 	 * URL fra quelli passati per parametro.
 	 * 
 	 * @param urls
+	 * @throws URISyntaxException 
 	 */
-	public void lasciaSoloQuestiURL(Collection<URL> urls) {
-		HashMap<URL, Page> parallelHomepages = new HashMap<>();
+	public void lasciaSoloQuestiURL(Collection<URL> urls) throws URISyntaxException {
+		Map<URI, Page> parallelHomepages = new HashMap<>();
 		for (URL url : urls)
-			parallelHomepages.put(url, this.candidateParallelHomepages.get(url));
+			parallelHomepages.put(url.toURI(), this.candidateParallelHomepages.get(url));
 		this.candidateParallelHomepages = parallelHomepages;
 	}
 
@@ -170,36 +174,13 @@ public class ParallelPages {
 	}
 
 	/**
-	 * Ritorna la mappa che serve per far funzionare ancora tutto. PROVVISORIO
-	 * TODO
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getLocalPath2Url() {
-		Map<String, String> localPath2Url = new HashMap<>();
-		for (Page page : this.candidateParallelHomepages.values()) {
-			localPath2Url.put(FetchManager.getInstance().findPageByURL(page.getUrlRedirect()),
-					page.getUrlRedirect().toString());
-		}
-		return localPath2Url;
-	}
-
-	public List<String> getFileToVerify() {
-		List<String> fileToVerify = new ArrayList<>();
-		for (int i = 1; i <= this.candidateParallelHomepages.size(); i++) {
-			fileToVerify.add(this.getStarterPage().getPageName() + i);
-		}
-		return fileToVerify;
-	}
-
-	/**
 	 * Ritorna la collezione di URL composta dalla homepage primitiva e da URL
 	 * provenienti dalle probabili homepage parallele.
 	 * 
 	 * @return
 	 */
-	public Set<URL> getParallelURLs() {
-		HashSet<URL> parallelURLs = new HashSet<>();
+	public Set<URI> getParallelURLs() {
+		HashSet<URI> parallelURLs = new HashSet<>();
 		parallelURLs.addAll(candidateParallelHomepages.keySet());
 		return parallelURLs;
 	}
@@ -210,9 +191,10 @@ public class ParallelPages {
 	 * 
 	 * @param url
 	 * @throws IOException
+	 * @throws URISyntaxException 
 	 */
-	public void addCandidateHomepage(URL url) throws IOException {
-		this.candidateParallelHomepages.put(url, new Page(url));
+	public void addCandidateHomepage(URL url) throws IOException, URISyntaxException {
+		this.candidateParallelHomepages.put(url.toURI(), new Page(url));
 	}
 
 	/***
@@ -237,12 +219,12 @@ public class ParallelPages {
 	public Set<List<String>> getGroupOfEntryPoints(int numberMaxOfEntryPoints) {
 		Set<List<String>> group = new HashSet<>();
 		List<String> listOfNumberedURL = new LinkedList<String>();
-		for (URL url : this.getParallelURLs()) {
+		for (URI uri : this.getParallelURLs()) {
 			if (listOfNumberedURL.size() == numberMaxOfEntryPoints) {
 				group.add(listOfNumberedURL);
 				listOfNumberedURL = new LinkedList<String>();
 			}
-			listOfNumberedURL.add(url.toString());
+			listOfNumberedURL.add(uri.toString());
 		}
 		if (listOfNumberedURL.size() != 0)
 			group.add(listOfNumberedURL);
@@ -257,10 +239,10 @@ public class ParallelPages {
 	 */
 	public Set<Set<String>> getPairOfStringEntryPoint() {
 		Set<Set<String>> group = new HashSet<>();
-		for (URL url : this.getParallelURLs()) {
+		for (URI uri : this.getParallelURLs()) {
 			Set<String> pairOfURL = new HashSet<String>();
 			pairOfURL.add(starterPage.toString());
-			pairOfURL.add(url.toString());
+			pairOfURL.add(uri.toString());
 			group.add(pairOfURL);
 		}
 		return group;

@@ -5,6 +5,7 @@ import it.uniroma3.parallel.model.PreHomepage;
 import it.uniroma3.parallel.model.Homepage;
 import it.uniroma3.parallel.model.Page;
 import it.uniroma3.parallel.model.ParallelCollections;
+import it.uniroma3.parallel.utils.FetchManager;
 import it.uniroma3.parallel.utils.Utils;
 
 import java.io.BufferedReader;
@@ -34,6 +35,8 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import java.util.Set;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -85,8 +88,11 @@ public class M2ltilingualSite {
 
 	// main per debugging
 	public static void main(String[] argv) throws IOException, InterruptedException, LangDetectException {
-		multilingualDetection("http://www.vmware.com/", 2, new ReentrantLock(), new ReentrantLock(), new ReentrantLock(),
-				new ReentrantLock());
+		File f = new File("seedTot2.txt");
+		List<String> siti = FileUtils.readLines(f);
+		for (String sito : siti)
+			multilingualDetection(sito, 2, new ReentrantLock(), new ReentrantLock(), new ReentrantLock(),
+					new ReentrantLock());
 	}
 
 	// argomenti: homepage e depth di visita, lock scrivere txt errori e siti
@@ -95,26 +101,27 @@ public class M2ltilingualSite {
 	public static void multilingualDetection(String homepageStringUrl, int depthT, Lock multSiteLogLock,
 			Lock errorLogLock, Lock productivityLock, Lock timeLock)
 			throws IOException, InterruptedException, LangDetectException {
-
 		long startDetectionTime = Utils.getTime();
-
-		// l'homepage su cui si fa la detection
-		Page homepageToDetect = new Homepage(homepageStringUrl);
-
-		// detector per Hreflang
-		MultilingualDetector multilingualDetector = new HreflangDetector();
-
-		// controllo per escludere alcuni siti falsi positivi multilingua
-		if (multilingualDetector.isInBlacklist(homepageToDetect.getUrlRedirect())) {
-			synchronized (multSiteLogLock) {
-				// scrivo su un csv che il sito non è multilingua
-				Utils.csvWr(new String[] { homepageStringUrl, Utils.getDate() }, SITE_NOT_MULTILINGUAL_CSV);
-			}
-			return;
-		}
 
 		// blocco try in cui ci sono le tre euristiche
 		try {
+
+
+			// l'homepage su cui si fa la detection
+			Page homepageToDetect = new Homepage(homepageStringUrl);
+
+			// detector per Hreflang
+			MultilingualDetector multilingualDetector = new HreflangDetector();
+
+			// controllo per escludere alcuni siti falsi positivi multilingua
+			if (multilingualDetector.isInBlacklist(homepageToDetect.getUrlRedirect())) {
+				synchronized (multSiteLogLock) {
+					// scrivo su un csv che il sito non è multilingua
+					Utils.csvWr(new String[] { homepageStringUrl, Utils.getDate() }, SITE_NOT_MULTILINGUAL_CSV);
+				}
+				return;
+			}
+
 			// Prendo il nome della cartella di output dall'URL della homepage
 			String nameFolder = homepageToDetect.getPageName();
 			ParallelPages groupOfHomepages;
@@ -152,22 +159,20 @@ public class M2ltilingualSite {
 								Long.toString(endTime - startTime) },
 						java.lang.Thread.currentThread().toString() + TIME_CSV);
 			}
-
+			// se ho coppie candidate lancio visita ricorsiva
 			if (!groupOfHomepages.isEmpty()) {
 				long endDetectionTime = Utils.getTime();
 				synchronized (multSiteLogLock) {
 					Utils.csvWr(new String[] { homepageStringUrl, VISIT_HOMEPAGE,
 							Long.toString(endDetectionTime - startDetectionTime) }, SITE_MULTILINGUAL_CSV);
 				}
-				// se ho coppie candidate lancio visita ricorsiva
+				// pulisco le folder di output e di crawling
+				FetchManager.getInstance().deleteFolders(nameFolder);
 				recursiveCrawler(groupOfHomepages, PAIR_FOR_OUTLINK, depthT, errorLogLock, nameFolder);
 				return;
-
 			}
 
-			// pulisco le folder di output e di crawling
-			Utils.deleteDir(OUTPUT);
-			Utils.deleteDir(HTML_PAGES_PRELIMINARY + nameFolder);
+			FetchManager.getInstance().deleteFolders(nameFolder);
 
 			// se ancora non ho reperito entry points, provo a rilevare
 			// eventuali preHomepage

@@ -3,7 +3,7 @@ package classTest;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
-import java.util.concurrent.locks.ReentrantLock;
+import java.net.URISyntaxException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +29,7 @@ public class HomepageOutlinkDetectorTest {
 	public void testDetect() {
 		try {
 			this.homepageOutlinkDetector.detect(homepage);
-		} catch (IOException | InterruptedException | LangDetectException e) {
+		} catch (IOException | InterruptedException | LangDetectException | URISyntaxException e) {
 			e.printStackTrace();
 			fail();
 		}

@@ -1,50 +1,17 @@
 package it.uniroma3.parallel.detection;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.locks.Lock;
 
-import javax.net.ssl.HandshakeCompletedEvent;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import com.cybozu.labs.langdetect.Detector;
-import com.cybozu.labs.langdetect.DetectorFactory;
-import com.cybozu.labs.langdetect.LangDetectException;
-
 import it.uniroma3.parallel.model.ParallelPages;
-import it.uniroma3.parallel.model.Page;
 import it.uniroma3.parallel.model.PairOfPages;
-import it.uniroma3.parallel.roadrunner.RoadRunnerDataSet;
 import it.uniroma3.parallel.roadrunner.RoadRunnerInvocator;
-import it.uniroma3.parallel.utils.FetchManager;
-import it.uniroma3.parallel.utils.Utils;
 
 /**
  * Classe che rappresenta un rilevatore di siti multilingua attraverso

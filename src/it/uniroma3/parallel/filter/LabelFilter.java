@@ -4,18 +4,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
-
 import org.xml.sax.SAXException;
 
-import com.cybozu.labs.langdetect.Detector;
-import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.LangDetectException;
 
 import it.uniroma3.parallel.model.PairOfPages;
@@ -23,7 +16,6 @@ import it.uniroma3.parallel.model.ParallelPages;
 import it.uniroma3.parallel.roadrunner.RoadRunnerDataSet;
 import it.uniroma3.parallel.utils.CybozuLanguageDetector;
 import it.uniroma3.parallel.utils.FetchManager;
-import it.uniroma3.parallel.utils.Utils;
 
 public class LabelFilter {
 	private static final int SECONDA_HOMEPAGE = 1;
@@ -53,7 +45,7 @@ public class LabelFilter {
 			// per ogni coppia di homepage analizzo l'output di RR
 			for (PairOfPages pair : groupOfHomepage.getListOfPairs()) {
 				RoadRunnerDataSet roadRunnerDataSet = FetchManager.getInstance().getRoadRunnerDataSet(pair);
-				if (roadRunnerDataSet == null || roadRunnerDataSet.getNumberOfLabels() < 1)
+				if (roadRunnerDataSet == null || roadRunnerDataSet.getNumberOfLabels() < 16)
 					continue;
 				List<String> textFromAllLabels = roadRunnerDataSet.getTextFromAllLabels();
 				if (textFromAllLabels == null)

@@ -1,12 +1,12 @@
 package it.uniroma3.parallel.detection;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import com.cybozu.labs.langdetect.LangDetectException;
 
 import it.uniroma3.parallel.model.ParallelPages;
-import it.uniroma3.parallel.model.Homepage;
 import it.uniroma3.parallel.model.Page;
 
 /**
@@ -44,7 +44,8 @@ public abstract class MultilingualDetector {
 	 * @throws IOException
 	 * @throws LangDetectException
 	 * @throws InterruptedException
+	 * @throws URISyntaxException 
 	 */
 	public abstract ParallelPages detect(Page page)
-			throws IOException, InterruptedException, LangDetectException;
+			throws IOException, InterruptedException, LangDetectException, URISyntaxException;
 }

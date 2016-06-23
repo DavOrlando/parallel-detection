@@ -3,6 +3,7 @@ package classTest;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +32,7 @@ public class HreflangDetectorTest {
 		try {
 			homepage = new Homepage(URL_FOR_TEST +"noHreflang.html");
 			assertNull(this.homepageDetector.detect(homepage));
-		} catch (IOException | LangDetectException e) {
+		} catch (IOException | LangDetectException | URISyntaxException e) {
 			fail();
 			e.printStackTrace();
 		}
@@ -46,7 +47,7 @@ public class HreflangDetectorTest {
 			assertNotNull(detectByHreflang);
 			//2 perchè anche la homepage viene aggiunta
 			assertEquals(2,detectByHreflang.getParallelURLs().size());
-		} catch (IOException | LangDetectException e) {
+		} catch (IOException | LangDetectException | URISyntaxException e) {
 			fail();
 			e.printStackTrace();
 		}
@@ -58,7 +59,7 @@ public class HreflangDetectorTest {
 			homepage = new Homepage(URL_FOR_TEST+"oneHreflangRelative.html");
 			ParallelPages detectByHreflang = this.homepageDetector.detect(homepage);
 			assertTrue(detectByHreflang.getParallelURLs().contains(new URL(ABSOLUTE_URL)));
-		} catch (IOException | LangDetectException e) {
+		} catch (IOException | LangDetectException | URISyntaxException e) {
 			fail();
 			e.printStackTrace();
 		}
@@ -72,7 +73,7 @@ public class HreflangDetectorTest {
 			ParallelPages detectByHreflang = this.homepageDetector.detect(homepage);
 			//3 perchè anche la homepage viene aggiunta
 			assertEquals(3,detectByHreflang.getParallelURLs().size());
-		} catch (IOException | LangDetectException e) {
+		} catch (IOException | LangDetectException | URISyntaxException e) {
 			fail();
 			e.printStackTrace();
 		}
@@ -84,7 +85,7 @@ public class HreflangDetectorTest {
 			homepage = new Homepage(new URL(URL_FOR_TEST+"twoHreflangButOneIsRelative.html"));
 			ParallelPages detectByHreflang = this.homepageDetector.detect(homepage);
 			assertTrue(detectByHreflang.getParallelURLs().contains(new URL(ABSOLUTE_URL)));
-		} catch (IOException | LangDetectException e) {
+		} catch (IOException | LangDetectException | URISyntaxException e) {
 			fail();
 			e.printStackTrace();
 		}
@@ -97,7 +98,7 @@ public class HreflangDetectorTest {
 			ParallelPages detectByHreflang = this.homepageDetector.detect(homepage);
 			//2 perchè cè la homepage
 			assertEquals(2,detectByHreflang.getParallelURLs().size());
-		} catch (IOException | LangDetectException e) {
+		} catch (IOException | LangDetectException | URISyntaxException e) {
 			fail();
 			e.printStackTrace();
 		}

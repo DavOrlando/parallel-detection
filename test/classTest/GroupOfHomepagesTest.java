@@ -3,8 +3,6 @@ package classTest;
 import static org.junit.Assert.*;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 
 import org.junit.Before;

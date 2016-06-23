@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,21 +17,20 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-
 import it.uniroma3.parallel.model.ParallelPages;
 import it.uniroma3.parallel.model.Page;
 import it.uniroma3.parallel.model.PairOfPages;
 import it.uniroma3.parallel.roadrunner.RoadRunnerDataSet;
 
 public class FetchManager {
+	private static final String OUTPUT = "output";
 	private static final String FILTRO_INSIEME = "filtro.insieme";
 	private static final String CONF_PROPERTIES = "resources/conf.properties";
 	private static final String HTML = ".html";
 	private static final String HOME_PAGE = "HomePage";
 	private static final String HTML_PAGES_PRELIMINARY = "htmlPagesPreliminary";
 	public static FetchManager instance;
-	private Map<URL, String> url2LocalPath;
+	private Map<URI, String> uri2LocalPath;
 	private Map<PairOfPages, RoadRunnerDataSet> pair2RRDataSet;
 	private Set<String> setOfAllMultilingualValues;
 
@@ -39,7 +38,7 @@ public class FetchManager {
 	 * Gestore dei download per questo Sistema.
 	 */
 	private FetchManager() {
-		this.url2LocalPath = new HashMap<>();
+		this.uri2LocalPath = new HashMap<>();
 		this.pair2RRDataSet = new HashMap<>();
 	}
 
@@ -64,7 +63,7 @@ public class FetchManager {
 		for (Page page : groupOfHomepage.getCandidateParallelHomepages()) {
 			makeDirectories(pageNumber, basePath);
 			// segno l'homepage
-			if (isHomepage) {
+			if (isHomepage && page.equals(groupOfHomepage.getStarterPage())) {
 				download(groupOfHomepage.getStarterPage(), basePath, pageNumber, true);
 				isHomepage = false;
 			} else {
@@ -106,7 +105,7 @@ public class FetchManager {
 				this.downloadPageInto(page, urlBase + "/" + HOME_PAGE + pageNumber + "-1" + HTML);
 			else// E' l'altra pagina allora sarà la seconda della coppia.
 				this.downloadPageInto(page, urlBase + "/" + HOME_PAGE + pageNumber + "-2" + HTML);
-		} catch (IOException e) {
+		} catch (IOException | URISyntaxException e) {
 			e.printStackTrace();
 		}
 
@@ -121,13 +120,14 @@ public class FetchManager {
 	 * @param localFilename,
 	 *            path dove mettere la pagina.
 	 * @throws IOException
+	 * @throws URISyntaxException
 	 */
-	private void downloadPageInto(Page page, String localFilename) throws IOException {
+	private void downloadPageInto(Page page, String localFilename) throws IOException, URISyntaxException {
 		FileOutputStream fos = null;
 		try {
 			fos = new FileOutputStream(localFilename);
 			fos.write(page.getDocument().toString().getBytes());
-			this.url2LocalPath.put(page.getUrlRedirect(), localFilename);
+			this.uri2LocalPath.put(page.getUrlRedirect().toURI(), localFilename);
 		} finally {
 			if (fos != null) {
 				fos.close();
@@ -155,9 +155,12 @@ public class FetchManager {
 	 * 
 	 * @param url
 	 * @return
+	 * @throws URISyntaxException
 	 */
-	public String findPageByURL(URL url) {
-		return this.url2LocalPath.get(url);
+	public String findPageByURL(URL url) throws URISyntaxException {
+		URI uri = url.toURI();
+		String string = this.uri2LocalPath.get(uri);
+		return string;
 	}
 
 	/**
@@ -189,16 +192,21 @@ public class FetchManager {
 	 * @return
 	 */
 	public Set<String> makeSetOf(String fileName) {
-		Set<String> fileContent = new HashSet<>();
+		Set<String> setOfElementForLanguages = new HashSet<>();
+		ArrayList<String> fileContent;
 		try {
-			fileContent = new HashSet<String>(FileUtils.readLines(new File(fileName)));
+			fileContent = new ArrayList<String>(FileUtils.readLines(new File(fileName)));
+			for (String entryLine : fileContent) {
+				for (String elementInLine : entryLine.split(","))
+					setOfElementForLanguages.add(elementInLine);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return fileContent;
+		return setOfElementForLanguages;
 	}
 
-	public List<String> getFilesToCreateSets(){
+	public List<String> getFilesToCreateSets() {
 		try {
 			System.getProperties().load(new FileInputStream(CONF_PROPERTIES));
 		} catch (IOException e) {
@@ -232,10 +240,15 @@ public class FetchManager {
 	public Set<String> makeSetOfAllMultilingualProperties() {
 		if (setOfAllMultilingualValues == null) {
 			setOfAllMultilingualValues = new HashSet<>();
-			for(String file : getFilesToCreateSets())
+			for (String file : getFilesToCreateSets())
 				setOfAllMultilingualValues.addAll(makeSetOf(file));
 		}
 		return setOfAllMultilingualValues;
+	}
+
+	public void deleteFolders(String nameFolder) {
+		Utils.deleteDir(OUTPUT);
+		Utils.deleteDir(HTML_PAGES_PRELIMINARY + nameFolder);
 	}
 
 }

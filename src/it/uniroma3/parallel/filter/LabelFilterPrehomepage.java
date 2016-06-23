@@ -1,12 +1,7 @@
 package it.uniroma3.parallel.filter;
 
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import it.uniroma3.parallel.model.PairOfPages;
 import it.uniroma3.parallel.model.ParallelPages;
 import it.uniroma3.parallel.roadrunner.RoadRunnerDataSet;

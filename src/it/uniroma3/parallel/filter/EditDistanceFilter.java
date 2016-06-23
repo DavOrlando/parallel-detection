@@ -1,9 +1,6 @@
 package it.uniroma3.parallel.filter;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import org.apache.commons.lang.StringUtils;
 
 import com.cybozu.labs.langdetect.LangDetectException;

@@ -1,8 +1,6 @@
 package it.uniroma3.parallel.filter;
 
 import java.io.IOException;
-import java.net.URL;
-
 import com.cybozu.labs.langdetect.LangDetectException;
 
 import it.uniroma3.parallel.model.Page;

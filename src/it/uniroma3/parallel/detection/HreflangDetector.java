@@ -1,10 +1,8 @@
 package it.uniroma3.parallel.detection;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -37,9 +35,10 @@ public class HreflangDetector extends MultilingualDetector{
 	 * @return GroupOfParallelUrls
 	 * @throws IOException
 	 * @throws LangDetectException 
+	 * @throws URISyntaxException 
 	 */
 	@Override
-	public ParallelPages detect(Page page) throws IOException, LangDetectException {
+	public ParallelPages detect(Page page) throws IOException, LangDetectException, URISyntaxException {
 		Homepage homepage = (Homepage) page;
 		Elements linksInHomePage = homepage.getDocument().select("link[hreflang]");
 		if (linksInHomePage.isEmpty())
