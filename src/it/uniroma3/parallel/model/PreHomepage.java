@@ -1,7 +1,6 @@
 package it.uniroma3.parallel.model;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class PreHomepage extends Page {

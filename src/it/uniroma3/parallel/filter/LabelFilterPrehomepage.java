@@ -26,7 +26,7 @@ public class LabelFilterPrehomepage {
 		try {
 			for (PairOfPages pair : parallelPages.getListOfPairs()) {
 				RoadRunnerDataSet roadRunnerDataSet = FetchManager.getInstance().getRoadRunnerDataSet(pair);
-				if (roadRunnerDataSet == null || roadRunnerDataSet.getNumberOfLabels() < 1)
+				if (roadRunnerDataSet == null || roadRunnerDataSet.getNumberOfLabels() < 1) //TODO controllare se deve essere minore di 16
 					continue;
 				pairOfPages.add(pair);
 			}
