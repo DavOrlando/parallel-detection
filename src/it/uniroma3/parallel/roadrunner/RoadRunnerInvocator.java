@@ -31,7 +31,7 @@ public class RoadRunnerInvocator {
 				+ pairNumber;
 
 		// creo folder e file style per l'output di rr
-		OutlinkDetector.backupFile(primaryPage.getPageName() + pairNumber);
+		FetchManager.getInstance().backupFile(primaryPage.getPageName() + pairNumber);
 
 		// System.out.println("RRRRRR " + page1 + " "+
 		// urlBase+"/"+"HomePage"+countEntryPoints+"-2"+".html");

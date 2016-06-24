@@ -2,8 +2,11 @@ package it.uniroma3.parallel.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -202,11 +205,41 @@ public class FetchManager {
 	 */
 	public void deleteFolders(String nameFolder) {
 		try {
-			FileUtils.deleteDirectory(new File(configuration.getStringOfFolderForRROutput()));
+			FileUtils.deleteDirectory(new File(configuration.getStringOfFolderOutput()));
 			FileUtils.deleteDirectory(new File(configuration.getStringOfFolderForHtmlPages() + nameFolder));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
+	// metodo per creare file style per output di rr
+	public static void backupFile(String folder) throws FileNotFoundException, IOException {
+		ConfigurationProperties confProp = ConfigurationProperties.getInstance();
+		new File(confProp.getStringOfFolderOutput()).mkdir();
+		new File(confProp.getStringOfFolderOutput()+"/" + folder).mkdir();
+		new File(confProp.getStringOfFolderOutput()+"/" + folder + "/"+confProp.getStringOfContainerDataXSLCopy()).mkdir();
+		File dbOrig = new File(confProp.getStringOfPathDataXSL());
+		File dbCopy = new File(confProp.getStringOfFolderOutput()+"/" + folder + confProp.getStringOfPathDataXSLCopy());
+		InputStream in = new FileInputStream(dbOrig);
+		OutputStream out = new FileOutputStream(dbCopy);
+		byte[] buf = new byte[1024];
+		int len;
+		while ((len = in.read(buf)) > 0) {
+			out.write(buf, 0, len);
+		}
+		in.close();
+		out.close();
+
+		File dbOrig2 = new File(confProp.getStringOfIndexXSL());
+		File dbCopy2 = new File(confProp.getStringOfFolderOutput()+"/" + folder + confProp.getStringOfPathIndexXSLCopy());
+		InputStream in2 = new FileInputStream(dbOrig2);
+		OutputStream out2 = new FileOutputStream(dbCopy2);
+		byte[] buf2 = new byte[1024];
+		int len2;
+		while ((len2 = in2.read(buf2)) > 0) {
+			out2.write(buf2, 0, len2);
+		}
+		in2.close();
+		out2.close();
+	}
 }

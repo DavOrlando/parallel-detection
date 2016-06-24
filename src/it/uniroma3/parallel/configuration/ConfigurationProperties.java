@@ -164,10 +164,54 @@ public class ConfigurationProperties {
 	 * 
 	 * @return
 	 */
-	public String getStringOfFolderForRROutput() {
+	public String getStringOfFolderOutput() {
 		return System.getProperty("outputRR");
 	}
 
+	/**
+	 * Ritorna il percorso del file data.xsl
+	 * 
+	 * @return
+	 */
+	public String getStringOfPathDataXSL() {
+		return System.getProperty("data_xsl_path");
+	}
+
+	/**
+	 * Ritorna la stringa del nome della cartella contentente data.xsl copiato
+	 * 
+	 * @return
+	 */
+	public String getStringOfContainerDataXSLCopy() {
+		return System.getProperty("data_xsl_container_folder");
+	}
+
+	/**
+	 * Ritorna la stringa per creare data.xsl dentro la folder di output
+	 * 
+	 * @return
+	 */
+	public String getStringOfPathDataXSLCopy() {
+		return System.getProperty("data_xsl_path_copy");
+	}
+
+	/**
+	 * Ritorna la stringa del percorso del file index.xsl originale
+	 * 
+	 * @return
+	 */
+	public String getStringOfIndexXSL() {
+		return System.getProperty("index_xsl_path");
+	}
+
+	/**
+	 *  Ritorna la stringa per creare index.xsl dentro la folder di output
+	 * @return
+	 */
+	public String getStringOfPathIndexXSLCopy() {
+		return System.getProperty("index_xsl_path_copy");
+	}
+	
 	/**
 	 * Ritorna il valore della chiave "error_log" nel file di proprietà
 	 * conf.properties
@@ -241,5 +285,7 @@ public class ConfigurationProperties {
 		}
 		return setOfElementForLanguages;
 	}
+
+
 
 }

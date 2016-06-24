@@ -32,46 +32,6 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 	protected Lock errorLogLock;
 
 
-	// OK
-	// metodo per creare file style per output di rr
-	public static void backupFile(String folder) throws FileNotFoundException, IOException {
-		new File(OUTPUT).mkdir();
-
-		String pathF = "output/" + folder;
-
-		new File(pathF).mkdir();
-
-		String pathF2 = "output/" + folder + "/style";
-
-		new File(pathF2).mkdir();
-
-		File dbOrig = new File("translated/style/data.xsl");
-		File dbCopy = new File("output/" + folder + "/style/data.xsl");
-		InputStream in = new FileInputStream(dbOrig);
-		OutputStream out = new FileOutputStream(dbCopy);
-		byte[] buf = new byte[1024];
-		int len;
-		while ((len = in.read(buf)) > 0) {
-			out.write(buf, 0, len);
-		}
-		in.close();
-		out.close();
-
-		File dbOrig2 = new File("translated/style/index.xsl");
-		File dbCopy2 = new File("output/" + folder + "/style/index.xsl");
-		InputStream in2 = new FileInputStream(dbOrig2);
-		OutputStream out2 = new FileOutputStream(dbCopy2);
-		byte[] buf2 = new byte[1024];
-		int len2;
-		while ((len2 = in2.read(buf2)) > 0) {
-			out2.write(buf2, 0, len2);
-		}
-		in2.close();
-		out2.close();
-
-	}
-
-
 
 
 	/**
