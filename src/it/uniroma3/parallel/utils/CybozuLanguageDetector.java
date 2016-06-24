@@ -33,6 +33,17 @@ public class CybozuLanguageDetector {
 	}
 
 	/**
+	 * Ritorna un istanza di questo servizio.
+	 * 
+	 * @return
+	 */
+	public static synchronized CybozuLanguageDetector getInstance() {
+		if (instance == null)
+			instance = new CybozuLanguageDetector();
+		return instance;
+	}
+
+	/**
 	 * Ritorna la lingua del document della pagina analizzando attraverso un
 	 * servizio esterno i vari testi all'interno del document.
 	 * 
@@ -68,17 +79,6 @@ public class CybozuLanguageDetector {
 		return paragraphHtmlDocument.text();
 	}
 
-	/**
-	 * Ritorna un istanza di questo servizio.
-	 * 
-	 * @return
-	 */
-	public static CybozuLanguageDetector getInstance() {
-		if (instance == null)
-			instance = new CybozuLanguageDetector();
-		return instance;
-	}
-	
 	public Set<String> getLanguagesOfStrings(List<String> testiConcatenati) throws LangDetectException {
 		Set<String> setOfLanguages = new HashSet<>();
 		// carico i profili delle lingue

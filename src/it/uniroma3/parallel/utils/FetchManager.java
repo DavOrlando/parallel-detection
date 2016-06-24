@@ -18,56 +18,115 @@ import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import it.uniroma3.parallel.model.ParallelPages;
+import it.uniroma3.parallel.configuration.ConfigurationProperties;
 import it.uniroma3.parallel.model.Page;
 import it.uniroma3.parallel.model.PairOfPages;
 import it.uniroma3.parallel.roadrunner.RoadRunnerDataSet;
 
+/**
+ * Classe che si occupa della gestione del caricamento dei dati nel file system
+ * (per adesso).
+ * 
+ * @author davideorlando
+ *
+ */
 public class FetchManager {
-	private static final String OUTPUT = "output";
-	private static final String FILTRO_INSIEME = "filtro.insieme";
-	private static final String CONF_PROPERTIES = "resources/conf.properties";
+
 	private static final String HTML = ".html";
 	private static final String HOME_PAGE = "HomePage";
-	private static final String HTML_PAGES_PRELIMINARY = "htmlPagesPreliminary";
 	public static FetchManager instance;
 	private Map<URI, String> uri2LocalPath;
 	private Map<PairOfPages, RoadRunnerDataSet> pair2RRDataSet;
-	private Set<String> setOfAllMultilingualValues;
+	private ConfigurationProperties configuration;
 
-	/**
-	 * Gestore dei download per questo Sistema.
-	 */
 	private FetchManager() {
 		this.uri2LocalPath = new HashMap<>();
 		this.pair2RRDataSet = new HashMap<>();
+		this.configuration = ConfigurationProperties.getInstance();
 	}
 
-	public static FetchManager getInstance() {
+	public static synchronized FetchManager getInstance() {
 		if (instance == null)
 			instance = new FetchManager();
 		return instance;
 	}
 
 	/**
+	 * Ritorna il percorso locale della pagina.
+	 * 
+	 * @param url
+	 * @return
+	 * @throws URISyntaxException
+	 */
+	public String findPageByURL(URL url) throws URISyntaxException {
+		URI uri = url.toURI();
+		String string = this.uri2LocalPath.get(uri);
+		return string;
+	}
+
+	/**
+	 * Aggiunge un dataset di RoadRunner relativo ad una coppia di homepage alla
+	 * mappa (coppieDiHomepage,RRDataSet).
+	 * 
+	 * @param pairOfHomepage
+	 * @param roadRunnerDataSet
+	 */
+	public void addRRDataSet(PairOfPages pairOfHomepage, RoadRunnerDataSet roadRunnerDataSet) {
+		this.pair2RRDataSet.put(pairOfHomepage, roadRunnerDataSet);
+	}
+
+	/**
+	 * Ritorna il dataset di RoadRunner relativo alla pair di homepage.
+	 * 
+	 * @param pairOfHomepages
+	 * @return
+	 */
+	public RoadRunnerDataSet getRoadRunnerDataSet(PairOfPages pairOfHomepages) {
+		return this.pair2RRDataSet.get(pairOfHomepages);
+	}
+
+	/**
+	 * Ritorna la base del percorso locale nel file system in cui verrano
+	 * salvate le pagine.
+	 * 
+	 * @param parallelPages
+	 * 
+	 * @param nameFolder
+	 * @return
+	 */
+	private String getBasePath(ParallelPages parallelPages) {
+		return this.getBasePath(parallelPages.getStarterPage().getPageName());
+	}
+
+	/**
+	 * Ritorna la base del percorso locale nel file system in cui verrano
+	 * salvate le pagine.
+	 * 
+	 * @param nameOfPage
+	 * @return
+	 */
+	private String getBasePath(String nameOfPage) {
+		return configuration.getStringOfFolderForHtmlPages() + nameOfPage + "/" + nameOfPage;
+	}
+
+	/**
 	 * Scarica in locale l'intero gruppo di pagine. Popola una mappa che mi dice
 	 * per ogni URL quale è il percorso in locale.
 	 * 
-	 * @param groupOfHomepage
+	 * @param parallelPages
 	 */
-	public void persistGroupOfHomepage(ParallelPages groupOfHomepage) {
-		String nameFolder = groupOfHomepage.getStarterPage().getPageName();
-		String basePath = HTML_PAGES_PRELIMINARY + nameFolder + "/" + nameFolder;
+	public void persistParallelPages(ParallelPages parallelPages) {
 		int pageNumber = 1;
 		boolean isHomepage = true;
 		// scarico le possibili homepage
-		for (Page page : groupOfHomepage.getCandidateParallelHomepages()) {
-			makeDirectories(pageNumber, basePath);
+		for (Page page : parallelPages.getCandidateParallelHomepages()) {
+			makeDirectories(getBasePath(parallelPages), pageNumber);
 			// segno l'homepage
-			if (isHomepage && page.equals(groupOfHomepage.getStarterPage())) {
-				download(groupOfHomepage.getStarterPage(), basePath, pageNumber, true);
+			if (isHomepage && page.equals(parallelPages.getStarterPage())) {
+				download(parallelPages.getStarterPage(), getBasePath(parallelPages), pageNumber, true);
 				isHomepage = false;
 			} else {
-				download(page, basePath, pageNumber, false);
+				download(page, getBasePath(parallelPages), pageNumber, false);
 				pageNumber++;
 			}
 		}
@@ -80,10 +139,10 @@ public class FetchManager {
 	 * @param groupOfHomepage
 	 */
 	public void persistPairOfHomepage(PairOfPages pairOfPages, String nameOfPreHomepage) {
-		String basePath = HTML_PAGES_PRELIMINARY + nameOfPreHomepage + "/" + nameOfPreHomepage;
-		makeDirectories(pairOfPages.getPairNumber(), basePath);
-		download(pairOfPages.getMainHomepage(), basePath, pairOfPages.getPairNumber(), true);
-		download(pairOfPages.getHomepageFromList(1), basePath, pairOfPages.getPairNumber(), false);
+		makeDirectories(getBasePath(nameOfPreHomepage), pairOfPages.getPairNumber());
+		download(pairOfPages.getMainHomepage(), getBasePath(nameOfPreHomepage), pairOfPages.getPairNumber(), true);
+		download(pairOfPages.getHomepageFromList(1), getBasePath(nameOfPreHomepage), pairOfPages.getPairNumber(),
+				false);
 	}
 
 	/**
@@ -146,109 +205,23 @@ public class FetchManager {
 	 * @param countEntryPoints
 	 * @param basePath
 	 */
-	private void makeDirectories(int countEntryPoints, String basePath) {
+	private void makeDirectories(String basePath,int countEntryPoints) {
 		new File(basePath + countEntryPoints).mkdirs();
 	}
 
 	/**
-	 * Ritorna il percorso locale della pagina.
+	 * Cancella le cartelle di output relative a RR e alle pagine HTML scaricate
+	 * in locale.
 	 * 
-	 * @param url
-	 * @return
-	 * @throws URISyntaxException
+	 * @param nameFolder
 	 */
-	public String findPageByURL(URL url) throws URISyntaxException {
-		URI uri = url.toURI();
-		String string = this.uri2LocalPath.get(uri);
-		return string;
-	}
-
-	/**
-	 * Aggiunge un dataset di RoadRunner relativo ad una coppia di homepage alla
-	 * mappa (coppieDiHomepage,RRDataSet).
-	 * 
-	 * @param pairOfHomepage
-	 * @param roadRunnerDataSet
-	 */
-	public void addRRDataSet(PairOfPages pairOfHomepage, RoadRunnerDataSet roadRunnerDataSet) {
-		this.pair2RRDataSet.put(pairOfHomepage, roadRunnerDataSet);
-	}
-
-	/**
-	 * Ritorna il dataset di RoadRunner relativo alla pair di homepage.
-	 * 
-	 * @param pairOfHomepages
-	 * @return
-	 */
-	public RoadRunnerDataSet getRoadRunnerDataSet(PairOfPages pairOfHomepages) {
-		return this.pair2RRDataSet.get(pairOfHomepages);
-	}
-
-	/**
-	 * Crea un insieme di stringhe, ognuna delle quali è una linea del file
-	 * specificato dalla stringa passata per parametro.
-	 * 
-	 * @param fileName
-	 * @return
-	 */
-	public Set<String> makeSetOf(String fileName) {
-		Set<String> setOfElementForLanguages = new HashSet<>();
-		ArrayList<String> fileContent;
-		try {
-			fileContent = new ArrayList<String>(FileUtils.readLines(new File(fileName)));
-			for (String entryLine : fileContent) {
-				for (String elementInLine : entryLine.split(","))
-					setOfElementForLanguages.add(elementInLine);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return setOfElementForLanguages;
-	}
-
-	public List<String> getFilesToCreateSets() {
-		try {
-			System.getProperties().load(new FileInputStream(CONF_PROPERTIES));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return getPropertyList(System.getProperties(), FILTRO_INSIEME);
-	}
-
-	/**
-	 * Ritorna una lista contenente i valori presi dalla proprietà name nel file
-	 * di proprietà properties.
-	 * 
-	 * @param properties
-	 * @param name
-	 * @return
-	 */
-	public static List<String> getPropertyList(Properties properties, String name) {
-		List<String> result = new LinkedList<String>();
-		for (String s : properties.getProperty(name).split(","))
-			result.add(s);
-		return result;
-	}
-
-	/**
-	 * Ritorna un insieme contenente tutte le stringhe rappresentanti i valori
-	 * che si ritrovano nelle ancore (o negli altri elementi del DOM) di un sito
-	 * multilingua. Un esempio sono i linguaggi: Italian, English, ecc..
-	 * 
-	 * @return
-	 */
-	public Set<String> makeSetOfAllMultilingualProperties() {
-		if (setOfAllMultilingualValues == null) {
-			setOfAllMultilingualValues = new HashSet<>();
-			for (String file : getFilesToCreateSets())
-				setOfAllMultilingualValues.addAll(makeSetOf(file));
-		}
-		return setOfAllMultilingualValues;
-	}
-
 	public void deleteFolders(String nameFolder) {
-		Utils.deleteDir(OUTPUT);
-		Utils.deleteDir(HTML_PAGES_PRELIMINARY + nameFolder);
+		try {
+			FileUtils.deleteDirectory(new File(configuration.getStringOfFolderForRROutput()));
+			FileUtils.deleteDirectory(new File(configuration.getStringOfFolderForHtmlPages() + nameFolder));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

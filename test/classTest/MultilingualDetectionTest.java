@@ -41,11 +41,14 @@ public class MultilingualDetectionTest {
 
 	@Test
 	public void testMultilingualDetection() throws IOException, InterruptedException, LangDetectException {
-		File f = new File("seedTot2.txt");
-		List<String> siti = FileUtils.readLines(f);
-		for (String sito : siti)
-			MultilingualDetection.multilingualDetection(sito, 2, new ReentrantLock(), new ReentrantLock(), new ReentrantLock(),
-					new ReentrantLock());
+		// File f = new File("seedTot2.txt");
+		// List<String> siti = FileUtils.readLines(f);
+		// for (String sito : siti)
+		// MultilingualDetection.multilingualDetection(sito, 2, new
+		// ReentrantLock(), new ReentrantLock(), new ReentrantLock(),
+		// new ReentrantLock());
+		MultilingualDetection.multilingualDetection("www.bulthaup.com", 2, new ReentrantLock(), new ReentrantLock(),
+				new ReentrantLock(), new ReentrantLock());
 	}
 
 }

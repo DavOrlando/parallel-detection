@@ -37,7 +37,7 @@ public class HomepageOutlinkDetector extends OutlinkDetector {
 		Homepage homepage = (Homepage) page;
 		// da ritornare alla fine
 		ParallelPages groupOfHomepage = new ParallelPages(homepage);
-		FetchManager.getInstance().persistGroupOfHomepage(groupOfHomepage);;
+		FetchManager.getInstance().persistParallelPages(groupOfHomepage);;
 		this.runRoadRunner(groupOfHomepage);
 		LabelFilter labelFilter = new LabelFilter();
 		groupOfHomepage.lasciaSoloQuestiURL(labelFilter.filter(groupOfHomepage));

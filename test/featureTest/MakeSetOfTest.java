@@ -12,10 +12,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import it.uniroma3.parallel.utils.FetchManager;
+import it.uniroma3.parallel.configuration.ConfigurationProperties;
 
 public class MakeSetOfTest {
-	private static final int NUMBER_OF_LANGUAGES = 811;
 	private File file;
 
 	@Before
@@ -26,12 +25,12 @@ public class MakeSetOfTest {
 
 	@Test
 	public void fileVuototest() {
-		assertEquals(0, FetchManager.getInstance().makeSetOf("").size());
+		assertEquals(0, ConfigurationProperties.getInstance().makeSetOf("").size());
 	}
 
 	@Test
 	public void fileConUnaStringatest() {
-		assertEquals(1, FetchManager.getInstance().makeSetOf("perTest").size());
+		assertEquals(1, ConfigurationProperties.getInstance().makeSetOf("perTest").size());
 	}
 
 	@Test
@@ -40,17 +39,17 @@ public class MakeSetOfTest {
 		stringhe.add("1");
 		stringhe.add("2");
 		FileUtils.writeLines(file, stringhe);
-		assertEquals(2, FetchManager.getInstance().makeSetOf("perTest").size());
+		assertEquals(2, ConfigurationProperties.getInstance().makeSetOf("perTest").size());
 	}
-	
+
 	@Test
 	public void fileContenteAltoNumeroDiLineetest() throws IOException {
-		assertEquals(NUMBER_OF_LANGUAGES, FetchManager.getInstance().makeSetOfAllMultilingualProperties().size());
+		assertFalse(ConfigurationProperties.getInstance().makeSetOfAllMultilingualProperties().isEmpty());
 	}
 
 	@Test
 	public void fileContenteSpagnoloAltoNumeroDiLineetest() throws IOException {
-		assertTrue(FetchManager.getInstance().makeSetOfAllMultilingualProperties().contains("español"));
+		assertTrue(ConfigurationProperties.getInstance().makeSetOfAllMultilingualProperties().contains("español"));
 	}
 
 	@After

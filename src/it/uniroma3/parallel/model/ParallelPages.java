@@ -93,7 +93,6 @@ public class ParallelPages {
 				}
 			}
 		}
-		int a = 2;
 	}
 
 	public void setHomepage(Homepage homepage) {

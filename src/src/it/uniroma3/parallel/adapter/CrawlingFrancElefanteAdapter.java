@@ -12,8 +12,8 @@ public class CrawlingFrancElefanteAdapter implements CrawlingAdapter {
 	private static final String ERROR_LOG_CSV = "ErrorLog.csv";
 
 	@Override
-	public void crawl(ParallelPages groupOfHomepages, int lengthGroupOfEntryPoint, int depthT,
-			Lock errorLogLock, String nameFolder, Lock productivityLock, Lock timeLock) throws IOException {
+	public void crawl(ParallelPages groupOfHomepages, Integer lengthGroupOfEntryPoint, int depthT, Lock errorLogLock,
+			String nameFolder, Lock productivityLock, Lock timeLock) throws IOException {
 		int countEntryPoints = 0;
 		for (List<String> currentGroupEP : groupOfHomepages.getGroupOfEntryPoints(lengthGroupOfEntryPoint)) {
 
@@ -28,7 +28,7 @@ public class CrawlingFrancElefanteAdapter implements CrawlingAdapter {
 			countEntryPoints++;
 			// lancio rr
 			try {
-				//R2cursiveCrawling.recursiveCrawling(parallelColl,depthT,errorLogLock,productivityLock,timeLock);
+				// R2cursiveCrawling.recursiveCrawling(parallelColl,depthT,errorLogLock,productivityLock,timeLock);
 			} catch (Exception e) {
 				e.printStackTrace();
 				synchronized (errorLogLock) {
