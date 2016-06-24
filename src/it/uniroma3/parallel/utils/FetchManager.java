@@ -113,10 +113,10 @@ public class FetchManager {
 			makeDirectories(getBasePath(parallelPages.getStarterPage().getPageName()), pageNumber);
 			// segno l'homepage
 			if (isHomepage && page.equals(parallelPages.getStarterPage())) {
-				savePageInLocal(parallelPages.getStarterPage(), pageNumber, true);
+				savePageInLocal(parallelPages.getStarterPage(),parallelPages.getStarterPage().getPageName(), pageNumber, true);
 				isHomepage = false;
 			} else {
-				savePageInLocal(page, pageNumber, false);
+				savePageInLocal(page,parallelPages.getStarterPage().getPageName(), pageNumber, false);
 				pageNumber++;
 			}
 		}
@@ -130,8 +130,8 @@ public class FetchManager {
 	 */
 	public void persistPairOfHomepage(PairOfPages pairOfPages, String nameOfPreHomepage) {
 		makeDirectories(getBasePath(nameOfPreHomepage), pairOfPages.getPairNumber());
-		savePageInLocal(pairOfPages.getMainHomepage(), pairOfPages.getPairNumber(), true);
-		savePageInLocal(pairOfPages.getHomepageFromList(1), pairOfPages.getPairNumber(), false);
+		savePageInLocal(pairOfPages.getMainHomepage(),nameOfPreHomepage, pairOfPages.getPairNumber(), true);
+		savePageInLocal(pairOfPages.getHomepageFromList(1),nameOfPreHomepage, pairOfPages.getPairNumber(), false);
 	}
 
 	/**
@@ -140,12 +140,13 @@ public class FetchManager {
 	 * pagina accoppiabile con la homepage(altro valore di pageNumber).
 	 * 
 	 * @param page
+	 * @param nameOfPrimaryPage 
 	 * @param pageNumber
 	 * @param isHomepage
 	 */
-	private void savePageInLocal(Page page, int pageNumber, boolean isHomepage) {
+	private void savePageInLocal(Page page, String nameOfPrimaryPage, int pageNumber, boolean isHomepage) {
 		// cartella dove scaricare la pagina
-		String urlBase = getBasePath(page.getPageName()) + pageNumber;
+		String urlBase = getBasePath(nameOfPrimaryPage) + pageNumber;
 		try {
 			if (isHomepage)// E' l'homepage allora sarà la prima della
 							// coppia.
@@ -181,7 +182,7 @@ public class FetchManager {
 			}
 		}
 	}
-
+	
 	/***
 	 * Crea le cartelle per scaricare in locale le pagine. Bisogna ricordare che
 	 * viene creata una cartella per ogni sito e all'interno delle sottocartelle
