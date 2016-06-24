@@ -89,19 +89,6 @@ public class FetchManager {
 	 * Ritorna la base del percorso locale nel file system in cui verrano
 	 * salvate le pagine.
 	 * 
-	 * @param parallelPages
-	 * 
-	 * @param nameFolder
-	 * @return
-	 */
-	private String getBasePath(ParallelPages parallelPages) {
-		return this.getBasePath(parallelPages.getStarterPage().getPageName());
-	}
-
-	/**
-	 * Ritorna la base del percorso locale nel file system in cui verrano
-	 * salvate le pagine.
-	 * 
 	 * @param nameOfPage
 	 * @return
 	 */
@@ -120,13 +107,13 @@ public class FetchManager {
 		boolean isHomepage = true;
 		// scarico le possibili homepage
 		for (Page page : parallelPages.getCandidateParallelHomepages()) {
-			makeDirectories(getBasePath(parallelPages), pageNumber);
+			makeDirectories(getBasePath(parallelPages.getStarterPage().getPageName()), pageNumber);
 			// segno l'homepage
 			if (isHomepage && page.equals(parallelPages.getStarterPage())) {
-				download(parallelPages.getStarterPage(), getBasePath(parallelPages), pageNumber, true);
+				savePageInLocal(parallelPages.getStarterPage(), pageNumber, true);
 				isHomepage = false;
 			} else {
-				download(page, getBasePath(parallelPages), pageNumber, false);
+				savePageInLocal(page, pageNumber, false);
 				pageNumber++;
 			}
 		}
@@ -140,9 +127,8 @@ public class FetchManager {
 	 */
 	public void persistPairOfHomepage(PairOfPages pairOfPages, String nameOfPreHomepage) {
 		makeDirectories(getBasePath(nameOfPreHomepage), pairOfPages.getPairNumber());
-		download(pairOfPages.getMainHomepage(), getBasePath(nameOfPreHomepage), pairOfPages.getPairNumber(), true);
-		download(pairOfPages.getHomepageFromList(1), getBasePath(nameOfPreHomepage), pairOfPages.getPairNumber(),
-				false);
+		savePageInLocal(pairOfPages.getMainHomepage(), pairOfPages.getPairNumber(), true);
+		savePageInLocal(pairOfPages.getHomepageFromList(1), pairOfPages.getPairNumber(), false);
 	}
 
 	/**
@@ -151,19 +137,18 @@ public class FetchManager {
 	 * pagina accoppiabile con la homepage(altro valore di pageNumber).
 	 * 
 	 * @param page
-	 * @param basePath
 	 * @param pageNumber
 	 * @param isHomepage
 	 */
-	private void download(Page page, String basePath, int pageNumber, boolean isHomepage) {
+	private void savePageInLocal(Page page, int pageNumber, boolean isHomepage) {
 		// cartella dove scaricare la pagina
-		String urlBase = basePath + pageNumber;
+		String urlBase = getBasePath(page.getPageName()) + pageNumber;
 		try {
 			if (isHomepage)// E' l'homepage allora sarà la prima della
 							// coppia.
-				this.downloadPageInto(page, urlBase + "/" + HOME_PAGE + pageNumber + "-1" + HTML);
+				this.saveAs(page, urlBase + "/" + HOME_PAGE + pageNumber + "-1" + HTML);
 			else// E' l'altra pagina allora sarà la seconda della coppia.
-				this.downloadPageInto(page, urlBase + "/" + HOME_PAGE + pageNumber + "-2" + HTML);
+				this.saveAs(page, urlBase + "/" + HOME_PAGE + pageNumber + "-2" + HTML);
 		} catch (IOException | URISyntaxException e) {
 			e.printStackTrace();
 		}
@@ -181,7 +166,7 @@ public class FetchManager {
 	 * @throws IOException
 	 * @throws URISyntaxException
 	 */
-	private void downloadPageInto(Page page, String localFilename) throws IOException, URISyntaxException {
+	private void saveAs(Page page, String localFilename) throws IOException, URISyntaxException {
 		FileOutputStream fos = null;
 		try {
 			fos = new FileOutputStream(localFilename);
@@ -205,7 +190,7 @@ public class FetchManager {
 	 * @param countEntryPoints
 	 * @param basePath
 	 */
-	private void makeDirectories(String basePath,int countEntryPoints) {
+	private void makeDirectories(String basePath, int countEntryPoints) {
 		new File(basePath + countEntryPoints).mkdirs();
 	}
 
