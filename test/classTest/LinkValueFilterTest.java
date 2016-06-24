@@ -21,18 +21,19 @@ public class LinkValueFilterTest {
 	public void loadAllName_test() {
 		assertNotNull(this.languageSetFilter.getSetForFilter());
 		assertFalse(this.languageSetFilter.getSetForFilter().isEmpty());
-		assertTrue(this.languageSetFilter.getSetForFilter().contains("Italian"));
-		assertTrue(this.languageSetFilter.getSetForFilter().contains("Italy"));
-		assertTrue(this.languageSetFilter.getSetForFilter().contains("Italia"));
+		assertTrue(this.languageSetFilter.getSetForFilter().contains("italian"));
+		assertTrue(this.languageSetFilter.getSetForFilter().contains("italy"));
+		assertTrue(this.languageSetFilter.getSetForFilter().contains("italia"));
 	}
 	
 	@Test
 	public void valueNotInSet_test(){
-		assertFalse(this.languageSetFilter.filter("ita"));
+		assertFalse(this.languageSetFilter.filter("dsad"));
 	}
+	
 	@Test
 	public void valueInSet_test(){
-		assertTrue(this.languageSetFilter.filter("Italian"));
+		assertTrue(this.languageSetFilter.filter("italian"));
 	}
 
 }

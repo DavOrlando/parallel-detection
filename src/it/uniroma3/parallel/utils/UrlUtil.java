@@ -5,6 +5,7 @@ import java.net.URL;
 
 /***
  * Classe con delle operazioni utili per gli URL.
+ * 
  * @author davideorlando
  * 
  */
@@ -22,19 +23,6 @@ public class UrlUtil {
 			return siteUrl;
 		return "http://".concat(siteUrl);
 	}
-
-	/**
-	 * Ritorna una stringa senza '/' o "\\" se ci sono alla fine.
-	 * 
-	 * @param urlToPurge
-	 * @return urlWithoutSlashesAtEnd
-	 */
-
-	// public static String getUrlWithoutSlashesAtEnd(String urlToPurge) {
-	// if (urlToPurge.endsWith("/") || urlToPurge.endsWith("\\"))
-	// return urlToPurge.substring(0, urlToPurge.length() - 1);
-	// return urlToPurge;
-	// }
 
 	/**
 	 * Ritorna un URL assoluto da un URL relativo.

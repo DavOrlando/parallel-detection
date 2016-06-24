@@ -35,7 +35,7 @@ public class MultilingualDetection {
 			Lock errorLogLock, Lock productivityLock, Lock timeLock)
 			throws IOException, InterruptedException, LangDetectException {
 
-		ConfigurationProperties configuration = ConfigurationProperties.getInstance();
+		ConfigurationProperties properties = ConfigurationProperties.getInstance();
 
 		long startDetectionTime = Calendar.getInstance().getTimeInMillis();
 		// blocco try in cui ci sono le tre euristiche
@@ -50,7 +50,7 @@ public class MultilingualDetection {
 				synchronized (multSiteLogLock) {
 					// scrivo su un csv che il sito non è multilingua
 					Utils.csvWr(new String[] { homepageStringUrl, Utils.getDate() },
-							configuration.getStringOfSiteNotMultilingual());
+							properties.getStringOfSiteNotMultilingual());
 				}
 				return;
 			}
@@ -62,20 +62,20 @@ public class MultilingualDetection {
 			long endTime = Calendar.getInstance().getTimeInMillis();
 			synchronized (timeLock) {
 				Utils.csvWr(
-						new String[] { homepageStringUrl, STRINGA_VUOTA, configuration.getStringOfMultDetecionHreflang(), STRINGA_VUOTA,
+						new String[] { homepageStringUrl, STRINGA_VUOTA, properties.getStringOfMultDetecionHreflang(), STRINGA_VUOTA,
 								Long.toString(endTime - startTime) },
-						java.lang.Thread.currentThread().toString() + configuration.getStringOfTimeCSV());
+						java.lang.Thread.currentThread().toString() + properties.getStringOfTimeCSV());
 			}
 			if (groupOfHomepages != null) {
 				long endDetectionTime = Calendar.getInstance().getTimeInMillis();
 				synchronized (multSiteLogLock) {
 					Utils.csvWr(
-							new String[] { homepageStringUrl, configuration.getStringOfHomepageHreflang(),
+							new String[] { homepageStringUrl, properties.getStringOfHomepageHreflang(),
 									Long.toString(endDetectionTime - startDetectionTime) },
-							configuration.getStringOfSiteMultilingual());
+							properties.getStringOfSiteMultilingual());
 				}
 				// su gruppi di 5 viene lanciata la visita ricorsiva
-				crawling.crawl(groupOfHomepages, configuration.getIntOfEntryNumberHreflang(), depthT, errorLogLock,
+				crawling.crawl(groupOfHomepages, properties.getIntOfEntryNumberHreflang(), depthT, errorLogLock,
 						nameFolder, productivityLock, timeLock);
 				return;
 			}
@@ -86,22 +86,22 @@ public class MultilingualDetection {
 			endTime = Calendar.getInstance().getTimeInMillis();
 			synchronized (timeLock) {
 				Utils.csvWr(
-						new String[] { homepageStringUrl, STRINGA_VUOTA, configuration.getStringOfMultDetectionOutlinks(), STRINGA_VUOTA,
+						new String[] { homepageStringUrl, STRINGA_VUOTA, properties.getStringOfMultDetectionOutlinks(), STRINGA_VUOTA,
 								Long.toString(endTime - startTime) },
-						java.lang.Thread.currentThread().toString() + configuration.getStringOfTimeCSV());
+						java.lang.Thread.currentThread().toString() + properties.getStringOfTimeCSV());
 			}
 			// se ho coppie candidate lancio visita ricorsiva
 			if (!groupOfHomepages.isEmpty()) {
 				long endDetectionTime = Calendar.getInstance().getTimeInMillis();
 				synchronized (multSiteLogLock) {
 					Utils.csvWr(
-							new String[] { homepageStringUrl, configuration.getStringOfVisitHomepage(),
+							new String[] { homepageStringUrl, properties.getStringOfVisitHomepage(),
 									Long.toString(endDetectionTime - startDetectionTime) },
-							configuration.getStringOfSiteMultilingual());
+							properties.getStringOfSiteMultilingual());
 				}
 				// pulisco le folder di output e di crawling
 				FetchManager.getInstance().deleteFolders(nameFolder);
-				crawling.crawl(groupOfHomepages, configuration.getIntOfEntryNumberOutlink(), depthT, errorLogLock,
+				crawling.crawl(groupOfHomepages, properties.getIntOfEntryNumberOutlink(), depthT, errorLogLock,
 						nameFolder, productivityLock, timeLock);
 				return;
 			}
@@ -116,21 +116,21 @@ public class MultilingualDetection {
 			endTime = Calendar.getInstance().getTimeInMillis();
 			synchronized (timeLock) {
 				Utils.csvWr(
-						new String[] { homepageStringUrl, STRINGA_VUOTA, configuration.getStringOfMultDetectionPrehomepage(), STRINGA_VUOTA,
+						new String[] { homepageStringUrl, STRINGA_VUOTA, properties.getStringOfMultDetectionPrehomepage(), STRINGA_VUOTA,
 								Long.toString(endTime - startTime) },
-						java.lang.Thread.currentThread().toString() + configuration.getStringOfTimeCSV());
+						java.lang.Thread.currentThread().toString() + properties.getStringOfTimeCSV());
 			}
 			if (groupOfHomepages != null && groupOfHomepages.getListOfPairs().size() != 0) {
 				synchronized (multSiteLogLock) {
 					long endDetectionTime = Calendar.getInstance().getTimeInMillis();
 					Utils.csvWr(
-							new String[] { homepageStringUrl, configuration.getStringOfPrehomepage(),
+							new String[] { homepageStringUrl, properties.getStringOfPrehomepage(),
 									Long.toString(endDetectionTime - startDetectionTime) },
-							configuration.getStringOfSiteMultilingual());
+							properties.getStringOfSiteMultilingual());
 				}
 				// elimino folder di output e di crawling
 				FetchManager.getInstance().deleteFolders(nameFolder);
-				crawling.crawl(groupOfHomepages, configuration.getIntOfEntryNumberOutlink(), depthT, errorLogLock,
+				crawling.crawl(groupOfHomepages, properties.getIntOfEntryNumberOutlink(), depthT, errorLogLock,
 						nameFolder, productivityLock, timeLock);
 				return;
 			}
@@ -144,14 +144,14 @@ public class MultilingualDetection {
 					synchronized (errorLogLock) {
 						// stampo nell'error log il sito che da il problema e
 						// l'errore
-						Utils.csvWr(homepageStringUrl, e, configuration.getStringOfErrorLogCSV());
+						Utils.csvWr(homepageStringUrl, e, properties.getStringOfErrorLogCSV());
 					}
 				}
 				synchronized (multSiteLogLock) {
 					long endDetectionTime = Calendar.getInstance().getTimeInMillis();
 					Utils.csvWr(
 							new String[] { homepageStringUrl, Long.toString(endDetectionTime - startDetectionTime) },
-							configuration.getStringOfSiteNotMultilingual());
+							properties.getStringOfSiteNotMultilingual());
 				}
 				// System.out.println("FINE STEP 3 PREHOMEPAGE");
 				return;
@@ -162,14 +162,14 @@ public class MultilingualDetection {
 		catch (Exception e) {
 			e.printStackTrace();
 			synchronized (errorLogLock) {
-				Utils.csvWr(homepageStringUrl, e, configuration.getStringOfErrorLogCSV());
+				Utils.csvWr(homepageStringUrl, e, properties.getStringOfErrorLogCSV());
 			}
 			{
 				synchronized (multSiteLogLock) {
 					long endDetectionTime = Calendar.getInstance().getTimeInMillis();
 					Utils.csvWr(
 							new String[] { homepageStringUrl, Long.toString(endDetectionTime - startDetectionTime) },
-							configuration.getStringOfSiteNotMultilingual());
+							properties.getStringOfSiteNotMultilingual());
 				}
 				// System.out.println("FINE STEP 3");
 				return;

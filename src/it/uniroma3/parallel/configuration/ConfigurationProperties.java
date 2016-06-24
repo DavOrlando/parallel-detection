@@ -205,11 +205,28 @@ public class ConfigurationProperties {
 	}
 
 	/**
-	 *  Ritorna la stringa per creare index.xsl dentro la folder di output
+	 * Ritorna la stringa per creare index.xsl dentro la folder di output
+	 * 
 	 * @return
 	 */
 	public String getStringOfPathIndexXSLCopy() {
 		return System.getProperty("index_xsl_path_copy");
+	}
+
+	/**
+	 * Ritorna -O:etc/flat-prefs.xml
+	 * @return
+	 */
+	public String getStringOfCommandAndPrefs() {
+		return System.getProperty("rr_parametro_prefs");
+	}
+
+	/**
+	 * Ritorna la stringa dataset.xml
+	 * @return
+	 */
+	public String getStringOfDataset(){
+		return System.getProperty("dataset");
 	}
 	
 	/**
@@ -230,6 +247,16 @@ public class ConfigurationProperties {
 	 */
 	public String getStringOfTimeCSV() {
 		return System.getProperty("time");
+	}
+	
+	/**
+	 * Ritorna il valore della chiave "rr_csv" nel file di proprietà
+	 * conf.properties
+	 * 
+	 * @return
+	 */
+	public String getStringOfRRCSV(){
+		return System.getProperty("rr_csv");
 	}
 
 	/**
@@ -286,6 +313,17 @@ public class ConfigurationProperties {
 		return setOfElementForLanguages;
 	}
 
-
+	/**
+	 * Ritorna la lista di elementi su cui si vuole fare language detection.
+	 * Potrebbero essere i paragrafi HTML (p) per esempio.
+	 * 
+	 * @return
+	 */
+	public List<String> getElementsForLanguageDetection() {
+		LinkedList<String> elementsForLanguageDetection = new LinkedList<String>();
+		for (String s : getPropertyList(configuration, "language_detection_elements"))
+			elementsForLanguageDetection.add(s);
+		return elementsForLanguageDetection;
+	}
 
 }

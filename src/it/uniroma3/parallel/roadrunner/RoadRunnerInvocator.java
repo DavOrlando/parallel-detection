@@ -8,52 +8,88 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import it.uniroma3.parallel.detection.OutlinkDetector;
+import it.uniroma3.parallel.configuration.ConfigurationProperties;
 import it.uniroma3.parallel.model.Page;
 import it.uniroma3.parallel.model.PairOfPages;
+import it.uniroma3.parallel.model.ParallelPages;
 import it.uniroma3.parallel.utils.FetchManager;
 import it.uniroma3.parallel.utils.Utils;
 
 public class RoadRunnerInvocator {
 
-	private static final String HTML_PAGES_PRELIMINARY = "htmlPagesPreliminary";
+	private static final String _1 = "1 ";
+	private static final String ATTR = "attr ";
+	private static final String LO_SPAZIO_DI_NOMI = "Lo spazio di nomi";
+	private static final String PARAMETRO_N = "-N:";
+	private static final String HOME_PAGE = "HomePage";
+	private static final String _2 = "-2";
+	private static final String HTML = ".html";
+	private static RoadRunnerInvocator instance;
+	private ConfigurationProperties properties = ConfigurationProperties.getInstance();
+	protected Lock errorLogLock;
 
-	public static void launchRR(PairOfPages pairOfHomepage, Lock errorLogLock, Page primaryPage)
+	private RoadRunnerInvocator() {
+		this.errorLogLock = new ReentrantLock();
+	}
+	
+
+	public static synchronized RoadRunnerInvocator getInstance() {
+		if(instance==null)
+			instance = new RoadRunnerInvocator();
+		return instance;
+	}
+
+	
+	/**
+	 * Lancia RoadRunner sul gruppo di homepage. Ovvero divide il gruppo in
+	 * coppie (HomepagePrimitiva,HomepageTrovata) e su questa coppia lancia
+	 * RoadRunner. La coppia avrà associato l'output di RoadRunner relativo.
+	 * 
+	 * @param groupOfHomepage
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	public void runRoadRunner(ParallelPages groupOfHomepage)
+			throws FileNotFoundException, IOException, InterruptedException {
+		for (PairOfPages pair : groupOfHomepage.getListOfPairs()) {
+			launchRR(pair, errorLogLock, groupOfHomepage.getStarterPage());
+		}
+	}
+
+	public void launchRR(PairOfPages pairOfHomepage, Lock errorLogLock, Page primaryPage)
 			throws FileNotFoundException, IOException, InterruptedException {
 		int pairNumber = pairOfHomepage.getPairNumber();
-	
-		String urlBase = HTML_PAGES_PRELIMINARY + primaryPage.getPageName() + "/" + primaryPage.getPageName()
-				+ pairNumber;
 
-		// creo folder e file style per l'output di rr
-		FetchManager.getInstance().backupFile(primaryPage.getPageName() + pairNumber);
-
-		// System.out.println("RRRRRR " + page1 + " "+
-		// urlBase+"/"+"HomePage"+countEntryPoints+"-2"+".html");
-
+		String urlBase = properties.getStringOfFolderForHtmlPages()
+				+ primaryPage.getPageName() + "/" + primaryPage.getPageName() + pairNumber;
+		FetchManager.getInstance().createFolderAndCopyStyleFile(primaryPage.getPageName() + pairNumber);
+		
 		Thread t3 = new Thread() {
 			@Override
 			public void run() {
 				try {
 					String localPath = FetchManager.getInstance().findPageByURL(primaryPage.getUrlRedirect());
-					rr("-N:" + primaryPage.getPageName() + pairNumber, "-O:etc/flat-prefs.xml",localPath ,
-							urlBase + "/" + "HomePage" + pairNumber + "-2" + ".html");
+					rr(PARAMETRO_N + primaryPage.getPageName() + pairNumber, properties.getStringOfCommandAndPrefs(), localPath,
+							urlBase + "/" + HOME_PAGE + pairNumber + _2 + HTML);
 					String ftv = primaryPage.getPageName() + pairNumber;
-					//alla coppia associo il suo output se esiste
-					if(new File("output" +"/"+ ftv + "/" + ftv + "_DataSet.xml").exists())
-						FetchManager.getInstance().addRRDataSet(pairOfHomepage,new RoadRunnerDataSet("output" + "/" + ftv + "/" + ftv + "_DataSet.xml"));
+					// alla coppia associo il suo output se esiste
+					if (new File(properties.getStringOfFolderOutput()+ "/" + ftv + "/" + ftv + properties.getStringOfDataset()).exists())
+						FetchManager.getInstance().addRRDataSet(pairOfHomepage,
+								new RoadRunnerDataSet(properties.getStringOfFolderOutput() + "/" + ftv + "/" + ftv + properties.getStringOfDataset()));
 				} catch (Exception e1) {
 					e1.printStackTrace();
 					synchronized (errorLogLock) {
 						// stampo nell'error log il sito che da il
 						// problema e l'errore
 						try {
-							Utils.csvWr(new String[] { primaryPage.getURLString(), e1.toString() }, "ErrorLog.csv");
+							Utils.csvWr(new String[] { primaryPage.getURLString(), e1.toString() }, properties.getStringOfErrorLogCSV());
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
@@ -69,25 +105,25 @@ public class RoadRunnerInvocator {
 	}
 
 	// lancia rr
-	public static void rr(String... argv) throws Exception {
+	public void rr(String... argv) throws Exception {
 
 		try {
 			it.uniroma3.dia.roadrunner.Shell.main(argv);
 			it.uniroma3.dia.roadrunner.tokenizer.token.TagFactory.reset();
 			it.uniroma3.dia.roadrunner.tokenizer.token.Tag.reset();
 
-			Utils.csvWr(new String[] { argv[0] }, "rr.csv");
+			Utils.csvWr(new String[] { argv[0] }, properties.getStringOfRRCSV());
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			String attribute = "";
 			String line = e.toString().split("/n")[0];
-			if (line.contains("Lo spazio di nomi"))
+			if (line.contains(LO_SPAZIO_DI_NOMI))
 				attribute = attribute.concat(line.split("'")[3]).concat(":");
 			else
 				return;
-			System.out.println("attr " + attribute);
-			System.out.println("1 " + argv[0].substring(3));
+			System.out.println(ATTR + attribute);
+			System.out.println(_1 + argv[0].substring(3));
 			System.out.println("2 " + argv[2]);
 			String pages = "";
 			for (int i = 2; i < argv.length; i++)
@@ -107,9 +143,8 @@ public class RoadRunnerInvocator {
 		}
 
 	}
-	
-	public static String generateNewPrefsXmlNew(String attribute, String nameSite, String pathFiles)
-			throws IOException {
+
+	public String generateNewPrefsXmlNew(String attribute, String nameSite, String pathFiles) throws IOException {
 
 		String parseTagResult = "";
 		String[] files = pathFiles.split(" ");

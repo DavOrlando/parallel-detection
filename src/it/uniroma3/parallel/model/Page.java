@@ -2,18 +2,10 @@ package it.uniroma3.parallel.model;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-
 import com.cybozu.labs.langdetect.LangDetectException;
 
-import it.uniroma3.parallel.filter.LanguageFilter;
-import it.uniroma3.parallel.filter.LinkValueFilter;
 import it.uniroma3.parallel.utils.CybozuLanguageDetector;
 import it.uniroma3.parallel.utils.UrlUtil;
 
@@ -128,63 +120,7 @@ public class Page {
 		return language;
 	}
 
-	/***
-	 * Ritorna un insieme di elementi HTML presenti nella pagina e che
-	 * corrispondono al tag elementName passato per parametro.
-	 * 
-	 * @param elementName
-	 *            nome dell'elemento HTML da cercare nella pagina.
-	 * @return
-	 */
-	protected HashSet<Element> getHtmlElements(String elementName) {
-		HashSet<Element> elements = new HashSet<Element>();
-		for (Element element : this.getDocument().select(elementName)) {
-			if (!element.toString().contains("com#"))
-				elements.add(element);
-		}
-		return elements;
-	}
 
-
-	/***
-	 * Ritorna tutti gli elementi HTML della pagina che potrebbero essere dei
-	 * link uscenti dalla pagina stessa.
-	 * 
-	 * @return
-	 */
-
-	public HashSet<Element> getAllOutlinks() {
-		HashSet<Element> elements = getHtmlElements("a");
-		elements.addAll(this.getHtmlElements("option"));
-		return elements;
-	}
-	
-	/**
-	 * Seleziona solo le pagine che superano i controlli sui vari filtri.
-	 * 
-	 * @param outlinks
-	 * @return
-	 * @throws IOException
-	 */
-	public List<Page> getMultilingualPage() {
-		List<Page> filteredPages = new ArrayList<>();
-		LanguageFilter languageFilter = new LanguageFilter();
-		LinkValueFilter linkValueFilter = new LinkValueFilter();
-		for (Element link : this.getAllOutlinks()) {
-			try {
-				Page outlinkPage;
-				if (linkValueFilter.filter(link.text().toLowerCase())) {
-					outlinkPage = new Page(link.absUrl("href"));
-					if (languageFilter.filter(this, outlinkPage))
-						filteredPages.add(outlinkPage);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return filteredPages;
-	}
-	
 	@Override
 	public int hashCode() {
 		return this.getURLString().hashCode();

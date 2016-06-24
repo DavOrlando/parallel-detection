@@ -1,17 +1,15 @@
 package it.uniroma3.parallel.detection;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.concurrent.locks.Lock;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
-import it.uniroma3.parallel.model.ParallelPages;
-import it.uniroma3.parallel.model.PairOfPages;
-import it.uniroma3.parallel.roadrunner.RoadRunnerInvocator;
+import it.uniroma3.parallel.filter.LanguageFilter;
+import it.uniroma3.parallel.filter.LinkValueFilter;
+import it.uniroma3.parallel.model.Page;
 
 /**
  * Classe che rappresenta un rilevatore di siti multilingua attraverso
@@ -24,33 +22,66 @@ import it.uniroma3.parallel.roadrunner.RoadRunnerInvocator;
 
 public abstract class OutlinkDetector extends MultilingualDetector {
 
-	protected static final String USER_AGENT = "Opera/9.63 (Windows NT 5.1; U; en) Presto/2.1.1";
-	protected static final String ERROR_LOG_CSV = "ErrorLog.csv";
-	protected static final String OUTPUT = "output";
-	protected static final String HTML_PAGES_PRELIMINARY = "htmlPagesPreliminary";
 
-	protected Lock errorLogLock;
-
-
-
-
-	/**
-	 * Lancia RoadRunner sul gruppo di homepage. Ovvero divide il gruppo in
-	 * coppie (HomepagePrimitiva,HomepageTrovata) e su questa coppia lancia
-	 * RoadRunner. La coppia avrà associato l'output di RoadRunner relativo.
+	/***
+	 * Ritorna un insieme di elementi HTML presenti nella pagina e che
+	 * corrispondono al tag elementName passato per parametro.
 	 * 
-	 * @param groupOfHomepage
-	 * @throws FileNotFoundException
-	 * @throws IOException
-	 * @throws InterruptedException
+	 * @param elementName
+	 *            nome dell'elemento HTML da cercare nella pagina.
+	 * @param document 
+	 * @return
 	 */
-	protected void runRoadRunner(ParallelPages groupOfHomepage)
-			throws FileNotFoundException, IOException, InterruptedException {
-		for (PairOfPages pair : groupOfHomepage.getListOfPairs()) {
-			RoadRunnerInvocator.launchRR(pair, errorLogLock,groupOfHomepage.getStarterPage());
+	protected HashSet<Element> getHtmlElements(String elementName, Document document) {
+		HashSet<Element> elements = new HashSet<Element>();
+		for (Element element : document.select(elementName)) {
+			if (!element.toString().contains("com#"))
+				elements.add(element);
 		}
+		return elements;
 	}
 
+
+	/***
+	 * Ritorna tutti gli elementi HTML della pagina che potrebbero essere dei
+	 * link uscenti dalla pagina stessa.
+	 * @param page 
+	 * 
+	 * @return
+	 */
+
+	public HashSet<Element> getAllOutlinks(Page page) {
+		HashSet<Element> elements = getHtmlElements("a",page.getDocument());
+		elements.addAll(this.getHtmlElements("option",page.getDocument()));
+		return elements;
+	}
+	
+	/**
+	 * Seleziona solo le pagine che superano i controlli sui vari filtri.
+	 * 
+	 * @param page
+	 * @return
+	 * @throws IOException
+	 */
+	public List<Page> getMultilingualPage(Page page) {
+		List<Page> filteredPages = new ArrayList<>();
+		LanguageFilter languageFilter = new LanguageFilter();
+		LinkValueFilter linkValueFilter = new LinkValueFilter();
+		for (Element link : this.getAllOutlinks(page)) {
+			try {
+				Page outlinkPage;
+				if (linkValueFilter.filter(link.text().toLowerCase())) {
+					outlinkPage = new Page(link.absUrl("href"));
+					if (languageFilter.filter(page, outlinkPage))
+						filteredPages.add(outlinkPage);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return filteredPages;
+	}
+	
 	
 	
 }

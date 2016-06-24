@@ -10,16 +10,18 @@ import it.uniroma3.parallel.model.Page;
 import it.uniroma3.parallel.model.PairOfPages;
 import it.uniroma3.parallel.model.ParallelPages;
 import it.uniroma3.parallel.model.PreHomepage;
+import it.uniroma3.parallel.roadrunner.RoadRunnerInvocator;
 import it.uniroma3.parallel.utils.FetchManager;
 
 public class PreHomepageOutlinkDetector extends OutlinkDetector {
 	@Override
 	public ParallelPages detect(Page page) throws IOException, InterruptedException, LangDetectException, URISyntaxException {
 		PreHomepage preHomepage = (PreHomepage) page;
+		preHomepage.setPossibleHomepages(this.getMultilingualPage(preHomepage));
 		ParallelPages parallelPages = new ParallelPages(preHomepage);
 		for(PairOfPages pairOfPages : parallelPages.getListOfPairs())
 			FetchManager.getInstance().persistPairOfHomepage(pairOfPages, preHomepage.getPageName());
-		this.runRoadRunner(parallelPages);
+		RoadRunnerInvocator.getInstance().runRoadRunner(parallelPages);
 		LabelFilterPrehomepage labelFilterPrehomepage = new LabelFilterPrehomepage();
 		parallelPages.setListOfPair(labelFilterPrehomepage.filter(parallelPages));
 		return parallelPages;

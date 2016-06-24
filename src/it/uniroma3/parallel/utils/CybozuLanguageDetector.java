@@ -11,8 +11,18 @@ import com.cybozu.labs.langdetect.Detector;
 import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.LangDetectException;
 
+import it.uniroma3.parallel.configuration.ConfigurationProperties;
+
+/**
+ * Classe che rappresenta il rilevatore di linguaggio che utilizza il servizio
+ * esterno Cybozu.
+ * 
+ * @author davideorlando
+ *
+ */
 public class CybozuLanguageDetector {
 
+	private static final String PROFILES_SM = "profiles.sm";
 	private static CybozuLanguageDetector instance;
 	private Detector detector;
 
@@ -24,7 +34,7 @@ public class CybozuLanguageDetector {
 		// caricamento dei profili per la language detection
 		if (DetectorFactory.getLangList().size() == 0)
 			try {
-				DetectorFactory.loadProfile("profiles.sm");
+				DetectorFactory.loadProfile(PROFILES_SM);
 				this.detector = DetectorFactory.create();
 			} catch (LangDetectException e) {
 				// TODO Auto-generated catch block
@@ -51,10 +61,10 @@ public class CybozuLanguageDetector {
 	 * @return
 	 * @throws LangDetectException
 	 */
-	// TODO selezionare gli elementi per fare lang detection : parametrico
-	// con una lista specificata in un file di properties
 	public String detect(Document document) throws LangDetectException {
-		String paragraphHtmlDocument = getStringElement("p", document);
+		String paragraphHtmlDocument="";
+		for(String element : ConfigurationProperties.getInstance().getElementsForLanguageDetection())
+			paragraphHtmlDocument += getStringElement(element, document);
 		if (paragraphHtmlDocument.length() == 0) {
 			detector.append(document.text());
 		} else
@@ -81,9 +91,6 @@ public class CybozuLanguageDetector {
 
 	public Set<String> getLanguagesOfStrings(List<String> testiConcatenati) throws LangDetectException {
 		Set<String> setOfLanguages = new HashSet<>();
-		// carico i profili delle lingue
-		if (DetectorFactory.getLangList().size() == 0)
-			DetectorFactory.loadProfile("profiles.sm");
 		for (String testo : testiConcatenati) {
 			String langDetect = textLanguageDetection(testo);
 			setOfLanguages.add(langDetect);
@@ -91,13 +98,13 @@ public class CybozuLanguageDetector {
 		return setOfLanguages;
 	}
 
-	public static String textLanguageDetection(String testo) throws LangDetectException {
+	public String textLanguageDetection(String testo) throws LangDetectException {
 		// risultati della language detection(en, it, ...)
 		String langDetect = "";
 		// detect su stringone
-		Detector detector = DetectorFactory.create();
 		detector.append(testo);
 		langDetect = detector.detect().toString();
+		detector = DetectorFactory.create();
 		// aggiungo la lingua rilevata al set
 		return langDetect;
 	}

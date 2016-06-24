@@ -9,7 +9,6 @@ public class PreHomepage extends Page {
 
 	public PreHomepage(String homepageStringUrl) throws IOException {
 		super(homepageStringUrl);
-		this.possibleHomepages=this.getMultilingualPage();
 	}
 
 	public List<Page> getPossibleHomepages() {

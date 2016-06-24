@@ -10,15 +10,8 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
 import org.apache.commons.io.FileUtils;
 import it.uniroma3.parallel.model.ParallelPages;
 import it.uniroma3.parallel.configuration.ConfigurationProperties;
@@ -113,10 +106,11 @@ public class FetchManager {
 			makeDirectories(getBasePath(parallelPages.getStarterPage().getPageName()), pageNumber);
 			// segno l'homepage
 			if (isHomepage && page.equals(parallelPages.getStarterPage())) {
-				savePageInLocal(parallelPages.getStarterPage(),parallelPages.getStarterPage().getPageName(), pageNumber, true);
+				savePageInLocal(parallelPages.getStarterPage(), parallelPages.getStarterPage().getPageName(),
+						pageNumber, true);
 				isHomepage = false;
 			} else {
-				savePageInLocal(page,parallelPages.getStarterPage().getPageName(), pageNumber, false);
+				savePageInLocal(page, parallelPages.getStarterPage().getPageName(), pageNumber, false);
 				pageNumber++;
 			}
 		}
@@ -130,8 +124,8 @@ public class FetchManager {
 	 */
 	public void persistPairOfHomepage(PairOfPages pairOfPages, String nameOfPreHomepage) {
 		makeDirectories(getBasePath(nameOfPreHomepage), pairOfPages.getPairNumber());
-		savePageInLocal(pairOfPages.getMainHomepage(),nameOfPreHomepage, pairOfPages.getPairNumber(), true);
-		savePageInLocal(pairOfPages.getHomepageFromList(1),nameOfPreHomepage, pairOfPages.getPairNumber(), false);
+		savePageInLocal(pairOfPages.getMainHomepage(), nameOfPreHomepage, pairOfPages.getPairNumber(), true);
+		savePageInLocal(pairOfPages.getHomepageFromList(1), nameOfPreHomepage, pairOfPages.getPairNumber(), false);
 	}
 
 	/**
@@ -140,7 +134,7 @@ public class FetchManager {
 	 * pagina accoppiabile con la homepage(altro valore di pageNumber).
 	 * 
 	 * @param page
-	 * @param nameOfPrimaryPage 
+	 * @param nameOfPrimaryPage
 	 * @param pageNumber
 	 * @param isHomepage
 	 */
@@ -182,7 +176,7 @@ public class FetchManager {
 			}
 		}
 	}
-	
+
 	/***
 	 * Crea le cartelle per scaricare in locale le pagine. Bisogna ricordare che
 	 * viene creata una cartella per ogni sito e all'interno delle sottocartelle
@@ -213,14 +207,22 @@ public class FetchManager {
 		}
 	}
 
-	// metodo per creare file style per output di rr
-	public static void backupFile(String folder) throws FileNotFoundException, IOException {
+	/**
+	 * Crea le cartelle necessarie a RoadRunner e copia il file di style.
+	 * 
+	 * @param folder
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	public void createFolderAndCopyStyleFile(String folder) throws FileNotFoundException, IOException {
 		ConfigurationProperties confProp = ConfigurationProperties.getInstance();
 		new File(confProp.getStringOfFolderOutput()).mkdir();
-		new File(confProp.getStringOfFolderOutput()+"/" + folder).mkdir();
-		new File(confProp.getStringOfFolderOutput()+"/" + folder + "/"+confProp.getStringOfContainerDataXSLCopy()).mkdir();
+		new File(confProp.getStringOfFolderOutput() + "/" + folder).mkdir();
+		new File(confProp.getStringOfFolderOutput() + "/" + folder + "/" + confProp.getStringOfContainerDataXSLCopy())
+				.mkdir();
 		File dbOrig = new File(confProp.getStringOfPathDataXSL());
-		File dbCopy = new File(confProp.getStringOfFolderOutput()+"/" + folder + confProp.getStringOfPathDataXSLCopy());
+		File dbCopy = new File(
+				confProp.getStringOfFolderOutput() + "/" + folder + confProp.getStringOfPathDataXSLCopy());
 		InputStream in = new FileInputStream(dbOrig);
 		OutputStream out = new FileOutputStream(dbCopy);
 		byte[] buf = new byte[1024];
@@ -232,7 +234,8 @@ public class FetchManager {
 		out.close();
 
 		File dbOrig2 = new File(confProp.getStringOfIndexXSL());
-		File dbCopy2 = new File(confProp.getStringOfFolderOutput()+"/" + folder + confProp.getStringOfPathIndexXSLCopy());
+		File dbCopy2 = new File(
+				confProp.getStringOfFolderOutput() + "/" + folder + confProp.getStringOfPathIndexXSLCopy());
 		InputStream in2 = new FileInputStream(dbOrig2);
 		OutputStream out2 = new FileOutputStream(dbCopy2);
 		byte[] buf2 = new byte[1024];

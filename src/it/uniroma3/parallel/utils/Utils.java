@@ -6,6 +6,11 @@ import java.util.Calendar;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
+/**
+ * Classe di utilità generale.
+ * @author francescoelefante
+ *
+ */
 public class Utils {
 
 	// funzione che ritorna la data attuale

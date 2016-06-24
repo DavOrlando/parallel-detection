@@ -27,8 +27,6 @@ import com.cybozu.labs.langdetect.LangDetectException;
  */
 public class ParallelPages {
 
-	private static final int DEFAULT_ENTRY_POINT_NUMBER = 5;
-
 	private Page starterPage;
 	private Map<URI, Page> candidateParallelHomepages;
 	private List<PairOfPages> listOfPairs;
@@ -40,7 +38,7 @@ public class ParallelPages {
 	 * @param starterPage
 	 * @throws LangDetectException
 	 * @throws MalformedURLException
-	 * @throws URISyntaxException 
+	 * @throws URISyntaxException
 	 */
 	public ParallelPages(Page starterPage) throws LangDetectException, MalformedURLException, URISyntaxException {
 		this.candidateParallelHomepages = new HashMap<>();
@@ -56,12 +54,12 @@ public class ParallelPages {
 	 * @param primaryHomepage
 	 * @throws LangDetectException
 	 * @throws MalformedURLException
-	 * @throws URISyntaxException 
+	 * @throws URISyntaxException
 	 * @throws IOException
 	 */
-	public ParallelPages(Homepage primaryHomepage) throws LangDetectException, MalformedURLException, URISyntaxException {
+	public ParallelPages(Homepage primaryHomepage)
+			throws LangDetectException, MalformedURLException, URISyntaxException {
 		this((Page) primaryHomepage);
-		this.findCandidateParallelHomepagesFromHomepage();
 		this.organizeInPairsFromHomepage();
 	}
 
@@ -72,9 +70,10 @@ public class ParallelPages {
 	 * @param preHomepage
 	 * @throws MalformedURLException
 	 * @throws LangDetectException
-	 * @throws URISyntaxException 
+	 * @throws URISyntaxException
 	 */
-	public ParallelPages(PreHomepage preHomepage) throws MalformedURLException, LangDetectException, URISyntaxException {
+	public ParallelPages(PreHomepage preHomepage)
+			throws MalformedURLException, LangDetectException, URISyntaxException {
 		this((Page) preHomepage);
 		this.organizeInPairsFromPreHomepage();
 	}
@@ -85,9 +84,8 @@ public class ParallelPages {
 		int i = 1;
 		for (Page firstPage : preHomepage.getPossibleHomepages()) {
 			for (Page secondPage : preHomepage.getPossibleHomepages()) {
-				if (firstPage.getURLString().compareTo(secondPage.getURLString()) >= 0 &&
-						!firstPage.equals(secondPage) && 
-						!firstPage.getLanguage().equals(secondPage.getLanguage())) {
+				if (firstPage.getURLString().compareTo(secondPage.getURLString()) >= 0 && !firstPage.equals(secondPage)
+						&& !firstPage.getLanguage().equals(secondPage.getLanguage())) {
 					this.listOfPairs.add(new PairOfPages(firstPage, secondPage, i));
 					i++;
 				}
@@ -101,19 +99,6 @@ public class ParallelPages {
 
 	public void setListOfPair(List<PairOfPages> listOfPair) {
 		this.listOfPairs = listOfPair;
-	}
-
-	/**
-	 * Trova le pagine candidate ad essere parallele. Lo fa attraverso la
-	 * ricerca di URL di pagine multilingua all'interno della homepage. Il primo
-	 * elemento della mappa sarà l'homepage primitiva.
-	 * @throws URISyntaxException 
-	 */
-	public void findCandidateParallelHomepagesFromHomepage() throws URISyntaxException {
-		 List<Page> multilingualPages = ((Homepage) this.starterPage).getMultilingualPage();
-		for (Page page : multilingualPages) {
-			candidateParallelHomepages.put(page.getUrlRedirect().toURI(), page);
-		}
 	}
 
 	public List<PairOfPages> getListOfPairs() {
@@ -153,7 +138,7 @@ public class ParallelPages {
 	 * URL fra quelli passati per parametro.
 	 * 
 	 * @param urls
-	 * @throws URISyntaxException 
+	 * @throws URISyntaxException
 	 */
 	public void lasciaSoloQuestiURL(Collection<URL> urls) throws URISyntaxException {
 		Map<URI, Page> parallelHomepages = new HashMap<>();
@@ -190,61 +175,23 @@ public class ParallelPages {
 	 * 
 	 * @param url
 	 * @throws IOException
-	 * @throws URISyntaxException 
+	 * @throws URISyntaxException
 	 */
 	public void addCandidateHomepage(URL url) throws IOException, URISyntaxException {
 		this.candidateParallelHomepages.put(url.toURI(), new Page(url));
 	}
 
-	/***
-	 * Ritorna un insieme di liste in cui ciascuna ha al massimo un numero di
-	 * URL paralleli.
-	 * 
-	 * @return
-	 */
-	public Set<List<String>> getGroupOfEntryPoints() {
-		return this.getGroupOfEntryPoints(DEFAULT_ENTRY_POINT_NUMBER);
-	}
 
-	/***
-	 * Ritorna un insieme di liste in cui ciascuna ha al massimo un numero di
-	 * URL paralleli.
-	 * 
-	 * @param numberMaxOfEntryPoints
-	 *            il numero di entry points massimi che vogliamo in ciascuna
-	 *            lista.
-	 * @return
-	 */
-	public Set<List<String>> getGroupOfEntryPoints(int numberMaxOfEntryPoints) {
-		Set<List<String>> group = new HashSet<>();
-		List<String> listOfNumberedURL = new LinkedList<String>();
-		for (URI uri : this.getParallelURLs()) {
-			if (listOfNumberedURL.size() == numberMaxOfEntryPoints) {
-				group.add(listOfNumberedURL);
-				listOfNumberedURL = new LinkedList<String>();
-			}
-			listOfNumberedURL.add(uri.toString());
-		}
-		if (listOfNumberedURL.size() != 0)
-			group.add(listOfNumberedURL);
-		return group;
 
-	}
 
-	/***
-	 * Ritorna un insieme di coppie.
+	/**
+	 * Aggiunge alla mappa una nuova pagina.
 	 * 
-	 * @return
+	 * @param page
+	 * @throws URISyntaxException
 	 */
-	public Set<Set<String>> getPairOfStringEntryPoint() {
-		Set<Set<String>> group = new HashSet<>();
-		for (URI uri : this.getParallelURLs()) {
-			Set<String> pairOfURL = new HashSet<String>();
-			pairOfURL.add(starterPage.toString());
-			pairOfURL.add(uri.toString());
-			group.add(pairOfURL);
-		}
-		return group;
+	public void addCandidateParallelHomepage(Page page) throws URISyntaxException {
+		this.candidateParallelHomepages.put(page.getUrl().toURI(), page);
 	}
 
 }

@@ -1,11 +1,8 @@
 package classTest;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 /*siti su cui lanciare il processo

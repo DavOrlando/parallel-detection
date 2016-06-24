@@ -2,10 +2,12 @@ package it.uniroma3.parallel.detection;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import com.cybozu.labs.langdetect.LangDetectException;
 
 import it.uniroma3.parallel.model.ParallelPages;
+import it.uniroma3.parallel.roadrunner.RoadRunnerInvocator;
 import it.uniroma3.parallel.filter.LabelFilter;
 import it.uniroma3.parallel.model.Homepage;
 import it.uniroma3.parallel.model.Page;
@@ -36,14 +38,27 @@ public class HomepageOutlinkDetector extends OutlinkDetector {
 	public ParallelPages detect(Page page) throws IOException, InterruptedException, LangDetectException, URISyntaxException {
 		Homepage homepage = (Homepage) page;
 		// da ritornare alla fine
-		ParallelPages groupOfHomepage = new ParallelPages(homepage);
-		FetchManager.getInstance().persistParallelPages(groupOfHomepage);;
-		this.runRoadRunner(groupOfHomepage);
+		ParallelPages parallelPage = new ParallelPages(homepage);
+		findCandidatePage(parallelPage);
+		FetchManager.getInstance().persistParallelPages(parallelPage);;
+		RoadRunnerInvocator.getInstance().runRoadRunner(parallelPage);
 		LabelFilter labelFilter = new LabelFilter();
-		groupOfHomepage.lasciaSoloQuestiURL(labelFilter.filter(groupOfHomepage));
-		return groupOfHomepage;
+		parallelPage.lasciaSoloQuestiURL(labelFilter.filter(parallelPage));
+		return parallelPage;
 	}
 
-	
+	/**
+	 * Trova le pagine candidate ad essere parallele. Lo fa attraverso la
+	 * ricerca di URL di pagine multilingua all'interno della homepage. Il primo
+	 * elemento della mappa sarà l'homepage primitiva.
+	 * @param parallelPage 
+	 * @throws URISyntaxException 
+	 */
+	public void findCandidatePage(ParallelPages parallelPage) throws URISyntaxException {
+		 List<Page> multilingualPages = getMultilingualPage(parallelPage.getStarterPage());
+		for (Page page : multilingualPages) {
+			parallelPage.addCandidateParallelHomepage(page);
+		}
+	}
 
 }

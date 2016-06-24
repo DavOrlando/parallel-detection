@@ -58,7 +58,7 @@ public class HreflangDetectorTest {
 		try {
 			homepage = new Homepage(URL_FOR_TEST+"oneHreflangRelative.html");
 			ParallelPages detectByHreflang = this.homepageDetector.detect(homepage);
-			assertTrue(detectByHreflang.getParallelURLs().contains(new URL(ABSOLUTE_URL)));
+			assertTrue(detectByHreflang.getParallelURLs().contains(new URL(ABSOLUTE_URL).toURI()));
 		} catch (IOException | LangDetectException | URISyntaxException e) {
 			fail();
 			e.printStackTrace();
@@ -84,7 +84,7 @@ public class HreflangDetectorTest {
 		try {
 			homepage = new Homepage(new URL(URL_FOR_TEST+"twoHreflangButOneIsRelative.html"));
 			ParallelPages detectByHreflang = this.homepageDetector.detect(homepage);
-			assertTrue(detectByHreflang.getParallelURLs().contains(new URL(ABSOLUTE_URL)));
+			assertTrue(detectByHreflang.getParallelURLs().contains(new URL(ABSOLUTE_URL).toURI()));
 		} catch (IOException | LangDetectException | URISyntaxException e) {
 			fail();
 			e.printStackTrace();
