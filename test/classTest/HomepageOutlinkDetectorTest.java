@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import it.uniroma3.parallel.detection.HomepageOutlinkDetector;
-import it.uniroma3.parallel.model.Homepage;
+import it.uniroma3.parallel.model.Page;
 
 public class HomepageOutlinkDetectorTest {
 
@@ -19,20 +19,20 @@ public class HomepageOutlinkDetectorTest {
 
 	private URL urlSite;
 	private HomepageOutlinkDetector homepageOutlinkDetector;
-	private Homepage homepage;
+	private Page page;
 
 	@Before
 	public void setUp() throws Exception {
 		this.urlSite = new URL("http://localhost:8080/testMinimale/homeIt.html");
-		this.homepage = new Homepage(urlSite);
+		this.page = new Page(urlSite);
 		homepageOutlinkDetector = new HomepageOutlinkDetector();
 	}
 
 	@Test
 	public void noOutlinkTest() {
 		try {
-			this.homepage = new Homepage(new URL(URL_FOR_TEST + "noOutlink.html"));
-			assertTrue(homepageOutlinkDetector.getMultilingualPage(homepage).isEmpty());
+			this.page = new Page(new URL(URL_FOR_TEST + "noOutlink.html"));
+			assertTrue(homepageOutlinkDetector.getMultilingualPage(page).isEmpty());
 		} catch (Exception e) {
 			fail();
 			e.printStackTrace();
@@ -42,8 +42,8 @@ public class HomepageOutlinkDetectorTest {
 	@Test
 	public void oneGoodOutlinkTest() {
 		try {
-			this.homepage = new Homepage(new URL(URL_FOR_TEST + "oneOutlink.html"));
-			assertEquals(1, homepageOutlinkDetector.getMultilingualPage(homepage).size());
+			this.page = new Page(new URL(URL_FOR_TEST + "oneOutlink.html"));
+			assertEquals(1, homepageOutlinkDetector.getMultilingualPage(page).size());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
@@ -53,8 +53,8 @@ public class HomepageOutlinkDetectorTest {
 	@Test
 	public void oneBadOutlinkEditDistanceFailTest() {
 		try {
-			this.homepage = new Homepage(new URL(URL_FOR_TEST + "oneOutlinkButNoEditDistance.html"));
-			assertTrue(homepageOutlinkDetector.getMultilingualPage(homepage).isEmpty());
+			this.page = new Page(new URL(URL_FOR_TEST + "oneOutlinkButNoEditDistance.html"));
+			assertTrue(homepageOutlinkDetector.getMultilingualPage(page).isEmpty());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
@@ -64,8 +64,8 @@ public class HomepageOutlinkDetectorTest {
 	@Test
 	public void oneBadOutlinkLanguageFailTest() {
 		try {
-			this.homepage = new Homepage(new URL(URL_FOR_TEST + "oneOutlinkButNoLanguage.html"));
-			assertTrue(homepageOutlinkDetector.getMultilingualPage(homepage).isEmpty());
+			this.page = new Page(new URL(URL_FOR_TEST + "oneOutlinkButNoLanguage.html"));
+			assertTrue(homepageOutlinkDetector.getMultilingualPage(page).isEmpty());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
@@ -75,8 +75,8 @@ public class HomepageOutlinkDetectorTest {
 	@Test
 	public void twoEqualsOutlinkTest() {
 		try {
-			this.homepage = new Homepage(new URL(URL_FOR_TEST + "twoEqualsOutlink.html"));
-			assertEquals(1,homepageOutlinkDetector.getMultilingualPage(homepage).size());
+			this.page = new Page(new URL(URL_FOR_TEST + "twoEqualsOutlink.html"));
+			assertEquals(1,homepageOutlinkDetector.getMultilingualPage(page).size());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
@@ -86,8 +86,8 @@ public class HomepageOutlinkDetectorTest {
 	@Test
 	public void twoGoodOutlink() {
 		try {
-			this.homepage = new Homepage(new URL(URL_FOR_TEST + "twoGoodOutlink.html"));
-			assertEquals(2, homepageOutlinkDetector.getMultilingualPage(homepage).size());
+			this.page = new Page(new URL(URL_FOR_TEST + "twoGoodOutlink.html"));
+			assertEquals(2, homepageOutlinkDetector.getMultilingualPage(page).size());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
@@ -97,8 +97,8 @@ public class HomepageOutlinkDetectorTest {
 	@Test
 	public void oneGoodAndOneBadOutlink() {
 		try {
-			this.homepage = new Homepage(new URL(URL_FOR_TEST + "oneGoodAndOneBadOutlink.html"));
-			assertEquals(1, homepageOutlinkDetector.getMultilingualPage(homepage).size());
+			this.page = new Page(new URL(URL_FOR_TEST + "oneGoodAndOneBadOutlink.html"));
+			assertEquals(1, homepageOutlinkDetector.getMultilingualPage(page).size());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();

@@ -9,7 +9,6 @@ import org.jsoup.select.Elements;
 import com.cybozu.labs.langdetect.LangDetectException;
 
 import it.uniroma3.parallel.model.ParallelPages;
-import it.uniroma3.parallel.model.Homepage;
 import it.uniroma3.parallel.model.Page;
 
 /**
@@ -39,13 +38,12 @@ public class HreflangDetector extends MultilingualDetector{
 	 */
 	@Override
 	public ParallelPages detect(Page page) throws IOException, LangDetectException, URISyntaxException {
-		Homepage homepage = (Homepage) page;
-		Elements linksInHomePage = homepage.getDocument().select("link[hreflang]");
+		Elements linksInHomePage = page.getDocument().select("link[hreflang]");
 		if (linksInHomePage.isEmpty())
 			return null;
-		ParallelPages groupOfHomepages = new ParallelPages(homepage);
+		ParallelPages groupOfHomepages = new ParallelPages(page);
 		for (Element link : linksInHomePage)
-			groupOfHomepages.addCandidateHomepage(new URL(link.attr("abs:href")));
+			groupOfHomepages.addCandidateParallelHomepage(new URL(link.attr("abs:href")));
 		return groupOfHomepages;
 	}
 

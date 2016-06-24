@@ -2,6 +2,7 @@ package it.uniroma3.parallel.detection;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.cybozu.labs.langdetect.LangDetectException;
@@ -9,8 +10,8 @@ import com.cybozu.labs.langdetect.LangDetectException;
 import it.uniroma3.parallel.model.ParallelPages;
 import it.uniroma3.parallel.roadrunner.RoadRunnerInvocator;
 import it.uniroma3.parallel.filter.LabelFilter;
-import it.uniroma3.parallel.model.Homepage;
 import it.uniroma3.parallel.model.Page;
+import it.uniroma3.parallel.model.PairOfPages;
 import it.uniroma3.parallel.utils.FetchManager;
 
 public class HomepageOutlinkDetector extends OutlinkDetector {
@@ -36,11 +37,11 @@ public class HomepageOutlinkDetector extends OutlinkDetector {
 
 	@Override
 	public ParallelPages detect(Page page) throws IOException, InterruptedException, LangDetectException, URISyntaxException {
-		Homepage homepage = (Homepage) page;
 		// da ritornare alla fine
-		ParallelPages parallelPage = new ParallelPages(homepage);
+		ParallelPages parallelPage = new ParallelPages(page);
 		findCandidatePage(parallelPage);
-		FetchManager.getInstance().persistParallelPages(parallelPage);;
+		organizeInPairs(parallelPage);
+		FetchManager.getInstance().persistParallelPages(parallelPage);
 		RoadRunnerInvocator.getInstance().runRoadRunner(parallelPage);
 		LabelFilter labelFilter = new LabelFilter();
 		parallelPage.lasciaSoloQuestiURL(labelFilter.filter(parallelPage));
@@ -59,6 +60,26 @@ public class HomepageOutlinkDetector extends OutlinkDetector {
 		for (Page page : multilingualPages) {
 			parallelPage.addCandidateParallelHomepage(page);
 		}
+	}
+	
+	/***
+	 * Crea una lista con tutte le coppie generate da
+	 * (firstHomepage,possibleParallelHomepages[i-esima]). E' possibile accedere
+	 * alla lista, dopo averla creata con questo metodo, grazie a getPair().
+	 * 
+	 * @return
+	 */
+	public void organizeInPairs(ParallelPages parallelPage) {
+		LinkedList<PairOfPages> listOfPairs = new LinkedList<>();
+		int i = 1;
+		for (Page page : parallelPage.getCandidateParallelHomepages()) {
+			if (!page.equals(parallelPage.getStarterPage())) {
+				PairOfPages pair = new PairOfPages(parallelPage.getStarterPage(), page, i);
+				listOfPairs.add(pair);
+				i++;
+			}
+		}
+		parallelPage.setListOfPair(listOfPairs);
 	}
 
 }

@@ -7,9 +7,12 @@ import java.util.List;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import com.cybozu.labs.langdetect.LangDetectException;
+
 import it.uniroma3.parallel.filter.LanguageFilter;
 import it.uniroma3.parallel.filter.LinkValueFilter;
 import it.uniroma3.parallel.model.Page;
+import it.uniroma3.parallel.model.ParallelPages;
 
 /**
  * Classe che rappresenta un rilevatore di siti multilingua attraverso
@@ -82,6 +85,7 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 		return filteredPages;
 	}
 	
+	public abstract void organizeInPairs(ParallelPages parallelPage) throws LangDetectException;
 	
 	
 }

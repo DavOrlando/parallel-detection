@@ -7,19 +7,20 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
-import it.uniroma3.parallel.model.Homepage;
+import it.uniroma3.parallel.model.Page;
 import it.uniroma3.parallel.model.PairOfPages;
+import it.uniroma3.parallel.model.PreHomepage;
 
 public class PairOfHomepagesTest {
 
 	private PairOfPages pair;
-	private Homepage hPage1;
-	private Homepage hPage2;
+	private Page hPage1;
+	private Page hPage2;
 	
 	@Before
 	public void setUp() throws Exception {
-		hPage1 = new Homepage("http://localhost:8080/testSenzaHreflang/homeIt.html");
-		hPage2 = new Homepage("http://localhost:8080/testSenzaHreflang/homeIt.html");
+		hPage1 = new Page("http://localhost:8080/testSenzaHreflang/homeIt.html");
+		hPage2 = new Page("http://localhost:8080/testSenzaHreflang/homeIt.html");
 		pair = new PairOfPages(hPage1, hPage2, 0);
 	}
 
@@ -30,7 +31,7 @@ public class PairOfHomepagesTest {
 	
 	@Test
 	public void CoppieDiversePerSecondaPaginaEqualstest() throws IOException {
-		assertNotEquals(pair,new PairOfPages(hPage1,new Homepage("http://localhost:8080/testSenzaHreflang/homeEn.html"),0));
+		assertNotEquals(pair,new PairOfPages(hPage1,new Page("http://localhost:8080/testSenzaHreflang/homeEn.html"),0));
 	}
 
 }

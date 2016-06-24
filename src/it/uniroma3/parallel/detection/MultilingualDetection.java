@@ -3,7 +3,6 @@ package it.uniroma3.parallel.detection;
 import it.uniroma3.parallel.model.ParallelPages;
 import it.uniroma3.parallel.model.PreHomepage;
 import it.uniroma3.parallel.configuration.ConfigurationProperties;
-import it.uniroma3.parallel.model.Homepage;
 import it.uniroma3.parallel.model.Page;
 import it.uniroma3.parallel.utils.FetchManager;
 import it.uniroma3.parallel.utils.Utils;
@@ -42,7 +41,7 @@ public class MultilingualDetection {
 		try {
 			CrawlingAdapter crawling = new CrawlingFrancElefanteAdapter();
 			// l'homepage su cui si fa la detection
-			Page homepageToDetect = new Homepage(homepageStringUrl);
+			Page homepageToDetect = new Page(homepageStringUrl);
 			// detector per Hreflang
 			MultilingualDetector multilingualDetector = new HreflangDetector();
 			// controllo per escludere alcuni siti falsi positivi multilingua

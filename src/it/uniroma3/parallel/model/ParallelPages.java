@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -45,66 +44,7 @@ public class ParallelPages {
 		this.starterPage = starterPage;
 		this.candidateParallelHomepages.put(starterPage.getUrlRedirect().toURI(), starterPage);
 	}
-
-	/**
-	 * Crea e inizializza lo stato dell'oggetto ParallelPages in base alle
-	 * informazioni che trova nella homepage passata per parametro. Popolando le
-	 * coppie in questo modo (HPPrimitiva,CandidatoPossibile).
-	 * 
-	 * @param primaryHomepage
-	 * @throws LangDetectException
-	 * @throws MalformedURLException
-	 * @throws URISyntaxException
-	 * @throws IOException
-	 */
-	public ParallelPages(Homepage primaryHomepage)
-			throws LangDetectException, MalformedURLException, URISyntaxException {
-		this((Page) primaryHomepage);
-		this.organizeInPairsFromHomepage();
-	}
-
-	/**
-	 * Costruttore per ParallelPages data una PreHomepage. Popola le coppie con
-	 * i link che ci sono all'interno della prehomepage.
-	 * 
-	 * @param preHomepage
-	 * @throws MalformedURLException
-	 * @throws LangDetectException
-	 * @throws URISyntaxException
-	 */
-	public ParallelPages(PreHomepage preHomepage)
-			throws MalformedURLException, LangDetectException, URISyntaxException {
-		this((Page) preHomepage);
-		this.organizeInPairsFromPreHomepage();
-	}
-
-	private void organizeInPairsFromPreHomepage() throws LangDetectException {
-		PreHomepage preHomepage = (PreHomepage) this.starterPage;
-		this.listOfPairs = new ArrayList<>();
-		int i = 1;
-		for (Page firstPage : preHomepage.getPossibleHomepages()) {
-			for (Page secondPage : preHomepage.getPossibleHomepages()) {
-				if (firstPage.getURLString().compareTo(secondPage.getURLString()) >= 0 && !firstPage.equals(secondPage)
-						&& !firstPage.getLanguage().equals(secondPage.getLanguage())) {
-					this.listOfPairs.add(new PairOfPages(firstPage, secondPage, i));
-					i++;
-				}
-			}
-		}
-	}
-
-	public void setHomepage(Homepage homepage) {
-		this.starterPage = homepage;
-	}
-
-	public void setListOfPair(List<PairOfPages> listOfPair) {
-		this.listOfPairs = listOfPair;
-	}
-
-	public List<PairOfPages> getListOfPairs() {
-		return this.listOfPairs;
-	}
-
+	
 	public Page getStarterPage() {
 		return starterPage;
 	}
@@ -113,23 +53,34 @@ public class ParallelPages {
 		return new ArrayList<>(candidateParallelHomepages.values());
 	}
 
-	/***
-	 * Crea una lista con tutte le coppie generate da
-	 * (firstHomepage,possibleParallelHomepages[i-esima]). E' possibile accedere
-	 * alla lista, dopo averla creata con questo metodo, grazie a getPair().
+	public List<PairOfPages> getListOfPairs() {
+		return new ArrayList<>(listOfPairs);
+	}
+
+	public void setListOfPair(List<PairOfPages> listOfPair) {
+		this.listOfPairs = listOfPair;
+	}
+
+	/**
+	 * Ritorna la collezione di URL composta dalla homepage primitiva e da URL
+	 * provenienti dalle probabili homepage parallele.
 	 * 
 	 * @return
 	 */
-	public void organizeInPairsFromHomepage() {
-		this.listOfPairs = new LinkedList<>();
-		int i = 1;
-		for (Page page : candidateParallelHomepages.values()) {
-			if (!page.equals(starterPage)) {
-				PairOfPages pair = new PairOfPages(this.starterPage, page, i);
-				listOfPairs.add(pair);
-				i++;
-			}
-		}
+	public Set<URI> getParallelURLs() {
+		HashSet<URI> parallelURLs = new HashSet<>();
+		parallelURLs.addAll(candidateParallelHomepages.keySet());
+		return parallelURLs;
+	}
+
+	/***
+	 * Ritorna true se non ci sono entry points, false altrimenti.
+	 * 
+	 * @return
+	 */
+	public boolean isEmpty() {
+		// perchè la homepage c'è sempre
+		return this.candidateParallelHomepages.size() == 1;
 	}
 
 	/**
@@ -147,28 +98,6 @@ public class ParallelPages {
 		this.candidateParallelHomepages = parallelHomepages;
 	}
 
-	/***
-	 * Ritorna true se non ci sono entry points, false altrimenti.
-	 * 
-	 * @return
-	 */
-	public boolean isEmpty() {
-		// perchè la homepage c'è sempre
-		return this.candidateParallelHomepages.size() == 1;
-	}
-
-	/**
-	 * Ritorna la collezione di URL composta dalla homepage primitiva e da URL
-	 * provenienti dalle probabili homepage parallele.
-	 * 
-	 * @return
-	 */
-	public Set<URI> getParallelURLs() {
-		HashSet<URI> parallelURLs = new HashSet<>();
-		parallelURLs.addAll(candidateParallelHomepages.keySet());
-		return parallelURLs;
-	}
-
 	/**
 	 * Aggiunge un URL e la pagina alla mappa di pagine candidate. Utile per la
 	 * prima euristica.
@@ -177,12 +106,9 @@ public class ParallelPages {
 	 * @throws IOException
 	 * @throws URISyntaxException
 	 */
-	public void addCandidateHomepage(URL url) throws IOException, URISyntaxException {
+	public void addCandidateParallelHomepage(URL url) throws IOException, URISyntaxException {
 		this.candidateParallelHomepages.put(url.toURI(), new Page(url));
 	}
-
-
-
 
 	/**
 	 * Aggiunge alla mappa una nuova pagina.

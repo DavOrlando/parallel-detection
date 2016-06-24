@@ -12,14 +12,14 @@ import com.cybozu.labs.langdetect.LangDetectException;
 
 import it.uniroma3.parallel.detection.HreflangDetector;
 import it.uniroma3.parallel.model.ParallelPages;
-import it.uniroma3.parallel.model.Homepage;
+import it.uniroma3.parallel.model.Page;
 
 public class HreflangDetectorTest {
 
 	private static final String URL_FOR_TEST = "http://localhost:8080/testForHreflang/";
 	private static final String ABSOLUTE_URL = "http://localhost:8080/testForHreflang/homeFr.html";
 	private HreflangDetector homepageDetector;
-	private Homepage homepage;
+	private Page page;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -30,8 +30,8 @@ public class HreflangDetectorTest {
 	@Test
 	public void pageWithNoHreflang() {
 		try {
-			homepage = new Homepage(URL_FOR_TEST +"noHreflang.html");
-			assertNull(this.homepageDetector.detect(homepage));
+			page= new Page(URL_FOR_TEST +"noHreflang.html");
+			assertNull(this.homepageDetector.detect(page));
 		} catch (IOException | LangDetectException | URISyntaxException e) {
 			fail();
 			e.printStackTrace();
@@ -42,10 +42,10 @@ public class HreflangDetectorTest {
 	@Test
 	public void pageWithOneHreflang() {
 		try {
-			homepage = new Homepage(URL_FOR_TEST+"oneHreflang.html");
-			ParallelPages detectByHreflang = this.homepageDetector.detect(homepage);
+			page= new Page(URL_FOR_TEST+"oneHreflang.html");
+			ParallelPages detectByHreflang = this.homepageDetector.detect(page);
 			assertNotNull(detectByHreflang);
-			//2 perchè anche la homepage viene aggiunta
+			//2 perchè anche la pageviene aggiunta
 			assertEquals(2,detectByHreflang.getParallelURLs().size());
 		} catch (IOException | LangDetectException | URISyntaxException e) {
 			fail();
@@ -56,8 +56,8 @@ public class HreflangDetectorTest {
 	@Test
 	public void pageWithOneHreflangRelative() {
 		try {
-			homepage = new Homepage(URL_FOR_TEST+"oneHreflangRelative.html");
-			ParallelPages detectByHreflang = this.homepageDetector.detect(homepage);
+			page= new Page(URL_FOR_TEST+"oneHreflangRelative.html");
+			ParallelPages detectByHreflang = this.homepageDetector.detect(page);
 			assertTrue(detectByHreflang.getParallelURLs().contains(new URL(ABSOLUTE_URL).toURI()));
 		} catch (IOException | LangDetectException | URISyntaxException e) {
 			fail();
@@ -69,9 +69,9 @@ public class HreflangDetectorTest {
 	@Test
 	public void pageWithTwoHreflang() {
 		try {
-			homepage = new Homepage(new URL(URL_FOR_TEST+"twoHreflang.html"));
-			ParallelPages detectByHreflang = this.homepageDetector.detect(homepage);
-			//3 perchè anche la homepage viene aggiunta
+			page= new Page(new URL(URL_FOR_TEST+"twoHreflang.html"));
+			ParallelPages detectByHreflang = this.homepageDetector.detect(page);
+			//3 perchè anche la pageviene aggiunta
 			assertEquals(3,detectByHreflang.getParallelURLs().size());
 		} catch (IOException | LangDetectException | URISyntaxException e) {
 			fail();
@@ -82,8 +82,8 @@ public class HreflangDetectorTest {
 	@Test
 	public void pageWithTwoButOneIsRelativeHreflang() {
 		try {
-			homepage = new Homepage(new URL(URL_FOR_TEST+"twoHreflangButOneIsRelative.html"));
-			ParallelPages detectByHreflang = this.homepageDetector.detect(homepage);
+			page= new Page(new URL(URL_FOR_TEST+"twoHreflangButOneIsRelative.html"));
+			ParallelPages detectByHreflang = this.homepageDetector.detect(page);
 			assertTrue(detectByHreflang.getParallelURLs().contains(new URL(ABSOLUTE_URL).toURI()));
 		} catch (IOException | LangDetectException | URISyntaxException e) {
 			fail();
@@ -94,8 +94,8 @@ public class HreflangDetectorTest {
 	@Test
 	public void homepageWithDuplicateHreflang() {
 		try {
-			homepage = new Homepage(new URL(URL_FOR_TEST+"duplicateHreflang.html"));
-			ParallelPages detectByHreflang = this.homepageDetector.detect(homepage);
+			page= new Page(new URL(URL_FOR_TEST+"duplicateHreflang.html"));
+			ParallelPages detectByHreflang = this.homepageDetector.detect(page);
 			//2 perchè cè la homepage
 			assertEquals(2,detectByHreflang.getParallelURLs().size());
 		} catch (IOException | LangDetectException | URISyntaxException e) {

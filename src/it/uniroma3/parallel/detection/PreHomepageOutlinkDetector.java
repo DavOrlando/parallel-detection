@@ -2,6 +2,7 @@ package it.uniroma3.parallel.detection;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 
 import com.cybozu.labs.langdetect.LangDetectException;
 
@@ -19,6 +20,7 @@ public class PreHomepageOutlinkDetector extends OutlinkDetector {
 		PreHomepage preHomepage = (PreHomepage) page;
 		preHomepage.setPossibleHomepages(this.getMultilingualPage(preHomepage));
 		ParallelPages parallelPages = new ParallelPages(preHomepage);
+		organizeInPairs(parallelPages);
 		for(PairOfPages pairOfPages : parallelPages.getListOfPairs())
 			FetchManager.getInstance().persistPairOfHomepage(pairOfPages, preHomepage.getPageName());
 		RoadRunnerInvocator.getInstance().runRoadRunner(parallelPages);
@@ -26,4 +28,20 @@ public class PreHomepageOutlinkDetector extends OutlinkDetector {
 		parallelPages.setListOfPair(labelFilterPrehomepage.filter(parallelPages));
 		return parallelPages;
 	}
+	
+	public void organizeInPairs(ParallelPages parallelPages) throws LangDetectException {
+		ArrayList<PairOfPages> listOfPairs = new ArrayList<>();
+		int i = 1;
+		for (Page firstPage : ((PreHomepage) parallelPages.getStarterPage()).getPossibleHomepages()) {
+			for (Page secondPage : ((PreHomepage) parallelPages.getStarterPage()).getPossibleHomepages()) {
+				if (firstPage.getURLString().compareTo(secondPage.getURLString()) >= 0 && !firstPage.equals(secondPage)
+						&& !firstPage.getLanguage().equals(secondPage.getLanguage())) {
+					listOfPairs.add(new PairOfPages(firstPage, secondPage, i));
+					i++;
+				}
+			}
+		}
+		parallelPages.setListOfPair(listOfPairs);
+	}
+
 }

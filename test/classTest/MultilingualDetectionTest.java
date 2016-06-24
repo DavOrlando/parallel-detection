@@ -30,6 +30,12 @@ import com.cybozu.labs.langdetect.LangDetectException;
 
 import it.uniroma3.parallel.detection.MultilingualDetection;
 
+// File f = new File("seedTot2.txt");
+// List<String> siti = FileUtils.readLines(f);
+// for (String sito : siti)
+// MultilingualDetection.multilingualDetection(sito, 2, new
+// ReentrantLock(), new ReentrantLock(), new ReentrantLock(),
+// new ReentrantLock());
 public class MultilingualDetectionTest {
 
 	@Before
@@ -37,15 +43,20 @@ public class MultilingualDetectionTest {
 	}
 
 	@Test
-	public void testMultilingualDetection() throws IOException, InterruptedException, LangDetectException {
-		// File f = new File("seedTot2.txt");
-		// List<String> siti = FileUtils.readLines(f);
-		// for (String sito : siti)
-		// MultilingualDetection.multilingualDetection(sito, 2, new
-		// ReentrantLock(), new ReentrantLock(), new ReentrantLock(),
-		// new ReentrantLock());
+	public void multilingualDetectionPrehomepage_test() throws IOException, InterruptedException, LangDetectException {
 		MultilingualDetection.multilingualDetection("www.bulthaup.com", 2, new ReentrantLock(), new ReentrantLock(),
 				new ReentrantLock(), new ReentrantLock());
 	}
 
+	@Test
+	public void multilingualDetectionHomepage_test() throws IOException, InterruptedException, LangDetectException {
+		MultilingualDetection.multilingualDetection("www.toyota.com", 2, new ReentrantLock(), new ReentrantLock(),
+				new ReentrantLock(), new ReentrantLock());
+	}
+	
+	@Test
+	public void multilingualDetectionHreflang_test() throws IOException, InterruptedException, LangDetectException {
+		MultilingualDetection.multilingualDetection("www.ferrari.com", 2, new ReentrantLock(), new ReentrantLock(),
+				new ReentrantLock(), new ReentrantLock());
+	}
 }
