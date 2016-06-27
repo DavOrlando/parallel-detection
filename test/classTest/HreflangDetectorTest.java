@@ -46,7 +46,7 @@ public class HreflangDetectorTest {
 			ParallelPages detectByHreflang = this.homepageDetector.detect(page);
 			assertNotNull(detectByHreflang);
 			//2 perchè anche la pageviene aggiunta
-			assertEquals(2,detectByHreflang.getParallelURLs().size());
+			assertEquals(2,detectByHreflang.getParallelURIs().size());
 		} catch (IOException | LangDetectException | URISyntaxException e) {
 			fail();
 			e.printStackTrace();
@@ -58,7 +58,7 @@ public class HreflangDetectorTest {
 		try {
 			page= new Page(URL_FOR_TEST+"oneHreflangRelative.html");
 			ParallelPages detectByHreflang = this.homepageDetector.detect(page);
-			assertTrue(detectByHreflang.getParallelURLs().contains(new URL(ABSOLUTE_URL).toURI()));
+			assertTrue(detectByHreflang.getParallelURIs().contains(new URL(ABSOLUTE_URL).toURI()));
 		} catch (IOException | LangDetectException | URISyntaxException e) {
 			fail();
 			e.printStackTrace();
@@ -72,7 +72,7 @@ public class HreflangDetectorTest {
 			page= new Page(new URL(URL_FOR_TEST+"twoHreflang.html"));
 			ParallelPages detectByHreflang = this.homepageDetector.detect(page);
 			//3 perchè anche la pageviene aggiunta
-			assertEquals(3,detectByHreflang.getParallelURLs().size());
+			assertEquals(3,detectByHreflang.getParallelURIs().size());
 		} catch (IOException | LangDetectException | URISyntaxException e) {
 			fail();
 			e.printStackTrace();
@@ -84,7 +84,7 @@ public class HreflangDetectorTest {
 		try {
 			page= new Page(new URL(URL_FOR_TEST+"twoHreflangButOneIsRelative.html"));
 			ParallelPages detectByHreflang = this.homepageDetector.detect(page);
-			assertTrue(detectByHreflang.getParallelURLs().contains(new URL(ABSOLUTE_URL).toURI()));
+			assertTrue(detectByHreflang.getParallelURIs().contains(new URL(ABSOLUTE_URL).toURI()));
 		} catch (IOException | LangDetectException | URISyntaxException e) {
 			fail();
 			e.printStackTrace();
@@ -97,7 +97,7 @@ public class HreflangDetectorTest {
 			page= new Page(new URL(URL_FOR_TEST+"duplicateHreflang.html"));
 			ParallelPages detectByHreflang = this.homepageDetector.detect(page);
 			//2 perchè cè la homepage
-			assertEquals(2,detectByHreflang.getParallelURLs().size());
+			assertEquals(2,detectByHreflang.getParallelURIs().size());
 		} catch (IOException | LangDetectException | URISyntaxException e) {
 			fail();
 			e.printStackTrace();

@@ -12,7 +12,7 @@ import it.uniroma3.parallel.model.Page;
  * @author davideorlando
  *
  */
-public class LanguageFilter implements Filter {
+public class LanguageFilter {
 
 	/**
 	 * Ritorna false se sono verificate le seguenti condizioni: -Il secondo link
@@ -23,9 +23,7 @@ public class LanguageFilter implements Filter {
 	 * @return
 	 * @throws LangDetectException
 	 * @throws IOException
-	 */
-	@Override
-	
+	 */	
 	public boolean filter(Page homepage, Page outlinkPage) {
 		return !isSameLanguage(homepage, outlinkPage);
 	}

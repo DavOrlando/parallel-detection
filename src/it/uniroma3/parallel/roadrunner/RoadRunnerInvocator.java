@@ -21,6 +21,13 @@ import it.uniroma3.parallel.model.ParallelPages;
 import it.uniroma3.parallel.utils.FetchManager;
 import it.uniroma3.parallel.utils.Utils;
 
+/**
+ * Classe che rappresenta il punto di accesso a RoadRunner. Se vogliamo
+ * eseguirlo lo facciamo tramite questa classe.
+ * 
+ * @author francescoelefante
+ *
+ */
 public class RoadRunnerInvocator {
 
 	private static final String _1 = "1 ";
@@ -37,15 +44,13 @@ public class RoadRunnerInvocator {
 	private RoadRunnerInvocator() {
 		this.errorLogLock = new ReentrantLock();
 	}
-	
 
 	public static synchronized RoadRunnerInvocator getInstance() {
-		if(instance==null)
+		if (instance == null)
 			instance = new RoadRunnerInvocator();
 		return instance;
 	}
 
-	
 	/**
 	 * Lancia RoadRunner sul gruppo di homepage. Ovvero divide il gruppo in
 	 * coppie (HomepagePrimitiva,HomepageTrovata) e su questa coppia lancia
@@ -67,29 +72,32 @@ public class RoadRunnerInvocator {
 			throws FileNotFoundException, IOException, InterruptedException {
 		int pairNumber = pairOfHomepage.getPairNumber();
 
-		String urlBase = properties.getStringOfFolderForHtmlPages()
-				+ primaryPage.getPageName() + "/" + primaryPage.getPageName() + pairNumber;
+		String urlBase = properties.getStringOfFolderForHtmlPages() + primaryPage.getPageName() + "/"
+				+ primaryPage.getPageName() + pairNumber;
 		FetchManager.getInstance().createFolderAndCopyStyleFile(primaryPage.getPageName() + pairNumber);
-		
+
 		Thread t3 = new Thread() {
 			@Override
 			public void run() {
 				try {
 					String localPath = FetchManager.getInstance().findPageByURL(primaryPage.getUrlRedirect());
-					rr(PARAMETRO_N + primaryPage.getPageName() + pairNumber, properties.getStringOfCommandAndPrefs(), localPath,
-							urlBase + "/" + HOME_PAGE + pairNumber + _2 + HTML);
+					rr(PARAMETRO_N + primaryPage.getPageName() + pairNumber, properties.getStringOfCommandAndPrefs(),
+							localPath, urlBase + "/" + HOME_PAGE + pairNumber + _2 + HTML);
 					String ftv = primaryPage.getPageName() + pairNumber;
 					// alla coppia associo il suo output se esiste
-					if (new File(properties.getStringOfFolderOutput()+ "/" + ftv + "/" + ftv + properties.getStringOfDataset()).exists())
+					if (new File(properties.getStringOfFolderOutput() + "/" + ftv + "/" + ftv
+							+ properties.getStringOfDataset()).exists())
 						FetchManager.getInstance().addRRDataSet(pairOfHomepage,
-								new RoadRunnerDataSet(properties.getStringOfFolderOutput() + "/" + ftv + "/" + ftv + properties.getStringOfDataset()));
+								new RoadRunnerDataSet(properties.getStringOfFolderOutput() + "/" + ftv + "/" + ftv
+										+ properties.getStringOfDataset()));
 				} catch (Exception e1) {
 					e1.printStackTrace();
 					synchronized (errorLogLock) {
 						// stampo nell'error log il sito che da il
 						// problema e l'errore
 						try {
-							Utils.csvWr(new String[] { primaryPage.getURLString(), e1.toString() }, properties.getStringOfErrorLogCSV());
+							Utils.csvWr(new String[] { primaryPage.getURLString(), e1.toString() },
+									properties.getStringOfErrorLogCSV());
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
@@ -111,7 +119,6 @@ public class RoadRunnerInvocator {
 			it.uniroma3.dia.roadrunner.Shell.main(argv);
 			it.uniroma3.dia.roadrunner.tokenizer.token.TagFactory.reset();
 			it.uniroma3.dia.roadrunner.tokenizer.token.Tag.reset();
-
 			Utils.csvWr(new String[] { argv[0] }, properties.getStringOfRRCSV());
 
 		} catch (Exception e) {
@@ -185,7 +192,6 @@ public class RoadRunnerInvocator {
 				scrivii.println(line);
 			}
 		}
-
 		br.close();
 		scrivii.close();
 		return fileXmlNew;

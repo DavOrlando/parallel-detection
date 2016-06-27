@@ -3,6 +3,7 @@ package it.uniroma3.parallel.detection;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -25,6 +26,7 @@ import it.uniroma3.parallel.model.ParallelPages;
 
 public abstract class OutlinkDetector extends MultilingualDetector {
 
+	public abstract void organizeInPairs(ParallelPages parallelPage) throws LangDetectException;
 
 	/***
 	 * Ritorna un insieme di elementi HTML presenti nella pagina e che
@@ -32,7 +34,7 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 	 * 
 	 * @param elementName
 	 *            nome dell'elemento HTML da cercare nella pagina.
-	 * @param document 
+	 * @param document
 	 * @return
 	 */
 	protected HashSet<Element> getHtmlElements(String elementName, Document document) {
@@ -44,36 +46,38 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 		return elements;
 	}
 
-
 	/***
 	 * Ritorna tutti gli elementi HTML della pagina che potrebbero essere dei
 	 * link uscenti dalla pagina stessa.
-	 * @param page 
+	 * 
+	 * @param page
 	 * 
 	 * @return
 	 */
 
 	public HashSet<Element> getAllOutlinks(Page page) {
-		HashSet<Element> elements = getHtmlElements("a",page.getDocument());
-		elements.addAll(this.getHtmlElements("option",page.getDocument()));
+		HashSet<Element> elements = getHtmlElements("a", page.getDocument());
+		elements.addAll(this.getHtmlElements("option", page.getDocument()));
 		return elements;
 	}
-	
+
 	/**
-	 * Seleziona solo le pagine che superano i controlli sui vari filtri.
+	 * Seleziona solo le pagine che superano i controlli sui vari filtri. In
+	 * questo caso i filtri sono il linguaggio differente e la presenza di testo
+	 * come 'english', 'en', ecc...
 	 * 
 	 * @param page
 	 * @return
 	 * @throws IOException
 	 */
 	public List<Page> getMultilingualPage(Page page) {
-		List<Page> filteredPages = new ArrayList<>();
+		List<Page> filteredPages = new LinkedList<>();
 		LanguageFilter languageFilter = new LanguageFilter();
-		LinkValueFilter linkValueFilter = new LinkValueFilter();
+		LinkValueFilter textValueOfLinkFilter = new LinkValueFilter();
 		for (Element link : this.getAllOutlinks(page)) {
 			try {
 				Page outlinkPage;
-				if (linkValueFilter.filter(link.text().toLowerCase())) {
+				if (textValueOfLinkFilter.filter(link.text())) {
 					outlinkPage = new Page(link.absUrl("href"));
 					if (languageFilter.filter(page, outlinkPage))
 						filteredPages.add(outlinkPage);
@@ -84,8 +88,5 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 		}
 		return filteredPages;
 	}
-	
-	public abstract void organizeInPairs(ParallelPages parallelPage) throws LangDetectException;
-	
-	
+
 }

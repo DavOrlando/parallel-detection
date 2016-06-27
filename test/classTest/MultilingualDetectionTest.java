@@ -37,26 +37,32 @@ import it.uniroma3.parallel.detection.MultilingualDetection;
 // ReentrantLock(), new ReentrantLock(), new ReentrantLock(),
 // new ReentrantLock());
 public class MultilingualDetectionTest {
+	
+	private static final String HREFLANG_DETECTION = "www.ferrari.com";
+	private static final String HOMEPAGE_DETECTION = "www.toyota.com";
+	private static final String PREHOMEPAGE_DETECTION = "www.bulthaup.com";
+	private MultilingualDetection multiDetection;
 
 	@Before
 	public void setUp() throws Exception {
+		this.multiDetection = new MultilingualDetection();
 	}
 
 	@Test
-	public void multilingualDetectionPrehomepage_test() throws IOException, InterruptedException, LangDetectException {
-		MultilingualDetection.multilingualDetection("www.bulthaup.com", 2, new ReentrantLock(), new ReentrantLock(),
+	public void multilingualDetectionPrehomepage_test_real_site() throws IOException, InterruptedException, LangDetectException {
+		multiDetection.multilingualDetection(PREHOMEPAGE_DETECTION, 2, new ReentrantLock(), new ReentrantLock(),
 				new ReentrantLock(), new ReentrantLock());
 	}
 
 	@Test
-	public void multilingualDetectionHomepage_test() throws IOException, InterruptedException, LangDetectException {
-		MultilingualDetection.multilingualDetection("www.toyota.com", 2, new ReentrantLock(), new ReentrantLock(),
+	public void multilingualDetectionHomepage_test_real_site() throws IOException, InterruptedException, LangDetectException {
+		multiDetection.multilingualDetection(HOMEPAGE_DETECTION, 2, new ReentrantLock(), new ReentrantLock(),
 				new ReentrantLock(), new ReentrantLock());
 	}
 	
 	@Test
-	public void multilingualDetectionHreflang_test() throws IOException, InterruptedException, LangDetectException {
-		MultilingualDetection.multilingualDetection("www.ferrari.com", 2, new ReentrantLock(), new ReentrantLock(),
+	public void multilingualDetectionHreflang_test_real_site() throws IOException, InterruptedException, LangDetectException {
+		multiDetection.multilingualDetection(HREFLANG_DETECTION, 2, new ReentrantLock(), new ReentrantLock(),
 				new ReentrantLock(), new ReentrantLock());
 	}
 }

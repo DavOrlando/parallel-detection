@@ -134,7 +134,7 @@ public class ConfigurationProperties {
 	 * 
 	 * @return
 	 */
-	public String getStringOfSiteMultilingual() {
+	public String getStringOfPathForSiteMultilingualCSV() {
 		return System.getProperty("site_multilingual");
 	}
 
@@ -144,7 +144,7 @@ public class ConfigurationProperties {
 	 * 
 	 * @return
 	 */
-	public String getStringOfSiteNotMultilingual() {
+	public String getStringOfPathForSiteNotMultilingual() {
 		return configuration.getProperty("site_not_multilingual");
 	}
 
@@ -215,6 +215,7 @@ public class ConfigurationProperties {
 
 	/**
 	 * Ritorna -O:etc/flat-prefs.xml
+	 * 
 	 * @return
 	 */
 	public String getStringOfCommandAndPrefs() {
@@ -223,12 +224,13 @@ public class ConfigurationProperties {
 
 	/**
 	 * Ritorna la stringa dataset.xml
+	 * 
 	 * @return
 	 */
-	public String getStringOfDataset(){
+	public String getStringOfDataset() {
 		return System.getProperty("dataset");
 	}
-	
+
 	/**
 	 * Ritorna il valore della chiave "error_log" nel file di proprietà
 	 * conf.properties
@@ -245,18 +247,27 @@ public class ConfigurationProperties {
 	 * 
 	 * @return
 	 */
-	public String getStringOfTimeCSV() {
+	public String getStringOfPathForTimeCSV() {
 		return System.getProperty("time");
 	}
-	
+
 	/**
 	 * Ritorna il valore della chiave "rr_csv" nel file di proprietà
 	 * conf.properties
 	 * 
 	 * @return
 	 */
-	public String getStringOfRRCSV(){
+	public String getStringOfRRCSV() {
 		return System.getProperty("rr_csv");
+	}
+
+	/**
+	 * Ritorna il path del file dei profili del linguaggio.
+	 * 
+	 * @return
+	 */
+	public String getProfileFilePath() {
+		return System.getProperty("profiles_lang");
 	}
 
 	/**

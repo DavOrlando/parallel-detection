@@ -27,10 +27,8 @@ public class MultilingualDetection {
 
 	private static final String STRINGA_VUOTA = "";
 
-	// argomenti: homepage e depth di visita, lock scrivere txt errori e siti
-	// mult o not mult rilevati
-	// trova entry points e li passa al metodo di crawling effettivo
-	public static void multilingualDetection(String homepageStringUrl, int depthT, Lock multSiteLogLock,
+	
+	public void multilingualDetection(String homepageStringUrl, int depthT, Lock multSiteLogLock,
 			Lock errorLogLock, Lock productivityLock, Lock timeLock)
 			throws IOException, InterruptedException, LangDetectException {
 
@@ -42,14 +40,14 @@ public class MultilingualDetection {
 			CrawlingAdapter crawling = new CrawlingFrancElefanteAdapter();
 			// l'homepage su cui si fa la detection
 			Page homepageToDetect = new Page(homepageStringUrl);
-			// detector per Hreflang
+			// detector per la prima euristica
 			MultilingualDetector multilingualDetector = new HreflangDetector();
 			// controllo per escludere alcuni siti falsi positivi multilingua
 			if (multilingualDetector.isInBlacklist(homepageToDetect.getUrlRedirect())) {
 				synchronized (multSiteLogLock) {
 					// scrivo su un csv che il sito non è multilingua
 					Utils.csvWr(new String[] { homepageStringUrl, Utils.getDate() },
-							properties.getStringOfSiteNotMultilingual());
+							properties.getStringOfPathForSiteNotMultilingual());
 				}
 				return;
 			}
@@ -61,9 +59,9 @@ public class MultilingualDetection {
 			long endTime = Calendar.getInstance().getTimeInMillis();
 			synchronized (timeLock) {
 				Utils.csvWr(
-						new String[] { homepageStringUrl, STRINGA_VUOTA, properties.getStringOfMultDetecionHreflang(), STRINGA_VUOTA,
-								Long.toString(endTime - startTime) },
-						java.lang.Thread.currentThread().toString() + properties.getStringOfTimeCSV());
+						new String[] { homepageStringUrl, STRINGA_VUOTA, properties.getStringOfMultDetecionHreflang(),
+								STRINGA_VUOTA, Long.toString(endTime - startTime) },
+						java.lang.Thread.currentThread().toString() + properties.getStringOfPathForTimeCSV());
 			}
 			if (groupOfHomepages != null) {
 				long endDetectionTime = Calendar.getInstance().getTimeInMillis();
@@ -71,32 +69,32 @@ public class MultilingualDetection {
 					Utils.csvWr(
 							new String[] { homepageStringUrl, properties.getStringOfHomepageHreflang(),
 									Long.toString(endDetectionTime - startDetectionTime) },
-							properties.getStringOfSiteMultilingual());
+							properties.getStringOfPathForSiteMultilingualCSV());
 				}
 				// su gruppi di 5 viene lanciata la visita ricorsiva
 				crawling.crawl(groupOfHomepages, properties.getIntOfEntryNumberHreflang(), depthT, errorLogLock,
 						nameFolder, productivityLock, timeLock);
 				return;
 			}
-			// detection con euristica degli outlink
+			// detector per la seconda euristica
 			multilingualDetector = new HomepageOutlinkDetector();
 			startTime = Calendar.getInstance().getTimeInMillis();
 			groupOfHomepages = multilingualDetector.detect(homepageToDetect);
 			endTime = Calendar.getInstance().getTimeInMillis();
 			synchronized (timeLock) {
 				Utils.csvWr(
-						new String[] { homepageStringUrl, STRINGA_VUOTA, properties.getStringOfMultDetectionOutlinks(), STRINGA_VUOTA,
-								Long.toString(endTime - startTime) },
-						java.lang.Thread.currentThread().toString() + properties.getStringOfTimeCSV());
+						new String[] { homepageStringUrl, STRINGA_VUOTA, properties.getStringOfMultDetectionOutlinks(),
+								STRINGA_VUOTA, Long.toString(endTime - startTime) },
+						java.lang.Thread.currentThread().toString() + properties.getStringOfPathForTimeCSV());
 			}
-			// se ho coppie candidate lancio visita ricorsiva
+			// se ho coppie candidate il sito è multilingua
 			if (!groupOfHomepages.isEmpty()) {
 				long endDetectionTime = Calendar.getInstance().getTimeInMillis();
 				synchronized (multSiteLogLock) {
 					Utils.csvWr(
 							new String[] { homepageStringUrl, properties.getStringOfVisitHomepage(),
 									Long.toString(endDetectionTime - startDetectionTime) },
-							properties.getStringOfSiteMultilingual());
+							properties.getStringOfPathForSiteMultilingualCSV());
 				}
 				// pulisco le folder di output e di crawling
 				FetchManager.getInstance().deleteFolders(nameFolder);
@@ -104,20 +102,17 @@ public class MultilingualDetection {
 						nameFolder, productivityLock, timeLock);
 				return;
 			}
-			FetchManager.getInstance().deleteFolders(nameFolder);
-			// se ancora non ho reperito entry points, provo a rilevare
-			// eventuali preHomepage
-			// (con link uscenti paralleli tra loro, ciascuno che porta ad una
-			// lingua diversa)
 			startTime = Calendar.getInstance().getTimeInMillis();
-			PreHomepageOutlinkDetector preHomepageOutlinkDetector = new PreHomepageOutlinkDetector();
-			groupOfHomepages = preHomepageOutlinkDetector.detect(new PreHomepage(homepageStringUrl));
+			// detector per la terza euristica
+			multilingualDetector = new PreHomepageOutlinkDetector();
+			groupOfHomepages = multilingualDetector.detect(new PreHomepage(homepageStringUrl));
 			endTime = Calendar.getInstance().getTimeInMillis();
 			synchronized (timeLock) {
 				Utils.csvWr(
-						new String[] { homepageStringUrl, STRINGA_VUOTA, properties.getStringOfMultDetectionPrehomepage(), STRINGA_VUOTA,
+						new String[] { homepageStringUrl, STRINGA_VUOTA,
+								properties.getStringOfMultDetectionPrehomepage(), STRINGA_VUOTA,
 								Long.toString(endTime - startTime) },
-						java.lang.Thread.currentThread().toString() + properties.getStringOfTimeCSV());
+						java.lang.Thread.currentThread().toString() + properties.getStringOfPathForTimeCSV());
 			}
 			if (groupOfHomepages != null && groupOfHomepages.getListOfPairs().size() != 0) {
 				synchronized (multSiteLogLock) {
@@ -125,7 +120,7 @@ public class MultilingualDetection {
 					Utils.csvWr(
 							new String[] { homepageStringUrl, properties.getStringOfPrehomepage(),
 									Long.toString(endDetectionTime - startDetectionTime) },
-							properties.getStringOfSiteMultilingual());
+							properties.getStringOfPathForSiteMultilingualCSV());
 				}
 				// elimino folder di output e di crawling
 				FetchManager.getInstance().deleteFolders(nameFolder);
@@ -133,46 +128,29 @@ public class MultilingualDetection {
 						nameFolder, productivityLock, timeLock);
 				return;
 			}
-			// se neanche con ultimo metodo non si trova nulla si considera il
-			// sito non mutlilingua
+			// altrimenti considero il sito non multilingua
 			else {
-				try {
-					FetchManager.getInstance().deleteFolders(nameFolder);
-				} catch (Exception e) {
-					e.printStackTrace();
-					synchronized (errorLogLock) {
-						// stampo nell'error log il sito che da il problema e
-						// l'errore
-						Utils.csvWr(homepageStringUrl, e, properties.getStringOfErrorLogCSV());
-					}
-				}
 				synchronized (multSiteLogLock) {
 					long endDetectionTime = Calendar.getInstance().getTimeInMillis();
 					Utils.csvWr(
 							new String[] { homepageStringUrl, Long.toString(endDetectionTime - startDetectionTime) },
-							properties.getStringOfSiteNotMultilingual());
+							properties.getStringOfPathForSiteNotMultilingual());
 				}
-				// System.out.println("FINE STEP 3 PREHOMEPAGE");
 				return;
 			}
 		}
-		// in caso di errori, scrivo sul fiel di log e considero il sito non
-		// multilingua
+		// in caso di errori considero il sito non multilingua.
 		catch (Exception e) {
 			e.printStackTrace();
 			synchronized (errorLogLock) {
 				Utils.csvWr(homepageStringUrl, e, properties.getStringOfErrorLogCSV());
 			}
-			{
-				synchronized (multSiteLogLock) {
-					long endDetectionTime = Calendar.getInstance().getTimeInMillis();
-					Utils.csvWr(
-							new String[] { homepageStringUrl, Long.toString(endDetectionTime - startDetectionTime) },
-							properties.getStringOfSiteNotMultilingual());
-				}
-				// System.out.println("FINE STEP 3");
-				return;
+			synchronized (multSiteLogLock) {
+				long endDetectionTime = Calendar.getInstance().getTimeInMillis();
+				Utils.csvWr(new String[] { homepageStringUrl, Long.toString(endDetectionTime - startDetectionTime) },
+						properties.getStringOfPathForSiteNotMultilingual());
 			}
+			return;
 		}
 	}
 }

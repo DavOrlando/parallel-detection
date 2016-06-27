@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
+
 import org.xml.sax.SAXException;
 
 import com.cybozu.labs.langdetect.LangDetectException;
@@ -17,7 +19,15 @@ import it.uniroma3.parallel.roadrunner.RoadRunnerDataSet;
 import it.uniroma3.parallel.utils.CybozuLanguageDetector;
 import it.uniroma3.parallel.utils.FetchManager;
 
-public class LabelFilter {
+/**
+ * Classe che rappresenta un filtro usato quando si conosce la homepage. Quindi
+ * analizzerà coppie dove il primo elemento è sempre la stessa homepage. (Vedi
+ * seconda euristica).
+ * 
+ * @author davideorlando
+ *
+ */
+public class HomepageLabelFilter {
 	private static final int SECONDA_HOMEPAGE = 1;
 
 	/**
@@ -33,36 +43,53 @@ public class LabelFilter {
 	 * 
 	 */
 	public Collection<URL> filter(ParallelPages groupOfHomepage) {
-		// memorizzeremo solo l'URL con più label
 		Map<String, URL> language2Url = new HashMap<String, URL>();
 		try {
-			language2Url.put(groupOfHomepage.getStarterPage().getLanguage(),groupOfHomepage.getStarterPage().getUrlRedirect());
-			// il valore è il num di label attuale e sostituiremo un URL in
-			// language2Url se e solo se troviamo per quel linguaggio una pagina
-			// con
-			// più label di quelle attuali
+			language2Url.put(groupOfHomepage.getStarterPage().getLanguage(),
+					groupOfHomepage.getStarterPage().getUrlRedirect());
 			Map<String, Integer> language2NumberOfLabel = new HashMap<String, Integer>();
 			// per ogni coppia di homepage analizzo l'output di RR
 			for (PairOfPages pair : groupOfHomepage.getListOfPairs()) {
-				RoadRunnerDataSet roadRunnerDataSet = FetchManager.getInstance().getRoadRunnerDataSet(pair);
-				if (roadRunnerDataSet == null || roadRunnerDataSet.getNumberOfLabels() < 16)
-					continue;
-				List<String> textFromAllLabels = roadRunnerDataSet.getTextFromAllLabels();
-				if (textFromAllLabels == null)
-					continue;
-				if (isEnoughText(textFromAllLabels) && isDifferentLanguage(textFromAllLabels)) {
-					String languagePage = pair.getHomepageFromList(SECONDA_HOMEPAGE).getLanguage();
-					if (language2NumberOfLabel.get(languagePage) == null || language2NumberOfLabel.get(languagePage)
-							.compareTo(roadRunnerDataSet.getNumberOfLabels()) < 0) {
-						language2Url.put(languagePage, pair.getHomepageFromList(SECONDA_HOMEPAGE).getUrlRedirect());
-						language2NumberOfLabel.put(languagePage, roadRunnerDataSet.getNumberOfLabels());
-					}
-				}
+				analyzesPair(language2Url, language2NumberOfLabel, pair);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return language2Url.values();
+	}
+
+	/**
+	 * Analizza la coppia in confronto a quelle già analizzate. Se la coppia
+	 * possiede più label, ovvero regioni parallele all'interno del DOM, per una
+	 * determinata lingua, sostituisce per quel linguaggio la pagina della
+	 * coppia analizzata.
+	 * 
+	 * @param language2Url
+	 * @param language2NumberOfLabel
+	 * @param pair
+	 * @throws XPathExpressionException
+	 * @throws LangDetectException
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	private void analyzesPair(Map<String, URL> language2Url, Map<String, Integer> language2NumberOfLabel,
+			PairOfPages pair) throws XPathExpressionException, LangDetectException, ParserConfigurationException,
+			SAXException, IOException, InterruptedException {
+		RoadRunnerDataSet roadRunnerDataSet = FetchManager.getInstance().getRoadRunnerDataSet(pair);
+		if (roadRunnerDataSet != null && roadRunnerDataSet.getNumberOfLabels() >= 16) {
+			List<String> textFromAllLabels = roadRunnerDataSet.getTextFromAllLabels();
+			if (textFromAllLabels != null && isEnoughText(textFromAllLabels)
+					&& isDifferentLanguage(textFromAllLabels)) {
+				String languagePage = pair.getHomepageFromList(SECONDA_HOMEPAGE).getLanguage();
+				if (language2NumberOfLabel.get(languagePage) == null || language2NumberOfLabel.get(languagePage)
+						.compareTo(roadRunnerDataSet.getNumberOfLabels()) < 0) {
+					language2Url.put(languagePage, pair.getHomepageFromList(SECONDA_HOMEPAGE).getUrlRedirect());
+					language2NumberOfLabel.put(languagePage, roadRunnerDataSet.getNumberOfLabels());
+				}
+			}
+		}
 	}
 
 	/**

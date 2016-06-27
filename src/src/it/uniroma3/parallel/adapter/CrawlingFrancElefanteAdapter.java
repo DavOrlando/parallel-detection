@@ -61,7 +61,7 @@ public class CrawlingFrancElefanteAdapter implements CrawlingAdapter {
 	public Set<List<String>> getGroupOfEntryPoints(int numberMaxOfEntryPoints, ParallelPages parallelPages) {
 		Set<List<String>> group = new HashSet<>();
 		List<String> listOfNumberedURL = new LinkedList<String>();
-		for (URI uri : parallelPages.getParallelURLs()) {
+		for (URI uri : parallelPages.getParallelURIs()) {
 			if (listOfNumberedURL.size() == numberMaxOfEntryPoints) {
 				group.add(listOfNumberedURL);
 				listOfNumberedURL = new LinkedList<String>();

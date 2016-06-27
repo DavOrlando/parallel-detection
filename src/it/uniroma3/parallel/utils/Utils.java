@@ -8,6 +8,7 @@ import au.com.bytecode.opencsv.CSVWriter;
 
 /**
  * Classe di utilità generale.
+ * 
  * @author francescoelefante
  *
  */
@@ -26,15 +27,27 @@ public class Utils {
 		return (year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second + "." + millis);
 	}
 
-
-	// funzione che scrive su un file csv
+	/**
+	 * Scrive su un file csv i campi specificati per parametro.
+	 * 
+	 * @param fields
+	 * @param pathCSV
+	 * @throws IOException
+	 */
 	public static void csvWr(String[] fields, String pathCSV) throws IOException {
 		CSVWriter writer = new CSVWriter(new FileWriter(pathCSV, true), '\t');
 		writer.writeNext(fields);
 		writer.close();
 	}
 
-
+	/**
+	 * Scrive su un file csv l'eccezione passata per parametro.
+	 * 
+	 * @param site
+	 * @param e
+	 * @param pathCSV
+	 * @throws IOException
+	 */
 	public static void csvWr(String site, Exception e, String pathCSV) throws IOException {
 		e.printStackTrace();
 		String[] fields = new String[] { site, e.toString() };

@@ -95,7 +95,7 @@ public class HomepageOutlinkDetectorTest {
 	}
 
 	@Test
-	public void oneGoodAndOneBadOutlink() {
+	public void oneGoodAndOneBadOutlinkTest() {
 		try {
 			this.page = new Page(new URL(URL_FOR_TEST + "oneGoodAndOneBadOutlink.html"));
 			assertEquals(1, homepageOutlinkDetector.getMultilingualPage(page).size());

@@ -12,15 +12,15 @@ import it.uniroma3.parallel.model.ParallelPages;
 import it.uniroma3.parallel.model.Page;
 
 /**
- * Classe che rappresenta un rilevatore di siti multilingua attraverso
- * l'euristica della ricerca degli attributi hreflang nei link.
+ * Classe che rappresenta la prima l'euristica fa la ricerca degli attributi
+ * hreflang nei link.
  * 
  * 
  * @author davideorlando
  * @see MultilingualDetector
  * @see Detector
  */
-public class HreflangDetector extends MultilingualDetector{
+public class HreflangDetector extends MultilingualDetector {
 
 	/**
 	 * Si cercano nella homepage del sito passato come parametro dei link
@@ -33,8 +33,8 @@ public class HreflangDetector extends MultilingualDetector{
 	 *            la pagina che rappresenta l'homepage del sito
 	 * @return GroupOfParallelUrls
 	 * @throws IOException
-	 * @throws LangDetectException 
-	 * @throws URISyntaxException 
+	 * @throws LangDetectException
+	 * @throws URISyntaxException
 	 */
 	@Override
 	public ParallelPages detect(Page page) throws IOException, LangDetectException, URISyntaxException {

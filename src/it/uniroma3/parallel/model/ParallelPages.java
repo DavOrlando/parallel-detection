@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,17 +45,28 @@ public class ParallelPages {
 		this.starterPage = starterPage;
 		this.candidateParallelHomepages.put(starterPage.getUrlRedirect().toURI(), starterPage);
 	}
-	
+
+	/**
+	 * Ritorna la pagina da cui è stata creata questa struttura dati.
+	 * 
+	 * @return
+	 */
 	public Page getStarterPage() {
 		return starterPage;
 	}
 
+	/**
+	 * Ritorna la lista di pagine candidate ad essere homepage parallele
+	 * multilingua.
+	 * 
+	 * @return
+	 */
 	public List<Page> getCandidateParallelHomepages() {
 		return new ArrayList<>(candidateParallelHomepages.values());
 	}
 
 	public List<PairOfPages> getListOfPairs() {
-		return new ArrayList<>(listOfPairs);
+		return new LinkedList<>(listOfPairs);
 	}
 
 	public void setListOfPair(List<PairOfPages> listOfPair) {
@@ -62,15 +74,13 @@ public class ParallelPages {
 	}
 
 	/**
-	 * Ritorna la collezione di URL composta dalla homepage primitiva e da URL
+	 * Ritorna la collezione di URI composta dalla homepage primitiva e da URL
 	 * provenienti dalle probabili homepage parallele.
 	 * 
 	 * @return
 	 */
-	public Set<URI> getParallelURLs() {
-		HashSet<URI> parallelURLs = new HashSet<>();
-		parallelURLs.addAll(candidateParallelHomepages.keySet());
-		return parallelURLs;
+	public Set<URI> getParallelURIs() {
+		return new HashSet<>(candidateParallelHomepages.keySet());
 	}
 
 	/***
@@ -80,7 +90,7 @@ public class ParallelPages {
 	 */
 	public boolean isEmpty() {
 		// perchè la homepage c'è sempre
-		return this.candidateParallelHomepages.size() == 1;
+		return this.candidateParallelHomepages.size() <= 1;
 	}
 
 	/**
@@ -94,7 +104,7 @@ public class ParallelPages {
 	public void lasciaSoloQuestiURL(Collection<URL> urls) throws URISyntaxException {
 		Map<URI, Page> parallelHomepages = new HashMap<>();
 		for (URL url : urls)
-			parallelHomepages.put(url.toURI(), this.candidateParallelHomepages.get(url));
+			parallelHomepages.put(url.toURI(), this.candidateParallelHomepages.get(url.toURI()));
 		this.candidateParallelHomepages = parallelHomepages;
 	}
 

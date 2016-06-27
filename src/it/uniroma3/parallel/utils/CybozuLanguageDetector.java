@@ -22,7 +22,6 @@ import it.uniroma3.parallel.configuration.ConfigurationProperties;
  */
 public class CybozuLanguageDetector {
 
-	private static final String PROFILES_SM = "profiles.sm";
 	private static CybozuLanguageDetector instance;
 	private Detector detector;
 
@@ -34,7 +33,7 @@ public class CybozuLanguageDetector {
 		// caricamento dei profili per la language detection
 		if (DetectorFactory.getLangList().size() == 0)
 			try {
-				DetectorFactory.loadProfile(PROFILES_SM);
+				DetectorFactory.loadProfile(ConfigurationProperties.getInstance().getProfileFilePath());
 				this.detector = DetectorFactory.create();
 			} catch (LangDetectException e) {
 				// TODO Auto-generated catch block
@@ -62,8 +61,8 @@ public class CybozuLanguageDetector {
 	 * @throws LangDetectException
 	 */
 	public String detect(Document document) throws LangDetectException {
-		String paragraphHtmlDocument="";
-		for(String element : ConfigurationProperties.getInstance().getElementsForLanguageDetection())
+		String paragraphHtmlDocument = "";
+		for (String element : ConfigurationProperties.getInstance().getElementsForLanguageDetection())
 			paragraphHtmlDocument += getStringElement(element, document);
 		if (paragraphHtmlDocument.length() == 0) {
 			detector.append(document.text());
@@ -89,6 +88,13 @@ public class CybozuLanguageDetector {
 		return paragraphHtmlDocument.text();
 	}
 
+	/**
+	 * Ritorna il linguaggio della lista di stringhe.
+	 * 
+	 * @param testiConcatenati
+	 * @return
+	 * @throws LangDetectException
+	 */
 	public Set<String> getLanguagesOfStrings(List<String> testiConcatenati) throws LangDetectException {
 		Set<String> setOfLanguages = new HashSet<>();
 		for (String testo : testiConcatenati) {
@@ -98,6 +104,13 @@ public class CybozuLanguageDetector {
 		return setOfLanguages;
 	}
 
+	/**
+	 * Ritorna il linguaggio della stringa passata per parametro.
+	 * 
+	 * @param testo
+	 * @return
+	 * @throws LangDetectException
+	 */
 	public String textLanguageDetection(String testo) throws LangDetectException {
 		// risultati della language detection(en, it, ...)
 		String langDetect = "";
