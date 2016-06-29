@@ -55,7 +55,7 @@ public class MultilingualDetectionTest {
 
 	@Test
 	public void multilingualDetectionHomepage_test_real_site() throws IOException, InterruptedException, LangDetectException {
-		multiDetection.multilingualDetection(HOMEPAGE_DETECTION, 2, new ReentrantLock(), new ReentrantLock(),
+		multiDetection.multilingualDetection("it.flightaware.com", 2, new ReentrantLock(), new ReentrantLock(),
 				new ReentrantLock(), new ReentrantLock());
 	}
 	

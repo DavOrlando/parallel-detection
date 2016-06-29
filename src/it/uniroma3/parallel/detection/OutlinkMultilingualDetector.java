@@ -132,7 +132,7 @@ public abstract class OutlinkMultilingualDetector extends MultilingualDetector {
 			} catch (IOException e) {
 				logger.error(e);
 			} catch (IllegalArgumentException e){
-				logger.error(e);
+				logger.error(e + " Assicurati di avere href all'interno di "+link.toString());
 			}
 		}
 		return filteredPages;
