@@ -12,7 +12,6 @@ import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggerFactory;
 
 /**
  * Classe che rappresenta le proprietà di configurazione della fase di

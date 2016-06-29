@@ -3,8 +3,6 @@ package it.uniroma3.parallel.detection;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.LinkedList;
-import java.util.List;
-
 import com.cybozu.labs.langdetect.LangDetectException;
 
 import it.uniroma3.parallel.model.ParallelPages;
@@ -77,6 +75,7 @@ public class HomepageOutlinkDetector extends OutlinkDetector {
 	 * 
 	 * @return
 	 */
+	@Override
 	public void organizeInPairs(ParallelPages parallelPage) {
 		LinkedList<PairOfPages> listOfPairs = new LinkedList<>();
 		int i = 1;

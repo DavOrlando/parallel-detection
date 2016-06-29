@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import it.uniroma3.parallel.model.Page;
 import it.uniroma3.parallel.model.PairOfPages;
-import it.uniroma3.parallel.model.PreHomepage;
 
 public class PairOfHomepagesTest {
 

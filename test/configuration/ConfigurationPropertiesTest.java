@@ -1,4 +1,4 @@
-package featureTest;
+package configuration;
 
 import static org.junit.Assert.*;
 
@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import it.uniroma3.parallel.configuration.ConfigurationProperties;
 
-public class MakeSetOfTest {
+public class ConfigurationPropertiesTest {
 	private static final String ES = "es";
 	private static final String EN = "en";
 	private static final int _500 = 500;

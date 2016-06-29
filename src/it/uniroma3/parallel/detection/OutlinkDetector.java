@@ -1,15 +1,12 @@
 package it.uniroma3.parallel.detection;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
-
 import com.cybozu.labs.langdetect.LangDetectException;
 
 import it.uniroma3.parallel.filter.LanguageFilter;
