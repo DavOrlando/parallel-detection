@@ -43,7 +43,7 @@ public class MultilingualDetection {
 			// l'homepage su cui si fa la detection
 			Page homepageToDetect = new Page(homepageStringUrl);
 			// detector per la prima euristica
-			MultilingualDetector multilingualDetector = new HreflangDetector();
+			MultilingualDetector multilingualDetector = new HreflangMultilingualDetector();
 			// controllo per escludere alcuni siti falsi positivi multilingua
 			if (multilingualDetector.isInBlacklist(homepageToDetect.getUrlRedirect())) {
 				synchronized (multSiteLogLock) {
@@ -79,7 +79,7 @@ public class MultilingualDetection {
 				return;
 			}
 			// detector per la seconda euristica
-			multilingualDetector = new HomepageOutlinkDetector();
+			multilingualDetector = new HomepageOutlinkMultilingualDetector();
 			startTime = Calendar.getInstance().getTimeInMillis();
 			groupOfHomepages = multilingualDetector.detect(homepageToDetect);
 			endTime = Calendar.getInstance().getTimeInMillis();
@@ -106,7 +106,7 @@ public class MultilingualDetection {
 			}
 			startTime = Calendar.getInstance().getTimeInMillis();
 			// detector per la terza euristica
-			multilingualDetector = new PreHomepageOutlinkDetector();
+			multilingualDetector = new PreHomepageOutlinkMultilingualDetector();
 			groupOfHomepages = multilingualDetector.detect(new PreHomepage(homepageStringUrl));
 			endTime = Calendar.getInstance().getTimeInMillis();
 			synchronized (timeLock) {

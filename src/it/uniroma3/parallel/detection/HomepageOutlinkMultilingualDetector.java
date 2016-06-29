@@ -21,9 +21,9 @@ import it.uniroma3.parallel.utils.FetchManager;
  * @author davideorlando
  *
  */
-public class HomepageOutlinkDetector extends OutlinkDetector {
+public class HomepageOutlinkMultilingualDetector extends OutlinkMultilingualDetector {
 
-	public HomepageOutlinkDetector() {
+	public HomepageOutlinkMultilingualDetector() {
 
 	}
 

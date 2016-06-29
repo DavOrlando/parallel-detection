@@ -23,7 +23,7 @@ import it.uniroma3.parallel.model.ParallelPages;
  *
  */
 
-public abstract class OutlinkDetector extends MultilingualDetector {
+public abstract class OutlinkMultilingualDetector extends MultilingualDetector {
 
 	public abstract void organizeInPairs(ParallelPages parallelPage) throws LangDetectException;
 

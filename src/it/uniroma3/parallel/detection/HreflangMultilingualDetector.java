@@ -20,7 +20,7 @@ import it.uniroma3.parallel.model.Page;
  * @see MultilingualDetector
  * @see Detector
  */
-public class HreflangDetector extends MultilingualDetector {
+public class HreflangMultilingualDetector extends MultilingualDetector {
 
 	/**
 	 * Si cercano nella homepage del sito passato come parametro dei link

@@ -1,4 +1,4 @@
-package classTest;
+package detection;
 
 
 import static org.junit.Assert.*;
@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import com.cybozu.labs.langdetect.LangDetectException;
 
-import it.uniroma3.parallel.detection.HreflangDetector;
+import it.uniroma3.parallel.detection.HreflangMultilingualDetector;
 import it.uniroma3.parallel.model.ParallelPages;
 import it.uniroma3.parallel.model.Page;
 
@@ -19,17 +19,17 @@ public class HreflangDetectorTest {
 
 	private static final String URL_FOR_TEST = "http://localhost:8080/testForHreflang/";
 	private static final String ABSOLUTE_URL = "http://localhost:8080/testForHreflang/homeFr.html";
-	private HreflangDetector homepageDetector;
+	private HreflangMultilingualDetector homepageDetector;
 	private Page page;
 	
 	@Before
 	public void setUp() throws Exception {
-		this.homepageDetector = new HreflangDetector();
+		this.homepageDetector = new HreflangMultilingualDetector();
 	}
 	
 
 	@Test
-	public void pageWithNoHreflang() {
+	public void detectPageWithoutHreflang_test() {
 		try {
 			page= new Page(URL_FOR_TEST +"noHreflang.html");
 			assertNull(this.homepageDetector.detect(page));
@@ -41,7 +41,7 @@ public class HreflangDetectorTest {
 	
 
 	@Test
-	public void pageWithOneHreflang() {
+	public void detectPageWithOneHreflang_test() {
 		try {
 			page= new Page(URL_FOR_TEST+"oneHreflang.html");
 			ParallelPages detectByHreflang = this.homepageDetector.detect(page);
@@ -55,7 +55,7 @@ public class HreflangDetectorTest {
 	}
 	
 	@Test
-	public void pageWithOneHreflangRelative() {
+	public void detectPageWithOneHreflangRelative_test() {
 		try {
 			page= new Page(URL_FOR_TEST+"oneHreflangRelative.html");
 			ParallelPages detectByHreflang = this.homepageDetector.detect(page);
@@ -68,7 +68,7 @@ public class HreflangDetectorTest {
 	
 	
 	@Test
-	public void pageWithTwoHreflang() {
+	public void detectPageWithTwoHreflang_test() {
 		try {
 			page= new Page(new URL(URL_FOR_TEST+"twoHreflang.html"));
 			ParallelPages detectByHreflang = this.homepageDetector.detect(page);
@@ -81,7 +81,7 @@ public class HreflangDetectorTest {
 	}
 	
 	@Test
-	public void pageWithTwoButOneIsRelativeHreflang() {
+	public void detectPageWithTwoButOneIsRelativeHreflang_test() {
 		try {
 			page= new Page(new URL(URL_FOR_TEST+"twoHreflangButOneIsRelative.html"));
 			ParallelPages detectByHreflang = this.homepageDetector.detect(page);
@@ -93,7 +93,7 @@ public class HreflangDetectorTest {
 	}
 	
 	@Test
-	public void homepageWithDuplicateHreflang() {
+	public void detectHomepageWithDuplicateHreflang_test() {
 		try {
 			page= new Page(new URL(URL_FOR_TEST+"duplicateHreflang.html"));
 			ParallelPages detectByHreflang = this.homepageDetector.detect(page);

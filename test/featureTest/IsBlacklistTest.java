@@ -9,15 +9,15 @@ import java.net.URL;
 import org.junit.Before;
 import org.junit.Test;
 
-import it.uniroma3.parallel.detection.HreflangDetector;
+import it.uniroma3.parallel.detection.HreflangMultilingualDetector;
 
 public class IsBlacklistTest {
 
-	private HreflangDetector multilingualDetector;
+	private HreflangMultilingualDetector multilingualDetector;
 
 	@Before
 	public void setUp() {
-		multilingualDetector = new HreflangDetector();
+		multilingualDetector = new HreflangMultilingualDetector();
 	}
 
 	@Test

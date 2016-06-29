@@ -7,7 +7,7 @@ import java.net.URL;
 import org.junit.Before;
 import org.junit.Test;
 
-import it.uniroma3.parallel.detection.HomepageOutlinkDetector;
+import it.uniroma3.parallel.detection.HomepageOutlinkMultilingualDetector;
 import it.uniroma3.parallel.model.Page;
 
 public class HomepageOutlinkDetectorTest {
@@ -18,14 +18,14 @@ public class HomepageOutlinkDetectorTest {
 	private static final String URL_FOR_TEST = "http://localhost:8080/testForLevenshteinAndLanguageFilter/";
 
 	private URL urlSite;
-	private HomepageOutlinkDetector homepageOutlinkDetector;
+	private HomepageOutlinkMultilingualDetector homepageOutlinkDetector;
 	private Page page;
 
 	@Before
 	public void setUp() throws Exception {
 		this.urlSite = new URL("http://localhost:8080/testMinimale/homeIt.html");
 		this.page = new Page(urlSite);
-		homepageOutlinkDetector = new HomepageOutlinkDetector();
+		homepageOutlinkDetector = new HomepageOutlinkMultilingualDetector();
 	}
 
 	@Test

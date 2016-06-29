@@ -24,7 +24,7 @@ import it.uniroma3.parallel.utils.FetchManager;
  * @author davideorlando
  *
  */
-public class PreHomepageOutlinkDetector extends OutlinkDetector {
+public class PreHomepageOutlinkMultilingualDetector extends OutlinkMultilingualDetector {
 	@Override
 	public ParallelPages detect(Page page)
 			throws IOException, InterruptedException, LangDetectException, URISyntaxException {
