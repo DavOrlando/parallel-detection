@@ -7,7 +7,7 @@ import org.jsoup.nodes.Document;
 import com.cybozu.labs.langdetect.LangDetectException;
 
 import it.uniroma3.parallel.utils.CybozuLanguageDetector;
-import it.uniroma3.parallel.utils.UrlUtil;
+import it.uniroma3.parallel.utils.UrlUtils;
 
 /**
  * Classe che rappresenta il concetto di pagina. Ovvero possiede i dati che sono
@@ -38,7 +38,7 @@ public class Page {
 	 * @throws IOException
 	 */
 	public Page(String homepageStringUrl) throws IOException {
-		this(new URL(UrlUtil.addHttp(homepageStringUrl)));
+		this(new URL(UrlUtils.getInstance().addHttp(homepageStringUrl)));
 	}
 
 	/***

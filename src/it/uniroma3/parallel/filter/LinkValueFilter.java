@@ -33,7 +33,11 @@ public class LinkValueFilter {
 	 * @return
 	 */
 	public boolean filter(String text) {
-		return this.getSetForFilter().contains(text.toLowerCase());
+		String normalizedText = text.toLowerCase();
+		String[] texts = normalizedText.split(" ");
+		if(texts.length == 2)
+			return this.getSetForFilter().contains(texts[0]) || this.getSetForFilter().contains(texts[1]);
+		return this.getSetForFilter().contains(normalizedText);
 	}
 
 }

@@ -1,8 +1,12 @@
 package classTest;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 /*siti su cui lanciare il processo
@@ -30,12 +34,7 @@ import com.cybozu.labs.langdetect.LangDetectException;
 
 import it.uniroma3.parallel.detection.MultilingualDetection;
 
-// File f = new File("seedTot2.txt");
-// List<String> siti = FileUtils.readLines(f);
-// for (String sito : siti)
-// MultilingualDetection.multilingualDetection(sito, 2, new
-// ReentrantLock(), new ReentrantLock(), new ReentrantLock(),
-// new ReentrantLock());
+
 public class MultilingualDetectionTest {
 	
 	private static final String HREFLANG_DETECTION = "www.ferrari.com";
@@ -56,7 +55,7 @@ public class MultilingualDetectionTest {
 
 	@Test
 	public void multilingualDetectionHomepage_test_real_site() throws IOException, InterruptedException, LangDetectException {
-		multiDetection.multilingualDetection(HOMEPAGE_DETECTION, 2, new ReentrantLock(), new ReentrantLock(),
+		multiDetection.multilingualDetection("http://www.usapartsdirect.com/", 2, new ReentrantLock(), new ReentrantLock(),
 				new ReentrantLock(), new ReentrantLock());
 	}
 	
@@ -65,4 +64,17 @@ public class MultilingualDetectionTest {
 		multiDetection.multilingualDetection(HREFLANG_DETECTION, 2, new ReentrantLock(), new ReentrantLock(),
 				new ReentrantLock(), new ReentrantLock());
 	}
+	
+//	@Test
+//	public void exp1_test() throws IOException, InterruptedException, LangDetectException {
+//		long time_start = Calendar.getInstance().getTimeInMillis();
+//		File f = new File("exp1.txt");
+//		List<String> siti = FileUtils.readLines(f);
+//		for (String sito : siti)
+//		this.multiDetection.multilingualDetection(sito, 2, new
+//		ReentrantLock(), new ReentrantLock(), new ReentrantLock(),
+//		new ReentrantLock());
+//		long time_finish = Calendar.getInstance().getTimeInMillis();
+//		System.out.println(time_finish-time_start);
+//	}
 }

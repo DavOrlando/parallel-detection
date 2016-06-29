@@ -198,7 +198,7 @@ public class FetchManager {
 	 * 
 	 * @param nameFolder
 	 */
-	public void deleteFolders(String nameFolder) {
+	public void deleteOutput(String nameFolder) {
 		try {
 			FileUtils.deleteDirectory(new File(configuration.getStringOfFolderOutput()));
 			FileUtils.deleteDirectory(new File(configuration.getStringOfFolderForHtmlPages() + nameFolder));

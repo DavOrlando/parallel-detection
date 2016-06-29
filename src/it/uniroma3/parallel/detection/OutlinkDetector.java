@@ -3,10 +3,12 @@ package it.uniroma3.parallel.detection;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
 
 import com.cybozu.labs.langdetect.LangDetectException;
 
@@ -76,11 +78,18 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 		LinkValueFilter textValueOfLinkFilter = new LinkValueFilter();
 		for (Element link : this.getAllOutlinks(page)) {
 			try {
-				Page outlinkPage;
 				if (textValueOfLinkFilter.filter(link.text())) {
-					outlinkPage = new Page(link.absUrl("href"));
+					Page outlinkPage = new Page(link.absUrl("href"));
 					if (languageFilter.filter(page, outlinkPage))
 						filteredPages.add(outlinkPage);
+				}
+				for (Element element : link.getElementsByTag("img")) {
+					if (element.hasAttr("alt"))
+						if (textValueOfLinkFilter.filter(element.attr("alt"))) {
+							Page outlinkPage = new Page(link.absUrl("href"));
+							if (languageFilter.filter(page, outlinkPage))
+								filteredPages.add(outlinkPage);
+						}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

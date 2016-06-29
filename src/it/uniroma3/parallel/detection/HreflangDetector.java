@@ -1,6 +1,7 @@
 package it.uniroma3.parallel.detection;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import org.jsoup.nodes.Element;
@@ -9,6 +10,7 @@ import org.jsoup.select.Elements;
 import com.cybozu.labs.langdetect.LangDetectException;
 
 import it.uniroma3.parallel.model.ParallelPages;
+import it.uniroma3.parallel.utils.UrlUtils;
 import it.uniroma3.parallel.model.Page;
 
 /**
@@ -42,9 +44,11 @@ public class HreflangDetector extends MultilingualDetector {
 		if (linksInHomePage.isEmpty())
 			return null;
 		ParallelPages groupOfHomepages = new ParallelPages(page);
-		for (Element link : linksInHomePage)
-			groupOfHomepages.addCandidateParallelHomepage(new URL(link.attr("abs:href")));
+		for (Element link : linksInHomePage){
+			groupOfHomepages.addCandidateParallelHomepage(UrlUtils.getInstance().getAbsoluteURL(link));
+		}
 		return groupOfHomepages;
 	}
+ 
 
 }

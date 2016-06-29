@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import it.uniroma3.parallel.utils.UrlUtil;
+import it.uniroma3.parallel.utils.UrlUtils;
 
 public class UrlUtilTest {
 	String urlSite;
@@ -18,34 +18,8 @@ public class UrlUtilTest {
 	@Test
 	public void addHttpTest() {
 		String completeUrlString = "http://www.test.com/test/";
-		assertEquals(completeUrlString, UrlUtil.addHttp(this.urlSite));
+		assertEquals(completeUrlString, UrlUtils.getInstance().addHttp(this.urlSite));
 	}
 
 	
-//
-//	@Test
-//	public void getNameFolderFromSiteUrlTest_removeQuestionPoint() {
-//		String urlSiteWithQuestionPoint = "http://www.test.com/test/?";
-//		String folderNameSite = "www.test.comtest";
-//		try {
-//			assertEquals(folderNameSite, UrlUtil.getNameFolderFromSiteUrl(new URL(urlSiteWithQuestionPoint)));
-//		} catch (MalformedURLException e) {
-//			fail();
-//			e.printStackTrace();
-//		}
-//	}
-
-
-	
-
-	@Test
-	public void hasHttp_UrlWithHttp() {
-		assertTrue(UrlUtil.hasHttp(UrlUtil.addHttp(this.urlSite)));
-	}
-
-	@Test
-	public void hasHttp_UrlWithoutHttp() {
-		assertFalse(UrlUtil.hasHttp(this.urlSite));
-	}
-
 }

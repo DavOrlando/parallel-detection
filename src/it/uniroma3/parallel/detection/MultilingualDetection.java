@@ -1,5 +1,6 @@
 package it.uniroma3.parallel.detection;
 
+
 import it.uniroma3.parallel.model.ParallelPages;
 import it.uniroma3.parallel.model.PreHomepage;
 import it.uniroma3.parallel.configuration.ConfigurationProperties;
@@ -52,7 +53,7 @@ public class MultilingualDetection {
 				return;
 			}
 			// Prendo il nome della cartella di output dall'URL della homepage
-			String nameFolder = homepageToDetect.getPageName();
+			String outputName = homepageToDetect.getPageName();
 			ParallelPages groupOfHomepages;
 			long startTime = Calendar.getInstance().getTimeInMillis();
 			groupOfHomepages = multilingualDetector.detect(homepageToDetect);
@@ -73,7 +74,7 @@ public class MultilingualDetection {
 				}
 				// su gruppi di 5 viene lanciata la visita ricorsiva
 				crawling.crawl(groupOfHomepages, properties.getIntOfEntryNumberHreflang(), depthT, errorLogLock,
-						nameFolder, productivityLock, timeLock);
+						outputName, productivityLock, timeLock);
 				return;
 			}
 			// detector per la seconda euristica
@@ -97,9 +98,9 @@ public class MultilingualDetection {
 							properties.getStringOfPathForSiteMultilingualCSV());
 				}
 				// pulisco le folder di output e di crawling
-				FetchManager.getInstance().deleteFolders(nameFolder);
+				FetchManager.getInstance().deleteOutput(outputName);
 				crawling.crawl(groupOfHomepages, properties.getIntOfEntryNumberOutlink(), depthT, errorLogLock,
-						nameFolder, productivityLock, timeLock);
+						outputName, productivityLock, timeLock);
 				return;
 			}
 			startTime = Calendar.getInstance().getTimeInMillis();
@@ -123,13 +124,14 @@ public class MultilingualDetection {
 							properties.getStringOfPathForSiteMultilingualCSV());
 				}
 				// elimino folder di output e di crawling
-				FetchManager.getInstance().deleteFolders(nameFolder);
+				FetchManager.getInstance().deleteOutput(outputName);
 				crawling.crawl(groupOfHomepages, properties.getIntOfEntryNumberOutlink(), depthT, errorLogLock,
-						nameFolder, productivityLock, timeLock);
+						outputName, productivityLock, timeLock);
 				return;
 			}
 			// altrimenti considero il sito non multilingua
 			else {
+				FetchManager.getInstance().deleteOutput(outputName);
 				synchronized (multSiteLogLock) {
 					long endDetectionTime = Calendar.getInstance().getTimeInMillis();
 					Utils.csvWr(
