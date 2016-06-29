@@ -1,4 +1,4 @@
-package detection;
+package it.uniroma3.detection;
 
 
 import static org.junit.Assert.*;
@@ -15,7 +15,7 @@ import it.uniroma3.parallel.detection.HreflangMultilingualDetector;
 import it.uniroma3.parallel.model.ParallelPages;
 import it.uniroma3.parallel.model.Page;
 
-public class HreflangDetectorTest {
+public class HreflangMultilingualDetectorTest {
 
 	private static final String URL_FOR_TEST = "http://localhost:8080/testForHreflang/";
 	private static final String ABSOLUTE_URL = "http://localhost:8080/testForHreflang/homeFr.html";

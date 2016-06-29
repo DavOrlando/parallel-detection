@@ -1,4 +1,4 @@
-package adapter;
+package it.uniroma3.adapter;
 
 import static org.junit.Assert.*;
 

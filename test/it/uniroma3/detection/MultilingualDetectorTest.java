@@ -1,4 +1,4 @@
-package featureTest;
+package it.uniroma3.detection;
 
 
 import static org.junit.Assert.*;
@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import it.uniroma3.parallel.detection.HreflangMultilingualDetector;
 
-public class IsBlacklistTest {
+public class MultilingualDetectorTest {
 
 	private HreflangMultilingualDetector multilingualDetector;
 

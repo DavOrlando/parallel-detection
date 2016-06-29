@@ -339,4 +339,16 @@ public class ConfigurationProperties {
 		return elementsForLanguageDetection;
 	}
 
+	/**
+	 * Ritorna la lista di tag che potrebbero contenere link esterni verso
+	 * pagine multilingua parallele.
+	 * 
+	 * @return
+	 */
+	public List<String> getStringOfTagName() {
+		LinkedList<String> tagNames = new LinkedList<String>();
+		for (String s : getPropertyList(configuration, "tagNames"))
+			tagNames.add(s);
+		return tagNames;
+	}
 }
