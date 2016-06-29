@@ -15,8 +15,8 @@ import it.uniroma3.parallel.filter.LinkTextFilter;
 import it.uniroma3.parallel.model.Page;
 
 public class OutlinkMultilingualDetectorTest {
-	
-	private static final String URL_TEST_GETMULTILINGUALPAGE = "http://localhost:8080/testForMultilingualFilter/";
+
+	private static final String URL_TEST_GETMULTILINGUALPAGE = "http://localhost:8080/testForHomepageMultilingualDetection/";
 	private static final String ALT_TEXT = "http://localhost:8080/test/multilingualEn1.html";
 	private static final String NO_OUTLINK = "http://localhost:8080/test/poorMultilingualIt1.html";
 	private static final String HTTP_LOCALHOST_8080_TEST_HOME_IT_HTML = "http://localhost:8080/test/homeIt.html";
@@ -136,9 +136,9 @@ public class OutlinkMultilingualDetectorTest {
 			fail();
 		}
 	}
-	
+
 	@Test
-	public void getMultilingualPageFromPageWithoutMultilingualPage_test(){
+	public void getMultilingualPageFromPageWithoutMultilingualPage_test() {
 		try {
 			assertTrue(this.outlinkDetector.getMultilingualPage(new Page(NO_ALT_TEXT)).isEmpty());
 		} catch (IOException e) {
@@ -146,27 +146,26 @@ public class OutlinkMultilingualDetectorTest {
 			fail();
 		}
 	}
-	
+
 	@Test
-	public void getMultilingualPageFromPageWithTwoMultilingualPage_test(){
+	public void getMultilingualPageFromPageWithTwoMultilingualPage_test() {
 		assertFalse(this.outlinkDetector.getMultilingualPage(page).isEmpty());
-		assertEquals(2,this.outlinkDetector.getMultilingualPage(page).size());
+		assertEquals(2, this.outlinkDetector.getMultilingualPage(page).size());
 	}
 
-
 	@Test
-	public void getMultilingualPageNoOutlinkTest_test() {
+	public void getMultilingualPageNoOutlink_test() {
 		try {
 			this.page = new Page(new URL(URL_TEST_GETMULTILINGUALPAGE + "noOutlink.html"));
 			assertTrue(outlinkDetector.getMultilingualPage(page).isEmpty());
 		} catch (Exception e) {
-			fail();
 			e.printStackTrace();
+			fail();
 		}
 	}
 
 	@Test
-	public void getMultilingualPageOneGoodOutlinkTest_test() {
+	public void getMultilingualPageOneGoodOutlink_test() {
 		try {
 			this.page = new Page(new URL(URL_TEST_GETMULTILINGUALPAGE + "oneOutlink.html"));
 			assertEquals(1, outlinkDetector.getMultilingualPage(page).size());
@@ -176,12 +175,11 @@ public class OutlinkMultilingualDetectorTest {
 		}
 	}
 
-
 	@Test
-	public void getMultilingualPageTwoEqualsOutlinkTest_test() {
+	public void getMultilingualPageTwoEqualsOutlink_test() {
 		try {
 			this.page = new Page(new URL(URL_TEST_GETMULTILINGUALPAGE + "twoEqualsOutlink.html"));
-			assertEquals(1,outlinkDetector.getMultilingualPage(page).size());
+			assertEquals(1, outlinkDetector.getMultilingualPage(page).size());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
@@ -200,7 +198,7 @@ public class OutlinkMultilingualDetectorTest {
 	}
 
 	@Test
-	public void getMultilingualPageOneGoodAndOneBadOutlinkTest_test() {
+	public void getMultilingualPageOneGoodAndOneBadOutlink_test() {
 		try {
 			this.page = new Page(new URL(URL_TEST_GETMULTILINGUALPAGE + "oneGoodAndOneBadOutlink.html"));
 			assertEquals(1, this.outlinkDetector.getMultilingualPage(page).size());

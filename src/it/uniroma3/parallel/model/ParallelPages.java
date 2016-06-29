@@ -39,11 +39,9 @@ public class ParallelPages {
 	 * per parametro nella mappa di possibili pagine parallele candidate.
 	 * 
 	 * @param starterPage
-	 * @throws LangDetectException
-	 * @throws MalformedURLException
 	 * @throws URISyntaxException
 	 */
-	public ParallelPages(Page starterPage) throws LangDetectException, MalformedURLException, URISyntaxException {
+	public ParallelPages(Page starterPage) throws URISyntaxException  {
 		this.candidateParallelHomepages = new HashMap<>();
 		this.starterPage = starterPage;
 		this.candidateParallelHomepages.put(starterPage.getUrlRedirect().toURI(), starterPage);

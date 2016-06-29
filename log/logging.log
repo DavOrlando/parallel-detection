@@ -17,3 +17,39 @@
 2016-06-29 18:49:31 ERROR ConfigurationProperties:324 - java.io.FileNotFoundException: File 'vuoto' does not exist
 2016-06-29 18:49:36 ERROR ConfigurationProperties:324 - java.io.FileNotFoundException: File 'vuoto' does not exist
 2016-06-29 18:50:11 ERROR ConfigurationProperties:324 - java.io.FileNotFoundException: File 'vuoto' does not exist
+2016-06-29 21:18:13 ERROR Page:66 - org.jsoup.HttpStatusException: HTTP error fetching URL. Status=404, URL=http://localhost:8080/testForMultilingualFilter/oneGoodAndOneBadOutlink.html
+2016-06-29 21:19:36 ERROR Page:66 - java.lang.IllegalArgumentException: protocol = http host = null
+2016-06-29 21:19:36 ERROR Page:66 - java.lang.IllegalArgumentException: protocol = http host = null
+2016-06-29 21:19:36 ERROR Page:66 - java.lang.IllegalArgumentException: protocol = http host = null
+2016-06-29 21:25:11 ERROR OutlinkMultilingualDetector:133 - java.net.MalformedURLException: no protocol: 
+2016-06-29 21:25:11 ERROR OutlinkMultilingualDetector:133 - java.net.MalformedURLException: no protocol: 
+2016-06-29 21:25:11 ERROR OutlinkMultilingualDetector:133 - java.net.MalformedURLException: no protocol: 
+2016-06-29 21:41:50 ERROR Page:68 - java.lang.IllegalArgumentException: protocol = http host = nullhttp:
+2016-06-29 21:42:25 ERROR Page:68 - java.lang.IllegalArgumentException: protocol = http host = null URL: http:
+2016-06-29 21:44:19 ERROR OutlinkMultilingualDetector:135 - java.lang.IllegalArgumentException: protocol = http host = null
+2016-06-29 21:45:26 ERROR OutlinkMultilingualDetector:135 - java.lang.IllegalArgumentException: protocol = http host = null
+2016-06-29 21:45:26 ERROR OutlinkMultilingualDetector:135 - java.lang.IllegalArgumentException: protocol = http host = null
+2016-06-29 21:45:27 ERROR OutlinkMultilingualDetector:135 - java.lang.IllegalArgumentException: protocol = http host = null
+2016-06-29 21:45:50 ERROR OutlinkMultilingualDetector:135 - protocol = http host = null
+2016-06-29 21:45:50 ERROR OutlinkMultilingualDetector:135 - protocol = http host = null
+2016-06-29 21:45:51 ERROR OutlinkMultilingualDetector:135 - protocol = http host = null
+2016-06-29 21:46:06 ERROR OutlinkMultilingualDetector:135 - [Ljava.lang.StackTraceElement;@5025a98f
+2016-06-29 21:46:06 ERROR OutlinkMultilingualDetector:135 - [Ljava.lang.StackTraceElement;@49993335
+2016-06-29 21:46:06 ERROR OutlinkMultilingualDetector:135 - [Ljava.lang.StackTraceElement;@20322d26
+2016-06-29 21:46:26 ERROR OutlinkMultilingualDetector:135 - 
+2016-06-29 21:46:26 ERROR OutlinkMultilingualDetector:135 - 
+2016-06-29 21:46:26 ERROR OutlinkMultilingualDetector:135 - 
+2016-06-29 21:58:43 ERROR ConfigurationProperties:290 - java.io.FileNotFoundException: File 'dasd' does not exist
+2016-06-29 22:00:17 ERROR ConfigurationProperties:290 - java.io.FileNotFoundException: File 'dasd' does not exist
+2016-06-29 22:00:26 ERROR ConfigurationProperties:290 - java.io.FileNotFoundException: File 'dasd' does not exist
+2016-06-29 22:04:21 ERROR OutlinkMultilingualDetector:135 - java.lang.IllegalArgumentException: protocol = http host = null
+2016-06-29 22:04:21 ERROR OutlinkMultilingualDetector:135 - java.lang.IllegalArgumentException: protocol = http host = null
+2016-06-29 22:04:21 ERROR OutlinkMultilingualDetector:135 - java.lang.IllegalArgumentException: protocol = http host = null
+2016-06-29 22:04:47 ERROR OutlinkMultilingualDetector:135 - java.lang.IllegalArgumentException: protocol = http host = null
+2016-06-29 23:27:13 ERROR LanguageFilter:51 - com.cybozu.labs.langdetect.LangDetectException: no features in text
+2016-06-29 23:28:41 ERROR LanguageFilter:51 - com.cybozu.labs.langdetect.LangDetectException: no features in text
+2016-06-29 23:28:41 ERROR LanguageFilter:52 - Impossible to verify language in: http://localhost:8080/testForPreHomepageMultilingualDetection/noOutlink.html
+2016-06-29 23:29:16 ERROR LanguageFilter:51 - com.cybozu.labs.langdetect.LangDetectException: no features in text
+Impossible to verify language in: http://localhost:8080/testForPreHomepageMultilingualDetection/noOutlink.html
+2016-06-29 23:38:54 ERROR LanguageFilter:46 - com.cybozu.labs.langdetect.LangDetectException: no features in text
+Impossible to verify language in: http://localhost:8080/testForPreHomepageMultilingualDetection/langDetectionError.html or in http://localhost:8080/testForPreHomepageMultilingualDetection/noOutlink.html

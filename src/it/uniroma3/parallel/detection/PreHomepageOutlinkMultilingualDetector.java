@@ -5,8 +5,11 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.LinkedList;
 
+import org.apache.log4j.Logger;
+
 import com.cybozu.labs.langdetect.LangDetectException;
 
+import it.uniroma3.parallel.filter.LanguageFilter;
 import it.uniroma3.parallel.filter.PrehomepageLabelFilter;
 import it.uniroma3.parallel.model.Page;
 import it.uniroma3.parallel.model.PairOfPages;
@@ -25,6 +28,8 @@ import it.uniroma3.parallel.utils.FetchManager;
  *
  */
 public class PreHomepageOutlinkMultilingualDetector extends OutlinkMultilingualDetector {
+	private static final Logger logger = Logger.getLogger(PreHomepageOutlinkMultilingualDetector.class);
+
 	@Override
 	public ParallelPages detect(Page page)
 			throws IOException, InterruptedException, LangDetectException, URISyntaxException {
@@ -48,13 +53,13 @@ public class PreHomepageOutlinkMultilingualDetector extends OutlinkMultilingualD
 	 * @return
 	 */
 	@Override
-	public void organizeInPairs(ParallelPages parallelPages) throws LangDetectException {
+	public void organizeInPairs(ParallelPages parallelPages) {
 		LinkedList<PairOfPages> listOfPairs = new LinkedList<>();
 		int i = 1;
 		for (Page firstPage : ((PreHomepage) parallelPages.getStarterPage()).getPossibleHomepages()) {
 			for (Page secondPage : ((PreHomepage) parallelPages.getStarterPage()).getPossibleHomepages()) {
-				if (firstPage.getURLString().compareTo(secondPage.getURLString()) > 0 && !firstPage.equals(secondPage)
-						&& !firstPage.getLanguage().equals(secondPage.getLanguage())) {
+				if (firstPage.getURLString().compareTo(secondPage.getURLString()) > 0
+						&& new LanguageFilter().filter(firstPage, secondPage)) {
 					listOfPairs.add(new PairOfPages(firstPage, secondPage, i));
 					i++;
 				}

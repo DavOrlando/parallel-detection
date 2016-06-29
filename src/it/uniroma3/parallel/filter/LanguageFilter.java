@@ -1,6 +1,8 @@
 package it.uniroma3.parallel.filter;
 
-import java.io.IOException;
+
+import org.apache.log4j.Logger;
+
 import com.cybozu.labs.langdetect.LangDetectException;
 
 import it.uniroma3.parallel.model.Page;
@@ -14,6 +16,8 @@ import it.uniroma3.parallel.model.Page;
  */
 public class LanguageFilter {
 
+	private static final Logger logger = Logger.getLogger(LanguageFilter.class);
+
 	/**
 	 * Ritorna false se sono verificate le seguenti condizioni: -Il secondo link
 	 * porta ad una pagina con lo stesso linguaggio della homepage;
@@ -21,9 +25,7 @@ public class LanguageFilter {
 	 * @param homepage
 	 * @param outlinkPage
 	 * @return
-	 * @throws LangDetectException
-	 * @throws IOException
-	 */	
+	 */
 	public boolean filter(Page homepage, Page outlinkPage) {
 		return !isSameLanguage(homepage, outlinkPage);
 	}
@@ -35,17 +37,13 @@ public class LanguageFilter {
 	 * @param homepage
 	 * @param outlinkString
 	 * @return
-	 * @throws LangDetectException
-	 * @throws IOException
 	 */
 	private boolean isSameLanguage(Page homepage, Page outlinkPage) {
-		// nel caso di un exception allora torno il valore che mi fa fallire il
-		// filtraggio
 		boolean stessoLinguaggio = true;
 		try {
 			stessoLinguaggio = homepage.getLanguage().equals(outlinkPage.getLanguage());
 		} catch (LangDetectException e) {
-			e.printStackTrace();
+			logger.error(e + "\nImpossible to verify language in: " + homepage.getURLString() +" or in "+outlinkPage.getURLString());
 		}
 		return stessoLinguaggio;
 	}
