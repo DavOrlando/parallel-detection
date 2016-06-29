@@ -53,7 +53,13 @@ public class ConfigurationPropertiesTest {
 
 	@Test
 	public void fileConUnaStringa_test() {
-		assertEquals(1, ConfigurationProperties.getInstance().makeSetOfStringByFile(CREATO_PER_TEST).size());
+		try {
+			assertEquals(1, ConfigurationProperties.getInstance().makeSetOfStringByFile(CREATO_PER_TEST).size());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			fail();
+		}
 	}
 
 	@SuppressWarnings("deprecation")

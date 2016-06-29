@@ -39,7 +39,7 @@ public class ConfigurationProperties {
 			this.configuration.load(inStream);
 			inStream.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e);
 		}
 	}
 
@@ -277,12 +277,17 @@ public class ConfigurationProperties {
 	 * multilingua. Un esempio sono i linguaggi: Italian, English, ecc..
 	 * 
 	 * @return
+	 * @throws IOException
 	 */
 	public Set<String> makeSetOfAllMultilingualProperties() {
-		if (setOfAllMultilingualValues == null) {
-			setOfAllMultilingualValues = new HashSet<>();
-			for (String file : getPropertyList(configuration, FILTRO_INSIEME))
-				setOfAllMultilingualValues.addAll(makeSetOfStringByFile(file));
+		try {
+			if (setOfAllMultilingualValues == null) {
+				setOfAllMultilingualValues = new HashSet<>();
+				for (String file : getPropertyList(configuration, FILTRO_INSIEME))
+					setOfAllMultilingualValues.addAll(makeSetOfStringByFile(file));
+			}
+		} catch (IOException e) {
+			logger.error(e);
 		}
 		return setOfAllMultilingualValues;
 	}
@@ -309,19 +314,16 @@ public class ConfigurationProperties {
 	 * 
 	 * @param fileName
 	 * @return
+	 * @throws IOException
 	 */
 	@SuppressWarnings("deprecation")
-	public Set<String> makeSetOfStringByFile(String fileName) {
+	public Set<String> makeSetOfStringByFile(String fileName) throws IOException {
 		Set<String> setOfElementForLanguages = new HashSet<>();
 		ArrayList<String> fileContent;
-		try {
-			fileContent = new ArrayList<String>(FileUtils.readLines(new File(fileName)));
-			for (String entryLine : fileContent) {
-				for (String elementInLine : entryLine.split(","))
-					setOfElementForLanguages.add(elementInLine);
-			}
-		} catch (IOException e) {
-			logger.error(e);
+		fileContent = new ArrayList<String>(FileUtils.readLines(new File(fileName)));
+		for (String entryLine : fileContent) {
+			for (String elementInLine : entryLine.split(","))
+				setOfElementForLanguages.add(elementInLine);
 		}
 		return setOfElementForLanguages;
 	}
@@ -350,5 +352,14 @@ public class ConfigurationProperties {
 		for (String s : getPropertyList(configuration, "tagNames"))
 			tagNames.add(s);
 		return tagNames;
+	}
+
+	/**
+	 * Ritorna l'user-agent presente nel file di configurazione
+	 * 
+	 * @return
+	 */
+	public String getStringOfUserAgent() {
+		return configuration.getProperty("user-agent");
 	}
 }

@@ -1,6 +1,7 @@
 package it.uniroma3.parallel.detection;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -118,19 +119,20 @@ public abstract class OutlinkMultilingualDetector extends MultilingualDetector {
 	 * 
 	 * @param page
 	 * @return
-	 * @throws IOException
 	 */
 	public List<Page> getMultilingualPage(Page page) {
 		List<Page> filteredPages = new LinkedList<>();
 		for (Element link : this.getAllOutlinks(page)) {
 			try {
 				if (checkAnchorText(link) || checkAltAttributes(link)) {
-					Page outlinkPage = new Page(link.absUrl("href"));
+					Page outlinkPage = new Page(link.attr("abs:href"));
 					if (checkLanguages(page, outlinkPage))
 						filteredPages.add(outlinkPage);
 				}
-			} catch (Exception e) {
-				logger.error(e.toString());
+			} catch (IOException e) {
+				logger.error(e);
+			} catch (IllegalArgumentException e){
+				logger.error(e);
 			}
 		}
 		return filteredPages;

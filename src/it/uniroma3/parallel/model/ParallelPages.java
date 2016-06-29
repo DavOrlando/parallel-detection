@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.cybozu.labs.langdetect.LangDetectException;
 
 /**
@@ -27,6 +29,7 @@ import com.cybozu.labs.langdetect.LangDetectException;
  */
 public class ParallelPages {
 
+	private static final Logger logger = Logger.getLogger(ParallelPages.class);
 	private Page starterPage;
 	private Map<URI, Page> candidateParallelHomepages;
 	private List<PairOfPages> listOfPairs;
@@ -126,8 +129,12 @@ public class ParallelPages {
 	 * @param page
 	 * @throws URISyntaxException
 	 */
-	public void addCandidateParallelHomepage(Page page) throws URISyntaxException {
-		this.candidateParallelHomepages.put(page.getUrl().toURI(), page);
+	public void addCandidateParallelHomepage(Page page){
+		try {
+			this.candidateParallelHomepages.put(page.getUrl().toURI(), page);
+		} catch (URISyntaxException e) {
+			logger.error(e);
+		}
 	}
 
 }

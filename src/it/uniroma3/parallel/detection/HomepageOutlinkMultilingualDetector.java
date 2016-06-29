@@ -23,10 +23,6 @@ import it.uniroma3.parallel.utils.FetchManager;
  */
 public class HomepageOutlinkMultilingualDetector extends OutlinkMultilingualDetector {
 
-	public HomepageOutlinkMultilingualDetector() {
-
-	}
-
 	/**
 	 * Si cercano nella homepage del sito passato come parametro dei link
 	 * uscenti che portano a pagine di linguaggio differente e stessa struttura
@@ -39,6 +35,8 @@ public class HomepageOutlinkMultilingualDetector extends OutlinkMultilingualDete
 	 *            la pagina che rappresenta l'homepage del sito
 	 * @return GroupOfParallelUrls
 	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws LangDetectException
 	 * @throws URISyntaxException
 	 */
 
@@ -60,9 +58,8 @@ public class HomepageOutlinkMultilingualDetector extends OutlinkMultilingualDete
 	 * già fra le candidate.
 	 * 
 	 * @param parallelPage
-	 * @throws URISyntaxException
 	 */
-	public void findCandidatePages(ParallelPages parallelPage) throws URISyntaxException {
+	public void findCandidatePages(ParallelPages parallelPage){
 		for (Page page : getMultilingualPage(parallelPage.getStarterPage())) {
 			parallelPage.addCandidateParallelHomepage(page);
 		}

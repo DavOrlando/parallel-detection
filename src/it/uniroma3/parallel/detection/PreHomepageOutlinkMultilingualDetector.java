@@ -53,7 +53,7 @@ public class PreHomepageOutlinkMultilingualDetector extends OutlinkMultilingualD
 		int i = 1;
 		for (Page firstPage : ((PreHomepage) parallelPages.getStarterPage()).getPossibleHomepages()) {
 			for (Page secondPage : ((PreHomepage) parallelPages.getStarterPage()).getPossibleHomepages()) {
-				if (firstPage.getURLString().compareTo(secondPage.getURLString()) >= 0 && !firstPage.equals(secondPage)
+				if (firstPage.getURLString().compareTo(secondPage.getURLString()) > 0 && !firstPage.equals(secondPage)
 						&& !firstPage.getLanguage().equals(secondPage.getLanguage())) {
 					listOfPairs.add(new PairOfPages(firstPage, secondPage, i));
 					i++;
