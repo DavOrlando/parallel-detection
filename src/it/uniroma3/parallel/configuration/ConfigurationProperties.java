@@ -11,6 +11,8 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggerFactory;
 
 /**
  * Classe che rappresenta le proprietà di configurazione della fase di
@@ -23,7 +25,7 @@ import org.apache.commons.io.FileUtils;
  *
  */
 public class ConfigurationProperties {
-
+	private static final Logger logger = Logger.getLogger(ConfigurationProperties.class);
 	private static final String FILTRO_INSIEME = "filtro.insieme";
 	private static final String RESOURCES_CONF_PROPERTIES = "resources/conf.properties";
 
@@ -281,7 +283,7 @@ public class ConfigurationProperties {
 		if (setOfAllMultilingualValues == null) {
 			setOfAllMultilingualValues = new HashSet<>();
 			for (String file : getPropertyList(configuration, FILTRO_INSIEME))
-				setOfAllMultilingualValues.addAll(makeSetOf(file));
+				setOfAllMultilingualValues.addAll(makeSetOfStringByFile(file));
 		}
 		return setOfAllMultilingualValues;
 	}
@@ -303,13 +305,14 @@ public class ConfigurationProperties {
 	}
 
 	/**
-	 * Crea un insieme di stringhe, ognuna delle quali è una linea del file
-	 * specificato dalla stringa passata per parametro.
+	 * Crea un insieme di stringhe, ognuna delle quali è una linea del file che
+	 * si trova nel percorso specificato dalla stringa passata per parametro.
 	 * 
 	 * @param fileName
 	 * @return
 	 */
-	public Set<String> makeSetOf(String fileName) {
+	@SuppressWarnings("deprecation")
+	public Set<String> makeSetOfStringByFile(String fileName) {
 		Set<String> setOfElementForLanguages = new HashSet<>();
 		ArrayList<String> fileContent;
 		try {
@@ -319,7 +322,7 @@ public class ConfigurationProperties {
 					setOfElementForLanguages.add(elementInLine);
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e);
 		}
 		return setOfElementForLanguages;
 	}

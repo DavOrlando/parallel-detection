@@ -3,12 +3,13 @@ package it.uniroma3.parallel.detection;
 
 import it.uniroma3.parallel.model.ParallelPages;
 import it.uniroma3.parallel.model.PreHomepage;
+import it.uniroma3.parallel.adapter.CrawlingAdapter;
+import it.uniroma3.parallel.adapter.CrawlingFrancElefanteAdapter;
 import it.uniroma3.parallel.configuration.ConfigurationProperties;
 import it.uniroma3.parallel.model.Page;
 import it.uniroma3.parallel.utils.FetchManager;
 import it.uniroma3.parallel.utils.Utils;
-import src.it.uniroma3.parallel.adapter.CrawlingAdapter;
-import src.it.uniroma3.parallel.adapter.CrawlingFrancElefanteAdapter;
+
 
 import java.io.IOException;
 import java.util.Calendar;

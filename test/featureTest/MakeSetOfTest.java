@@ -15,42 +15,62 @@ import org.junit.Test;
 import it.uniroma3.parallel.configuration.ConfigurationProperties;
 
 public class MakeSetOfTest {
+	private static final String ES = "es";
+	private static final String EN = "en";
+	private static final int _500 = 500;
+	private static final String ENGLISH = "english";
+	private static final String ESPAÑOL = "español";
+	private static final String CREATO_PER_TEST = "creatoPerTest";
+	private static final String VUOTO = "vuoto";
 	private File file;
+	private List<String> lineeDiTesto;
 
+	@SuppressWarnings("deprecation")
 	@Before
 	public void setUp() throws Exception {
-		this.file = new File("perTest");
-		FileUtils.writeStringToFile(file, "1");
+		this.lineeDiTesto = new ArrayList<String>();
+		this.file = new File(CREATO_PER_TEST);
+		lineeDiTesto.add(ENGLISH);
+		FileUtils.writeLines(file, lineeDiTesto);
 	}
 
 	@Test
-	public void fileVuototest() {
-		assertEquals(0, ConfigurationProperties.getInstance().makeSetOf("").size());
+	public void nessunFile_test() {
+		File file = new File(VUOTO);
+		assertEquals(0, ConfigurationProperties.getInstance().makeSetOfStringByFile(VUOTO).size());
 	}
 
 	@Test
-	public void fileConUnaStringatest() {
-		assertEquals(1, ConfigurationProperties.getInstance().makeSetOf("perTest").size());
+	public void fileConUnaStringa_test() {
+		assertEquals(1, ConfigurationProperties.getInstance().makeSetOfStringByFile(CREATO_PER_TEST).size());
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Test
+	public void fileConDueStringhe_test() throws IOException {
+		lineeDiTesto.add(ESPAÑOL);
+		FileUtils.writeLines(file,lineeDiTesto);
+		assertEquals(2, ConfigurationProperties.getInstance().makeSetOfStringByFile(CREATO_PER_TEST).size());
+	}
+
+	@SuppressWarnings("deprecation")
+	@Test
+	public void fileConDueStringheUguali_test() throws IOException {
+		lineeDiTesto.add(ENGLISH);
+		FileUtils.writeLines(file,lineeDiTesto);
+		assertEquals(1, ConfigurationProperties.getInstance().makeSetOfStringByFile(CREATO_PER_TEST).size());
 	}
 
 	@Test
-	public void fileConDueStringhetest() throws IOException {
-		List<String> stringhe = new ArrayList<>();
-		stringhe.add("1");
-		stringhe.add("2");
-		FileUtils.writeLines(file, stringhe);
-		assertEquals(2, ConfigurationProperties.getInstance().makeSetOf("perTest").size());
-	}
-
-	@Test
-	public void fileContenteAltoNumeroDiLineetest() throws IOException {
+	public void caricamentoFilePerCrawler_test() throws IOException {
 		assertFalse(ConfigurationProperties.getInstance().makeSetOfAllMultilingualProperties().isEmpty());
+		assertTrue(ConfigurationProperties.getInstance().makeSetOfAllMultilingualProperties().size() > _500);
+		assertTrue(ConfigurationProperties.getInstance().makeSetOfAllMultilingualProperties().contains(ESPAÑOL));
+		assertTrue(ConfigurationProperties.getInstance().makeSetOfAllMultilingualProperties().contains(ENGLISH));
+		assertTrue(ConfigurationProperties.getInstance().makeSetOfAllMultilingualProperties().contains(ES));
+		assertTrue(ConfigurationProperties.getInstance().makeSetOfAllMultilingualProperties().contains(EN));
 	}
 
-	@Test
-	public void fileContenteSpagnoloAltoNumeroDiLineetest() throws IOException {
-		assertTrue(ConfigurationProperties.getInstance().makeSetOfAllMultilingualProperties().contains("español"));
-	}
 
 	@After
 	public void after() {

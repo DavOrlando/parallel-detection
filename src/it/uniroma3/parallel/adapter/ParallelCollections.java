@@ -1,4 +1,4 @@
-package src.it.uniroma3.parallel.adapter;
+package it.uniroma3.parallel.adapter;
 import java.util.List;
 
 public class ParallelCollections {
