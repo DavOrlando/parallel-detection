@@ -13,7 +13,7 @@ import org.jsoup.nodes.Node;
 import com.cybozu.labs.langdetect.LangDetectException;
 
 import it.uniroma3.parallel.filter.LanguageFilter;
-import it.uniroma3.parallel.filter.LinkValueFilter;
+import it.uniroma3.parallel.filter.LinkTextFilter;
 import it.uniroma3.parallel.model.Page;
 import it.uniroma3.parallel.model.ParallelPages;
 
@@ -74,28 +74,62 @@ public abstract class OutlinkDetector extends MultilingualDetector {
 	 */
 	public List<Page> getMultilingualPage(Page page) {
 		List<Page> filteredPages = new LinkedList<>();
-		LanguageFilter languageFilter = new LanguageFilter();
-		LinkValueFilter textValueOfLinkFilter = new LinkValueFilter();
 		for (Element link : this.getAllOutlinks(page)) {
 			try {
-				if (textValueOfLinkFilter.filter(link.text())) {
+				if (checkAnchorText(link, page) || checkAltAttributes(link, page)) {
 					Page outlinkPage = new Page(link.absUrl("href"));
-					if (languageFilter.filter(page, outlinkPage))
+					if (checkLanguages(page, outlinkPage))
 						filteredPages.add(outlinkPage);
-				}
-				for (Element element : link.getElementsByTag("img")) {
-					if (element.hasAttr("alt"))
-						if (textValueOfLinkFilter.filter(element.attr("alt"))) {
-							Page outlinkPage = new Page(link.absUrl("href"));
-							if (languageFilter.filter(page, outlinkPage))
-								filteredPages.add(outlinkPage);
-						}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 		return filteredPages;
+	}
+
+	/**
+	 * Ritorna true se il testo all'interno dell'ancora contiene una delle
+	 * parole che ci fanno cambiare la lingua del sito.
+	 * 
+	 * @param link
+	 * @param page
+	 * @return
+	 * @throws IOException
+	 */
+	private boolean checkAnchorText(Element link, Page page) throws IOException {
+		return new LinkTextFilter().filter(link.text());
+	}
+
+	/**
+	 * Ritorna true se nel valore dell'attributo alt delle immagini, che in
+	 * realtà sono ancora per pagine esterne, è presente una delle parole che ci
+	 * permettono di cambiare sito.
+	 * 
+	 * @param link
+	 * @param page
+	 * @return
+	 * @throws IOException
+	 */
+	private boolean checkAltAttributes(Element link, Page page) throws IOException {
+		boolean isGood = false;
+		for (Iterator<Element> iterator = link.getElementsByTag("img").iterator(); !isGood && iterator.hasNext();) {
+			Element element = iterator.next();
+			if (element.hasAttr("alt"))
+				isGood = new LinkTextFilter().filter(element.attr("alt"));
+		}
+		return isGood;
+	}
+
+	/**
+	 * Controlla il linguaggio delle due pagine e ritorna true se è diverso.
+	 * 
+	 * @param page
+	 * @param outlinkPage
+	 * @return
+	 */
+	private boolean checkLanguages(Page page, Page outlinkPage) {
+		return new LanguageFilter().filter(page, outlinkPage);
 	}
 
 }

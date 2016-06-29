@@ -12,7 +12,7 @@ import it.uniroma3.parallel.configuration.ConfigurationProperties;
  * @author davideorlando
  *
  */
-public class LinkValueFilter {
+public class LinkTextFilter {
 
 	/**
 	 * Torna l'insieme di quei testi che possono rappresentare un cambiamento di

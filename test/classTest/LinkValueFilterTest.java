@@ -5,15 +5,15 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import it.uniroma3.parallel.filter.LinkValueFilter;
+import it.uniroma3.parallel.filter.LinkTextFilter;
 
 public class LinkValueFilterTest {
 
-	private LinkValueFilter languageSetFilter;
+	private LinkTextFilter languageSetFilter;
 
 	@Before
 	public void setUp() throws Exception {
-		this.languageSetFilter = new LinkValueFilter();
+		this.languageSetFilter = new LinkTextFilter();
 
 	}
 

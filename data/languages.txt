@@ -183,3 +183,4 @@ yo,yor,yor,yoruba,yorùbá
 za,zha,zha,zhuang,chuang,saɯcueŋƅ,sawcuengh
 zh,zho,chi,chinese,中文(zhōngwén),汉语,漢語
 zu,zul,zul,zulu,isizulu
+canadian

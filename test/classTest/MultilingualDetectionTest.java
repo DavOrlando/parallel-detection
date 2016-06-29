@@ -55,7 +55,7 @@ public class MultilingualDetectionTest {
 
 	@Test
 	public void multilingualDetectionHomepage_test_real_site() throws IOException, InterruptedException, LangDetectException {
-		multiDetection.multilingualDetection("http://www.usapartsdirect.com/", 2, new ReentrantLock(), new ReentrantLock(),
+		multiDetection.multilingualDetection(HOMEPAGE_DETECTION, 2, new ReentrantLock(), new ReentrantLock(),
 				new ReentrantLock(), new ReentrantLock());
 	}
 	
@@ -65,16 +65,16 @@ public class MultilingualDetectionTest {
 				new ReentrantLock(), new ReentrantLock());
 	}
 	
-//	@Test
-//	public void exp1_test() throws IOException, InterruptedException, LangDetectException {
-//		long time_start = Calendar.getInstance().getTimeInMillis();
-//		File f = new File("exp1.txt");
-//		List<String> siti = FileUtils.readLines(f);
-//		for (String sito : siti)
-//		this.multiDetection.multilingualDetection(sito, 2, new
-//		ReentrantLock(), new ReentrantLock(), new ReentrantLock(),
-//		new ReentrantLock());
-//		long time_finish = Calendar.getInstance().getTimeInMillis();
-//		System.out.println(time_finish-time_start);
-//	}
+	@Test
+	public void exp1_test() throws IOException, InterruptedException, LangDetectException {
+		long time_start = Calendar.getInstance().getTimeInMillis();
+		File f = new File("exp.txt");
+		List<String> siti = FileUtils.readLines(f);
+		for (String sito : siti)
+		this.multiDetection.multilingualDetection(sito, 2, new
+		ReentrantLock(), new ReentrantLock(), new ReentrantLock(),
+		new ReentrantLock());
+		long time_finish = Calendar.getInstance().getTimeInMillis();
+		System.out.println(time_finish-time_start);
+	}
 }
