@@ -64,11 +64,19 @@ public class PairOfPages {
 		}
 		return code;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		PairOfPages pairOfHomepages = (PairOfPages) obj;
 		return this.homepages.equals(pairOfHomepages.homepages);
+	}
+
+	@Override
+	public String toString() {
+		if (this.getHomepageFromList(0) != null && this.getHomepageFromList(1) != null)
+			return "(" + this.getHomepageFromList(0).getURLString() + "," + this.getHomepageFromList(1).getURLString()
+					+ ");";
+		return super.toString();
 	}
 
 }

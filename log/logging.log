@@ -188,3 +188,13 @@ Impossible to verify language in: http://localhost:8080/testForPreHomepageMultil
 2016-06-30 09:04:16 ERROR CybozuLanguageDetector:108 - com.cybozu.labs.langdetect.LangDetectException: no features in text failed detection for 0000
 2016-06-30 09:04:16 ERROR LanguageFilter:46 - com.cybozu.labs.langdetect.LangDetectException: no features in text
 Impossible to verify language in: http://localhost:8080/testForPreHomepageMultilingualDetection/langDetectionError.html or in http://localhost:8080/testForPreHomepageMultilingualDetection/noOutlink.html
+2016-06-30 10:06:36 ERROR CybozuLanguageDetector:107 - com.cybozu.labs.langdetect.LangDetectException: no features in text failed detection for ===
+2016-06-30 10:06:36 ERROR CybozuLanguageDetector:107 - com.cybozu.labs.langdetect.LangDetectException: no features in text failed detection for 0000
+2016-06-30 10:06:36 ERROR LanguageFilter:46 - com.cybozu.labs.langdetect.LangDetectException: no features in text
+Impossible to verify language in: http://localhost:8080/testForPreHomepageMultilingualDetection/langDetectionError.html or in http://localhost:8080/testForPreHomepageMultilingualDetection/noOutlink.html
+2016-06-30 10:12:10 ERROR CybozuLanguageDetector:107 - com.cybozu.labs.langdetect.LangDetectException: no features in text failed detection for ===
+2016-06-30 10:12:10 ERROR CybozuLanguageDetector:107 - com.cybozu.labs.langdetect.LangDetectException: no features in text failed detection for 0000
+2016-06-30 11:20:03 ERROR CybozuLanguageDetector:107 - com.cybozu.labs.langdetect.LangDetectException: no features in text failed detection for ===
+2016-06-30 11:20:03 ERROR CybozuLanguageDetector:107 - com.cybozu.labs.langdetect.LangDetectException: no features in text failed detection for 0000
+2016-06-30 11:20:03 ERROR LanguageFilter:46 - com.cybozu.labs.langdetect.LangDetectException: no features in text
+Impossible to verify language in: http://localhost:8080/testForPreHomepageMultilingualDetection/langDetectionError.html or in http://localhost:8080/testForPreHomepageMultilingualDetection/noOutlink.html

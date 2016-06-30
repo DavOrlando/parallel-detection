@@ -25,6 +25,8 @@ import org.apache.log4j.Logger;
  */
 public class ParallelPages {
 
+	private static final String URL_OR_PAGE_FAIL = " error with this URL: ";
+	private static final String URI_FAIL = " failed to transform URL to URI in ";
 	private static final Logger logger = Logger.getLogger(ParallelPages.class);
 	private Page starterPage;
 	private Map<URI, Page> candidateParallelHomepages;
@@ -37,7 +39,7 @@ public class ParallelPages {
 	 * @param starterPage
 	 * @throws URISyntaxException
 	 */
-	public ParallelPages(Page starterPage) throws URISyntaxException  {
+	public ParallelPages(Page starterPage) throws URISyntaxException {
 		this.candidateParallelHomepages = new HashMap<>();
 		this.starterPage = starterPage;
 		this.candidateParallelHomepages.put(starterPage.getUrlRedirect().toURI(), starterPage);
@@ -97,12 +99,15 @@ public class ParallelPages {
 	 * URL fra quelli passati per parametro.
 	 * 
 	 * @param urls
-	 * @throws URISyntaxException
 	 */
-	public void lasciaSoloQuestiURL(Collection<URL> urls) throws URISyntaxException {
+	public void lasciaSoloQuestiURL(Collection<URL> urls) {
 		Map<URI, Page> parallelHomepages = new HashMap<>();
 		for (URL url : urls)
-			parallelHomepages.put(url.toURI(), this.candidateParallelHomepages.get(url.toURI()));
+			try {
+				parallelHomepages.put(url.toURI(), this.candidateParallelHomepages.get(url.toURI()));
+			} catch (URISyntaxException e) {
+				logger.error(e + URI_FAIL + url.toString());
+			}
 		this.candidateParallelHomepages = parallelHomepages;
 	}
 
@@ -111,24 +116,25 @@ public class ParallelPages {
 	 * prima euristica.
 	 * 
 	 * @param url
-	 * @throws IOException
-	 * @throws URISyntaxException
 	 */
-	public void addCandidateParallelHomepage(URL url) throws IOException, URISyntaxException {
-		this.candidateParallelHomepages.put(url.toURI(), new Page(url));
+	public void addCandidateParallelHomepage(URL url) {
+		try {
+			this.candidateParallelHomepages.put(url.toURI(), new Page(url));
+		} catch (URISyntaxException | IOException e) {
+			logger.error(e + URL_OR_PAGE_FAIL + url.toString());
+		}
 	}
 
 	/**
 	 * Aggiunge alla mappa una nuova pagina.
 	 * 
 	 * @param page
-	 * @throws URISyntaxException
 	 */
-	public void addCandidateParallelHomepage(Page page){
+	public void addCandidateParallelHomepage(Page page) {
 		try {
 			this.candidateParallelHomepages.put(page.getUrl().toURI(), page);
 		} catch (URISyntaxException e) {
-			logger.error(e);
+			logger.error(e + URI_FAIL + page.getURLString());
 		}
 	}
 

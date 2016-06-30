@@ -10,6 +10,7 @@ import java.io.PrintStream;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -37,6 +38,7 @@ public class RoadRunnerInvocator {
 	private static final String HOME_PAGE = "HomePage";
 	private static final String _2 = "-2";
 	private static final String HTML = ".html";
+	private static final Logger logger = Logger.getLogger(RoadRunnerInvocator.class);
 	private static RoadRunnerInvocator instance;
 	private ConfigurationProperties properties = ConfigurationProperties.getInstance();
 	protected Lock errorLogLock;
@@ -57,17 +59,18 @@ public class RoadRunnerInvocator {
 	 * RoadRunner. La coppia avrà associato l'output di RoadRunner relativo.
 	 * 
 	 * @param groupOfHomepage
-	 * @throws FileNotFoundException
-	 * @throws IOException
-	 * @throws InterruptedException
 	 */
-	public void runRoadRunner(ParallelPages groupOfHomepage)
-			throws FileNotFoundException, IOException, InterruptedException {
+	public void runRoadRunner(ParallelPages groupOfHomepage) {
 		for (PairOfPages pair : groupOfHomepage.getListOfPairs()) {
-			launchRR(pair, errorLogLock, groupOfHomepage.getStarterPage());
+			try {
+				launchRR(pair, errorLogLock, groupOfHomepage.getStarterPage());
+			} catch (IOException | InterruptedException e) {
+				logger.error(e+" failed to run road runner on this pair: " + pair.toString());
+			}
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public void launchRR(PairOfPages pairOfHomepage, Lock errorLogLock, Page primaryPage)
 			throws FileNotFoundException, IOException, InterruptedException {
 		int pairNumber = pairOfHomepage.getPairNumber();
@@ -91,7 +94,7 @@ public class RoadRunnerInvocator {
 								new RoadRunnerDataSet(properties.getStringOfFolderOutput() + "/" + ftv + "/" + ftv
 										+ properties.getStringOfDataset()));
 				} catch (Exception e1) {
-					e1.printStackTrace();
+					logger.error(e1);
 					synchronized (errorLogLock) {
 						// stampo nell'error log il sito che da il
 						// problema e l'errore
@@ -99,7 +102,7 @@ public class RoadRunnerInvocator {
 							Utils.csvWr(new String[] { primaryPage.getURLString(), e1.toString() },
 									properties.getStringOfErrorLogCSV());
 						} catch (IOException e) {
-							e.printStackTrace();
+							logger.error(e);
 						}
 					}
 				}

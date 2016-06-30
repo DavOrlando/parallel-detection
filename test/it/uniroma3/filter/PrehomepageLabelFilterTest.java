@@ -8,7 +8,6 @@ import org.junit.Test;
 
 import it.uniroma3.parallel.detection.PreHomepageOutlinkMultilingualDetector;
 import it.uniroma3.parallel.filter.PrehomepageLabelFilter;
-import it.uniroma3.parallel.model.Page;
 import it.uniroma3.parallel.model.PairOfPages;
 import it.uniroma3.parallel.model.ParallelPages;
 import it.uniroma3.parallel.model.PreHomepage;

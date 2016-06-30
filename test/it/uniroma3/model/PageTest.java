@@ -1,4 +1,4 @@
-package classTest;
+package it.uniroma3.model;
 
 import static org.junit.Assert.*;
 
@@ -10,12 +10,13 @@ import org.jsoup.nodes.Document;
 import org.junit.Before;
 import org.junit.Test;
 
+import it.uniroma3.parallel.configuration.ConfigurationProperties;
 import it.uniroma3.parallel.model.Page;
 
 public class PageTest {
-	private static final String USER_AGENT = "Opera/9.63 (Windows NT 5.1; U; en) Presto/2.1.1";
-	private static final String HTTP_LOCALHOST_8080 = "http://localhost:8080";
-	private static final String URL_FOR_TEST = "http://localhost:8080/testForLevenshteinAndLanguageFilter/";
+	private static final String HTTP_LOCALHOST_80802 = "http://localhost:8080";
+	private static final String USER_AGENT = ConfigurationProperties.getInstance().getStringOfUserAgent();
+	private static final String HTTP_LOCALHOST_8080 = HTTP_LOCALHOST_80802;
 
 	private URL urlSite;
 	private Page page;
@@ -27,26 +28,26 @@ public class PageTest {
 	}
 
 	@Test
-	public void siteTest() {
+	public void pageCreation_test() {
 		try {
 			Document document = Jsoup.connect(urlSite.toString())
 					.userAgent(USER_AGENT).timeout(8000).get();
 			assertEquals(document, page.getDocument());
 		} catch (IOException e) {
-			fail();
 			e.printStackTrace();
+			fail();
 		}
 	}
 
 	@Test
-	public void getUrlRootTest_UrlWithPort() {
+	public void getDomainUrlWithPort_test() {
 		assertEquals(HTTP_LOCALHOST_8080, page.getDomain());
 	}
 
 	@Test
-	public void getUrlRootTest_SimpleUrl() {
+	public void getDomainSimpleURL_test() {
 		try {
-			URL urlIncomplete = new URL("http://localhost:8080");
+			URL urlIncomplete = new URL(HTTP_LOCALHOST_80802);
 			Page page = new Page(urlIncomplete);
 			assertEquals(urlIncomplete.toString(), page.getDomain());
 		} catch (Exception e) {
@@ -56,7 +57,7 @@ public class PageTest {
 	}
 
 	@Test
-	public void getNameFolder_removeSlash() {
+	public void getPageName_test() {
 		String folderNameSite = "localhost8080testMinimalehomeIt.html";
 		assertEquals(folderNameSite, page.getPageName());
 

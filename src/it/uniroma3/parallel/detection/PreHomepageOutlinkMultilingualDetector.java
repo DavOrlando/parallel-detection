@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.LinkedList;
 
-import org.apache.log4j.Logger;
 
 import com.cybozu.labs.langdetect.LangDetectException;
 
@@ -28,8 +27,7 @@ import it.uniroma3.parallel.utils.FetchManager;
  *
  */
 public class PreHomepageOutlinkMultilingualDetector extends OutlinkMultilingualDetector {
-	private static final Logger logger = Logger.getLogger(PreHomepageOutlinkMultilingualDetector.class);
-
+	
 	@Override
 	public ParallelPages detect(Page page)
 			throws IOException, InterruptedException, LangDetectException, URISyntaxException {

@@ -19,6 +19,12 @@ public class UrlUtils {
 
 	}
 
+	public static synchronized UrlUtils getInstance() {
+		if (instance == null)
+			instance = new UrlUtils();
+		return instance;
+	}
+
 	/**
 	 * Ritorna un URL con lo scheme http all'inizio.
 	 * 
@@ -53,12 +59,6 @@ public class UrlUtils {
 		if (!urlLink.contains("www") && !urlLink.contains("http"))
 			urlLink = link.attr("abs:href");
 		return new URL(addHttp(urlLink));
-	}
-
-	public static synchronized UrlUtils getInstance() {
-		if (instance == null)
-			instance = new UrlUtils();
-		return instance;
 	}
 
 }

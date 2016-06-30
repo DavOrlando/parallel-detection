@@ -3,7 +3,6 @@ package it.uniroma3.adapter;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +37,7 @@ public class CrawlingFrancElefanteAdapterTest {
 		try {
 			emptyParallelPage.addCandidateParallelHomepage(new URL(TEST2));
 			assertEquals(2, this.adapter.getGroupOfEntryPoints(1, emptyParallelPage).size());
-		} catch (URISyntaxException | IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 			fail();
 		}
@@ -50,12 +49,11 @@ public class CrawlingFrancElefanteAdapterTest {
 			emptyParallelPage.addCandidateParallelHomepage(new URL(TEST2));
 			emptyParallelPage.addCandidateParallelHomepage(new URL(TEST3));
 			assertEquals(3, this.adapter.getGroupOfEntryPoints(1, emptyParallelPage).size());
-		} catch (IOException | URISyntaxException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 			fail();
 		}
 	}
-	
 
 	@Test
 	public void getGroupOfEntryPoints_TwoForGroup_EmptyParallelPage_test() {
@@ -63,25 +61,25 @@ public class CrawlingFrancElefanteAdapterTest {
 		// 1 perchè la homepage c'è sempre
 		assertEquals(1, this.adapter.getGroupOfEntryPoints(2, emptyParallelPage).size());
 	}
-	
+
 	@Test
 	public void getGroupOfEntryPoints_TowForGroup_ParallelPageWithOneCandidate_test() {
 		try {
 			emptyParallelPage.addCandidateParallelHomepage(new URL(TEST2));
 			assertEquals(1, this.adapter.getGroupOfEntryPoints(2, emptyParallelPage).size());
-		} catch (URISyntaxException | IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 			fail();
 		}
 	}
-	
+
 	@Test
 	public void getGroupOfEntryPoints_TwoForGroup_ParallelPageWithTwoCandidate_test() {
 		try {
 			emptyParallelPage.addCandidateParallelHomepage(new URL(TEST2));
 			emptyParallelPage.addCandidateParallelHomepage(new URL(TEST3));
 			assertEquals(2, this.adapter.getGroupOfEntryPoints(2, emptyParallelPage).size());
-		} catch (IOException | URISyntaxException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 			fail();
 		}

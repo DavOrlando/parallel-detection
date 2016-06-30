@@ -55,9 +55,7 @@ public class FetchManager {
 	 * @throws URISyntaxException
 	 */
 	public String findPageByURL(URL url) throws URISyntaxException {
-		URI uri = url.toURI();
-		String string = this.uri2LocalPath.get(uri);
-		return string;
+		return this.uri2LocalPath.get(url.toURI());
 	}
 
 	/**

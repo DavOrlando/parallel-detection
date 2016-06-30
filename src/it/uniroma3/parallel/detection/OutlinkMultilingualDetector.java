@@ -16,6 +16,7 @@ import it.uniroma3.parallel.filter.LanguageFilter;
 import it.uniroma3.parallel.filter.LinkTextFilter;
 import it.uniroma3.parallel.model.Page;
 import it.uniroma3.parallel.model.ParallelPages;
+import it.uniroma3.parallel.utils.UrlUtils;
 
 /**
  * Classe che rappresenta un rilevatore di siti multilingua attraverso
@@ -124,14 +125,14 @@ public abstract class OutlinkMultilingualDetector extends MultilingualDetector {
 		for (Element link : this.getAllOutlinks(page)) {
 			try {
 				if (checkAnchorText(link) || checkAltAttributes(link)) {
-					Page outlinkPage = new Page(link.attr("abs:href"));
+					Page outlinkPage = new Page(UrlUtils.getInstance().getAbsoluteURL(link));
 					if (checkLanguages(page, outlinkPage))
 						filteredPages.add(outlinkPage);
 				}
 			} catch (IOException e) {
 				logger.error(e);
-			} catch (IllegalArgumentException e){
-				logger.error(e + " Assicurati di avere href all'interno di "+link.toString());
+			} catch (IllegalArgumentException e) {
+				logger.error(e + " Assicurati di avere href all'interno di " + link.toString());
 			}
 		}
 		return filteredPages;

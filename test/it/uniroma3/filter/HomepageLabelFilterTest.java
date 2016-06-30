@@ -2,7 +2,6 @@ package it.uniroma3.filter;
 
 import static org.junit.Assert.*;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -106,14 +105,9 @@ public class HomepageLabelFilterTest {
 		homepageOutlinkMultilingualDetector.findCandidatePages(parallelPage);
 		homepageOutlinkMultilingualDetector.organizeInPairs(parallelPage);
 		FetchManager.getInstance().persistParallelPages(parallelPage);
-		try {
-			RoadRunnerInvocator.getInstance().runRoadRunner(parallelPage);
-			Collection<URL> filter2 = filter.filter(parallelPage);
-			assertEquals(3, filter2.size());
-		} catch (IOException | InterruptedException e) {
-			e.printStackTrace();
-			fail();
-		}
+		RoadRunnerInvocator.getInstance().runRoadRunner(parallelPage);
+		Collection<URL> filter2 = filter.filter(parallelPage);
+		assertEquals(3, filter2.size());
 	}
 	
 	@After

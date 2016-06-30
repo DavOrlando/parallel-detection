@@ -1,4 +1,4 @@
-package classTest;
+package it.uniroma3.model;
 
 import static org.junit.Assert.*;
 

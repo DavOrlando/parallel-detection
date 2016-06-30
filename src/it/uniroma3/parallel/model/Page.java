@@ -3,7 +3,6 @@ package it.uniroma3.parallel.model;
 import java.io.IOException;
 import java.net.URL;
 
-import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import com.cybozu.labs.langdetect.LangDetectException;
@@ -23,7 +22,6 @@ import it.uniroma3.parallel.utils.UrlUtils;
 public class Page {
 
 	private static final int TIMEOUT = 8000;
-	private static final Logger logger = Logger.getLogger(Page.class);
 	private URL url;
 	private URL urlRedirect;
 	private Document document;
@@ -38,7 +36,7 @@ public class Page {
 	 * dell'URL dell'homepage.
 	 * 
 	 * @param homepageStringUrl
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public Page(String homepageStringUrl) throws IOException {
 		this(new URL(UrlUtils.getInstance().addHttp(homepageStringUrl)));
@@ -56,7 +54,8 @@ public class Page {
 	 */
 	public Page(URL url) throws IOException {
 		this.url = url;
-		this.document = Jsoup.connect(url.toString()).userAgent(ConfigurationProperties.getInstance().getStringOfUserAgent()).timeout(TIMEOUT).get();
+		this.document = Jsoup.connect(url.toString())
+				.userAgent(ConfigurationProperties.getInstance().getStringOfUserAgent()).timeout(TIMEOUT).get();
 		// se c'è il redirect ci prendiamo l'URL finale.
 		this.urlRedirect = new URL(this.document.location());
 	}
