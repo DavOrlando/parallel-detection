@@ -25,15 +25,11 @@ public class PrehomepageLabelFilter {
 	 */
 	public List<PairOfPages> filter(ParallelPages parallelPages) {
 		List<PairOfPages> pairOfPages = new LinkedList<>();
-		try {
-			for (PairOfPages pair : parallelPages.getListOfPairs()) {
-				RoadRunnerDataSet roadRunnerDataSet = FetchManager.getInstance().getRoadRunnerDataSet(pair);
-				// TODO controllare se <16 va bene
-				if (roadRunnerDataSet != null && roadRunnerDataSet.getNumberOfLabels() >= 16)
-					pairOfPages.add(pair);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		for (PairOfPages pair : parallelPages.getListOfPairs()) {
+			RoadRunnerDataSet roadRunnerDataSet = FetchManager.getInstance().getRoadRunnerDataSet(pair);
+			// TODO controllare se <16 va bene
+			if (roadRunnerDataSet != null && roadRunnerDataSet.getNumberOfLabels() >= 16)
+				pairOfPages.add(pair);
 		}
 		return pairOfPages;
 	}

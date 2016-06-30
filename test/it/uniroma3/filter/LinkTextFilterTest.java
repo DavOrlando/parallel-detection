@@ -1,4 +1,4 @@
-package classTest;
+package it.uniroma3.filter;
 
 import static org.junit.Assert.*;
 
@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import it.uniroma3.parallel.filter.LinkTextFilter;
 
-public class LinkValueFilterTest {
+public class LinkTextFilterTest {
 
 	private LinkTextFilter languageSetFilter;
 

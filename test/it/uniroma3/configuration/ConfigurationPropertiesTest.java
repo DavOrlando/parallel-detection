@@ -18,7 +18,6 @@ import it.uniroma3.parallel.configuration.ConfigurationProperties;
 public class ConfigurationPropertiesTest {
 	private static final String OPTION = "option";
 	private static final String ANCHOR = "a";
-	private static final String PARAGRAPH = "p";
 	private static final String ES = "es";
 	private static final String EN = "en";
 	private static final int _500 = 500;
@@ -40,13 +39,16 @@ public class ConfigurationPropertiesTest {
 
 	@Test
 	public void nessunFile_test() {
+		File file = null;
 		try {
-			File file = new File(VUOTO);
+			file = new File(VUOTO);
 			FileUtils.writeStringToFile(file, "");
 			assertEquals(0, ConfigurationProperties.getInstance().makeSetOfStringByFile(VUOTO).size());
 		} catch (IOException e) {
 			e.printStackTrace();
 			fail();
+		}finally {
+			file.delete();
 		}
 	}
 

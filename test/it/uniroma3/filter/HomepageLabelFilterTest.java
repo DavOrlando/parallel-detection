@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -113,6 +114,11 @@ public class HomepageLabelFilterTest {
 			e.printStackTrace();
 			fail();
 		}
+	}
+	
+	@After
+	public void after(){
+		FetchManager.getInstance().deleteOutput(this.parallelPage.getStarterPage().getPageName());
 	}
 
 }

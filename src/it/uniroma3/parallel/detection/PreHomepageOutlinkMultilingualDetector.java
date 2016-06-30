@@ -37,6 +37,8 @@ public class PreHomepageOutlinkMultilingualDetector extends OutlinkMultilingualD
 		preHomepage.setPossibleHomepages(this.getMultilingualPage(preHomepage));
 		ParallelPages parallelPages = new ParallelPages(preHomepage);
 		organizeInPairs(parallelPages);
+		// attenzione andrebbe salvata anche la prehomepage, ma dato che questa
+		// euristica avviene dopo la seconda non serve.
 		for (PairOfPages pairOfPages : parallelPages.getListOfPairs())
 			FetchManager.getInstance().persistPairOfHomepage(pairOfPages, preHomepage.getPageName());
 		RoadRunnerInvocator.getInstance().runRoadRunner(parallelPages);

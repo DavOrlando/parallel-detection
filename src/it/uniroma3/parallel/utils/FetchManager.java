@@ -88,7 +88,7 @@ public class FetchManager {
 	 * @param nameOfPage
 	 * @return
 	 */
-	private String getBasePath(String nameOfPage) {
+	public String getBasePath(String nameOfPage) {
 		return configuration.getStringOfFolderForHtmlPages() + nameOfPage + "/" + nameOfPage;
 	}
 
@@ -138,7 +138,7 @@ public class FetchManager {
 	 * @param pageNumber
 	 * @param isHomepage
 	 */
-	private void savePageInLocal(Page page, String nameOfPrimaryPage, int pageNumber, boolean isHomepage) {
+	public void savePageInLocal(Page page, String nameOfPrimaryPage, int pageNumber, boolean isHomepage) {
 		// cartella dove scaricare la pagina
 		String urlBase = getBasePath(nameOfPrimaryPage) + pageNumber;
 		try {
@@ -188,7 +188,7 @@ public class FetchManager {
 	 * @param countEntryPoints
 	 * @param basePath
 	 */
-	private void makeDirectories(String basePath, int countEntryPoints) {
+	public void makeDirectories(String basePath, int countEntryPoints) {
 		new File(basePath + countEntryPoints).mkdirs();
 	}
 

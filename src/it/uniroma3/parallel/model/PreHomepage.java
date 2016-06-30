@@ -1,6 +1,7 @@
 package it.uniroma3.parallel.model;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -16,6 +17,7 @@ public class PreHomepage extends Page {
 
 	public PreHomepage(String homepageStringUrl) throws IOException {
 		super(homepageStringUrl);
+		this.possibleHomepages = new LinkedList<>();
 	}
 
 	public List<Page> getPossibleHomepages() {
