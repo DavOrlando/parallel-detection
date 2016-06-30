@@ -56,6 +56,8 @@ public class UrlUtils {
 	 */
 	public URL getAbsoluteURL(Element link) throws MalformedURLException {
 		String urlLink = link.attr("href");
+		if(urlLink.length()>1 && urlLink.charAt(0) == '/' && urlLink.charAt(1) =='/')
+			urlLink = link.attr("abs:href");
 		if (!urlLink.contains("www") && !urlLink.contains("http"))
 			urlLink = link.attr("abs:href");
 		return new URL(addHttp(urlLink));
