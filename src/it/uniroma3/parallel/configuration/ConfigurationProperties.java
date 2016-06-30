@@ -362,4 +362,14 @@ public class ConfigurationProperties {
 	public String getStringOfUserAgent() {
 		return configuration.getProperty("user-agent");
 	}
+
+	/**
+	 * Ritorna il numero minimo di label per considerare una pagina parallela,
+	 * deciso da configurazione.
+	 * 
+	 * @return
+	 */
+	public int getIntOfNumLabelMin() {
+		return Integer.valueOf(configuration.getProperty("label_min"));
+	}
 }

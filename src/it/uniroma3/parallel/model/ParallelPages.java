@@ -1,7 +1,6 @@
 package it.uniroma3.parallel.model;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -13,10 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.log4j.Logger;
-
-import com.cybozu.labs.langdetect.LangDetectException;
 
 /**
  * Classe che rappresenta un gruppo di prababili homepage parallele. Conosce
@@ -45,6 +41,7 @@ public class ParallelPages {
 		this.candidateParallelHomepages = new HashMap<>();
 		this.starterPage = starterPage;
 		this.candidateParallelHomepages.put(starterPage.getUrlRedirect().toURI(), starterPage);
+		this.listOfPairs = new LinkedList<>();
 	}
 
 	/**

@@ -13,18 +13,22 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- * Classe che rappresenta il dataset di RoadRunner, ovvero il risultato di una sua esecuzione.
+ * Classe che rappresenta il dataset di RoadRunner, ovvero il risultato di una
+ * sua esecuzione.
+ * 
  * @author davideorlando
  *
  */
 public class RoadRunnerDataSet {
 
 	private static final String ATTRIBUTE_LABEL = "//attribute/@label";
+	private static final Logger logger = Logger.getLogger(RoadRunnerDataSet.class);
 	private NodeList labelNodes;
 	private XPath xPath;
 	private Document xmlDocument;
@@ -100,40 +104,43 @@ public class RoadRunnerDataSet {
 	}
 
 	/**
-	 * Ritorna una lista di testi. Ogni testo è la concatenazione delle
-	 * stringhe di ogni label per una lingua. Quindi con due lingue avrò
-	 * due testi, uno in linguaggio1 (testo delle label in linguaggio1) e
-	 * un altro in linguaggio2(testo delle label in linguaggio2).
+	 * Ritorna una lista di testi. Ogni testo è la concatenazione delle stringhe
+	 * di ogni label per una lingua. Quindi con due lingue avrò due testi, uno
+	 * in linguaggio1 (testo delle label in linguaggio1) e un altro in
+	 * linguaggio2(testo delle label in linguaggio2).
 	 * 
 	 * @return
-	 * @throws XPathExpressionException
 	 */
 
-	public List<String> getTextFromAllLabels() throws XPathExpressionException {
+	public List<String> getTextFromAllLabels() {
 		List<String> listaStringoni = new ArrayList<>();
-		NodeList localFilenameNodes = this.getLocalFilename();
-		for (int j = 0; j < localFilenameNodes.getLength(); j++) {
-			listaStringoni.add(j, "");
-		}
-		// prendo il testo da tutte le label
-		for (String label : getStringOfLabel()) {
-			// query per sapere testo delle label
-			String getExtractedValuesXpath = "//attribute[@label='" + label + "']//inputsamples";
-			NodeList extractedValueNodes = (NodeList) xPath.compile(getExtractedValuesXpath).evaluate(xmlDocument,
-					XPathConstants.NODESET);
-			// per ogni risultato avuto dalla query appena sopra (dove
-			// chiedo testo per quella label)
-			// j rappresenta i vari source, quante label ho con stesso nome
-			// quindi quanti documenti ho allineato
-			for (int j = 0; j < extractedValueNodes.getLength(); j++) {
-				// se per doc j-esimo ho un risultato non null allora setta
-				// temp con result della query altrimenti setta temp=" "
-				String temp = " ";
-				if (extractedValueNodes.item(j).getFirstChild().getNodeValue() != null)
-					temp = extractedValueNodes.item(j).getFirstChild().getNodeValue();
-				// metodo remove rimuove elemento e lo restituisce
-				listaStringoni.add(j, listaStringoni.remove(j).concat(temp) + " ");
+		try {
+			NodeList localFilenameNodes = this.getLocalFilename();
+			for (int j = 0; j < localFilenameNodes.getLength(); j++) {
+				listaStringoni.add(j, "");
 			}
+			// prendo il testo da tutte le label
+			for (String label : getStringOfLabel()) {
+				// query per sapere testo delle label
+				String getExtractedValuesXpath = "//attribute[@label='" + label + "']//inputsamples";
+				NodeList extractedValueNodes = (NodeList) xPath.compile(getExtractedValuesXpath).evaluate(xmlDocument,
+						XPathConstants.NODESET);
+				// per ogni risultato avuto dalla query appena sopra (dove
+				// chiedo testo per quella label)
+				// j rappresenta i vari source, quante label ho con stesso nome
+				// quindi quanti documenti ho allineato
+				for (int j = 0; j < extractedValueNodes.getLength(); j++) {
+					// se per doc j-esimo ho un risultato non null allora setta
+					// temp con result della query altrimenti setta temp=" "
+					String temp = " ";
+					if (extractedValueNodes.item(j).getFirstChild().getNodeValue() != null)
+						temp = extractedValueNodes.item(j).getFirstChild().getNodeValue();
+					// metodo remove rimuove elemento e lo restituisce
+					listaStringoni.add(j, listaStringoni.remove(j).concat(temp) + " ");
+				}
+			}
+		} catch (XPathExpressionException e) {
+			logger.error(e);
 		}
 		return listaStringoni;
 	}

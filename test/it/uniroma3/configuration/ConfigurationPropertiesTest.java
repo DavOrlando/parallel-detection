@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.channels.AsynchronousServerSocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -93,10 +92,9 @@ public class ConfigurationPropertiesTest {
 	public void caricamentoTagNames_test() throws IOException {
 		List<String> stringOfTagName = ConfigurationProperties.getInstance().getStringOfTagName();
 		assertFalse(stringOfTagName.isEmpty());
-		assertEquals(3,stringOfTagName.size());
-		assertEquals(PARAGRAPH, stringOfTagName.get(0));
-		assertEquals(ANCHOR, stringOfTagName.get(1));
-		assertEquals(OPTION, stringOfTagName.get(2));
+		assertEquals(2,stringOfTagName.size());
+		assertEquals(ANCHOR, stringOfTagName.get(0));
+		assertEquals(OPTION, stringOfTagName.get(1));
 	}
 
 	@After

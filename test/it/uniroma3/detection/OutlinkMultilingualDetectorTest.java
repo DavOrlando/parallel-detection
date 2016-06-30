@@ -5,13 +5,10 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
-import java.util.Iterator;
-
 import org.jsoup.nodes.Element;
 import org.junit.Before;
 import org.junit.Test;
 
-import it.uniroma3.parallel.filter.LinkTextFilter;
 import it.uniroma3.parallel.model.Page;
 
 public class OutlinkMultilingualDetectorTest {

@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
@@ -22,6 +23,7 @@ import it.uniroma3.parallel.configuration.ConfigurationProperties;
  */
 public class CybozuLanguageDetector {
 
+	private static final Logger logger = Logger.getLogger(CybozuLanguageDetector.class);
 	private static CybozuLanguageDetector instance;
 	private Detector detector;
 
@@ -93,13 +95,17 @@ public class CybozuLanguageDetector {
 	 * 
 	 * @param testiConcatenati
 	 * @return
-	 * @throws LangDetectException
 	 */
-	public Set<String> getLanguagesOfStrings(List<String> testiConcatenati) throws LangDetectException {
+	public Set<String> getLanguagesOfStrings(List<String> testiConcatenati) {
 		Set<String> setOfLanguages = new HashSet<>();
 		for (String testo : testiConcatenati) {
-			String langDetect = textLanguageDetection(testo);
-			setOfLanguages.add(langDetect);
+			String langDetect;
+			try {
+				langDetect = textLanguageDetection(testo);
+				setOfLanguages.add(langDetect);
+			} catch (LangDetectException e) {
+				logger.error(e + " failed detection for " + testo);
+			}
 		}
 		return setOfLanguages;
 	}

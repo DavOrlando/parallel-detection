@@ -11,7 +11,6 @@ import org.jsoup.nodes.Element;
 import com.cybozu.labs.langdetect.LangDetectException;
 
 import it.uniroma3.parallel.detection.OutlinkMultilingualDetector;
-import it.uniroma3.parallel.filter.LanguageFilter;
 import it.uniroma3.parallel.filter.LinkTextFilter;
 import it.uniroma3.parallel.model.Page;
 import it.uniroma3.parallel.model.ParallelPages;
@@ -42,6 +41,7 @@ public class OutlinkDetectorImplForTest extends OutlinkMultilingualDetector {
 	 * @param document
 	 * @return
 	 */
+	@Override
 	public HashSet<Element> getHtmlElements(String elementName, Document document) {
 		HashSet<Element> elements = new HashSet<Element>();
 		for (Element element : document.select(elementName)) {

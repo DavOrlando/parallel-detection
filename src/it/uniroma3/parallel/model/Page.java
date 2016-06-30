@@ -1,7 +1,6 @@
 package it.uniroma3.parallel.model;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.log4j.Logger;

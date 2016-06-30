@@ -44,13 +44,13 @@ public class HomepageOutlinkMultilingualDetector extends OutlinkMultilingualDete
 	public ParallelPages detect(Page page)
 			throws IOException, InterruptedException, LangDetectException, URISyntaxException {
 		// da ritornare alla fine
-		ParallelPages parallelPage = new ParallelPages(page);
-		findCandidatePages(parallelPage);
-		organizeInPairs(parallelPage);
-		FetchManager.getInstance().persistParallelPages(parallelPage);
-		RoadRunnerInvocator.getInstance().runRoadRunner(parallelPage);
-		parallelPage.lasciaSoloQuestiURL(new HomepageLabelFilter().filter(parallelPage));
-		return parallelPage;
+		ParallelPages parallelPages = new ParallelPages(page);
+		findCandidatePages(parallelPages);
+		organizeInPairs(parallelPages);
+		FetchManager.getInstance().persistParallelPages(parallelPages);
+		RoadRunnerInvocator.getInstance().runRoadRunner(parallelPages);
+		parallelPages.lasciaSoloQuestiURL(new HomepageLabelFilter().filter(parallelPages));
+		return parallelPages;
 	}
 
 	/**

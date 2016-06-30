@@ -1,7 +1,6 @@
 package it.uniroma3.parallel.detection;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -32,7 +31,7 @@ public abstract class OutlinkMultilingualDetector extends MultilingualDetector {
 	private static final String COM_HASH = "com#";
 	private static final Logger logger = Logger.getLogger(OutlinkMultilingualDetector.class);
 
-	public abstract void organizeInPairs(ParallelPages parallelPage) throws LangDetectException;
+	public abstract void organizeInPairs(ParallelPages parallelPages) throws LangDetectException;
 
 	/***
 	 * Ritorna un insieme di elementi HTML presenti nella pagina e che

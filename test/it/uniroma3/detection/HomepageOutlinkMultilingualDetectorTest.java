@@ -7,7 +7,6 @@ import java.net.URL;
 import org.junit.Before;
 import org.junit.Test;
 
-import it.uniroma3.parallel.configuration.ConfigurationProperties;
 import it.uniroma3.parallel.detection.HomepageOutlinkMultilingualDetector;
 import it.uniroma3.parallel.model.Page;
 import it.uniroma3.parallel.model.ParallelPages;
