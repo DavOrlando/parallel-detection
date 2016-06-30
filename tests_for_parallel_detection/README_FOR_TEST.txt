@@ -1,0 +1,4 @@
+-Esportare la cartella tests_for_parallel-detection.zip;
+-Includere come progetti web su Eclipse tutti i progetti contenuti all’interno della folder tests_for_parallel-detection;
+-Esportare i progetti in formato war su tomcat;
+-Far partire i test del progetto parallel-detection;
