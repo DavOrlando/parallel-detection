@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : defaults.xml
+    Created on : 25 luglio 2008, 16.21
+    Author     : Valter Crescenzi
+    Description: Contains configuration for
+                 Flat Wrapper InferenceRoadRunner Wrapper Generation System
+-->
+<preferences name="Flat Preferences">
+
+    <skipTags value="a, a, "/>
+    <skipTrees value="noscript,script,style"/>
+    <skipAttributes value="selected,alt,bgcolor"/>
+    <attributeValues value="class,id,invariant,dompath"/>
+    <separators value=",-|/\()[]{}"/>
+    <evaluationSupport value="false"/>
+    <allWhiteSpaces value="false"/>
+    <distillVariantTags value="false"/>
+    <step0 value="false"/>
+    <solutions value="1"/>
+    <backtracking value="true"/>
+    <collapsingbt value="false"/>
+    <minDOMdepth value="0"/>
+    <ambiguity value="0"/> <!-- this may affect occurrences -->
+    <occurrences value="1"/>
+    <useTokenVariants value="true"/>
+    <useVariants value="true"/>
+    <useHooks value="true"/>
+    <usePluses value="false"/>
+    <useSubtrees value="true"/>
+    <useStars value="true"/>
+    <useOr value="false"/>
+    <refineVariants value="false"/>
+    <refineSubtrees value="false"/>
+    <refineStars value="false"/>
+    <forceTokenVariants value="false"/>
+    <freePlus value="false"/>
+    <maxStates value="0"/>
+    <LLk value="3"/>
+    <RRk value="3"/>
+    <disambiguate value="true"/>
+    <segmentation value="true"/>
+    <useRoles value="true"/>
+    <sizeThreshold value="3"/>
+    <suppThreshold value="0.3"/>
+    <delimiterEC value="false"/>
+
+    <prefixLabelling value="false"/>
+    <visualLabelling value="false"/>
+    <trimLabels value="true"/>
+    <minLabelLen value="2"/>
+    <maxLabelLen value="100"/>
+    <maxAlpha value="0.26175"/> <!-- 0.08725; 0.17450; 0.26175; <-> 5,10,15 degrees-->
+    <maxScore value="0.00523"/> <!-- 2% of maxAlpha -->
+    <maxDistance value="300"/>
+    <visualBoxer value="it.uniroma3.dia.roadrunner.labeller.RemoteJREXBoxer"/>
+
+    <outputdir value="output"/>
+    <logdir value="log"/>
+    <dataset_style value="/style/data.xsl"/>
+    <index_style value="/style/index.xsl"/>
+    <insertURL value="false"/>
+    <insertID value="false"/>
+    <encoding value="latin1"/><!-- DA ELIMINARE -->
+
+</preferences>
