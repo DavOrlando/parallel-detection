@@ -7,8 +7,8 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
-import it.uniroma3.parallel.model.Page;
-import it.uniroma3.parallel.model.PairOfPages;
+import it.uniroma3.parallelcorpora.model.Page;
+import it.uniroma3.parallelcorpora.model.PairOfPages;
 
 public class PairOfPagesTest {
 

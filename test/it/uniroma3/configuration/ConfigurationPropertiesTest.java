@@ -13,7 +13,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import it.uniroma3.parallel.configuration.ConfigurationProperties;
+import it.uniroma3.parallelcorpora.configuration.ConfigurationProperties;
 
 public class ConfigurationPropertiesTest {
 	private static final String OPTION = "option";

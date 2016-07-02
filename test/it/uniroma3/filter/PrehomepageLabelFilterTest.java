@@ -6,13 +6,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import it.uniroma3.parallel.detection.PreHomepageOutlinkMultilingualDetector;
-import it.uniroma3.parallel.filter.PrehomepageLabelFilter;
-import it.uniroma3.parallel.model.PairOfPages;
-import it.uniroma3.parallel.model.ParallelPages;
-import it.uniroma3.parallel.model.PreHomepage;
-import it.uniroma3.parallel.roadrunner.RoadRunnerInvocator;
-import it.uniroma3.parallel.utils.FetchManager;
+import it.uniroma3.parallelcorpora.detection.PreHomepageOutlinkMultilingualDetector;
+import it.uniroma3.parallelcorpora.filter.PrehomepageLabelFilter;
+import it.uniroma3.parallelcorpora.model.PairOfPages;
+import it.uniroma3.parallelcorpora.model.ParallelPages;
+import it.uniroma3.parallelcorpora.model.PreHomepage;
+import it.uniroma3.parallelcorpora.roadrunner.RoadRunnerInvocator;
+import it.uniroma3.parallelcorpora.utils.FetchManager;
 
 public class PrehomepageLabelFilterTest {
 

@@ -11,11 +11,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import it.uniroma3.parallel.detection.HomepageOutlinkMultilingualDetector;
-import it.uniroma3.parallel.model.Page;
-import it.uniroma3.parallel.model.ParallelPages;
-import it.uniroma3.parallel.roadrunner.RoadRunnerInvocator;
-import it.uniroma3.parallel.utils.FetchManager;
+import it.uniroma3.parallelcorpora.detection.HomepageOutlinkMultilingualDetector;
+import it.uniroma3.parallelcorpora.model.Page;
+import it.uniroma3.parallelcorpora.model.ParallelPages;
+import it.uniroma3.parallelcorpora.roadrunner.RoadRunnerInvocator;
+import it.uniroma3.parallelcorpora.utils.FetchManager;
 
 public class HomepageLabelFilterTest {
 

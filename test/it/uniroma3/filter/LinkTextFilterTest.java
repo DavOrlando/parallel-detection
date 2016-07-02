@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import it.uniroma3.parallel.filter.LinkTextFilter;
+import it.uniroma3.parallelcorpora.filter.LinkTextFilter;
 
 public class LinkTextFilterTest {
 

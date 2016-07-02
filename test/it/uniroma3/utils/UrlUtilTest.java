@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import it.uniroma3.parallel.utils.UrlUtils;
+import it.uniroma3.parallelcorpora.utils.UrlUtils;
 
 public class UrlUtilTest {
 	String urlSite;

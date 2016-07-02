@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 
-import it.uniroma3.parallel.model.Page;
-import it.uniroma3.parallel.model.ParallelPages;
+import it.uniroma3.parallelcorpora.model.Page;
+import it.uniroma3.parallelcorpora.model.ParallelPages;
 
 public class ParallelPagesTest {
 

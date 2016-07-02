@@ -7,9 +7,9 @@ import java.net.URL;
 import org.junit.Before;
 import org.junit.Test;
 
-import it.uniroma3.parallel.adapter.CrawlingFrancElefanteAdapter;
-import it.uniroma3.parallel.model.Page;
-import it.uniroma3.parallel.model.ParallelPages;
+import it.uniroma3.parallelcorpora.adapter.CrawlingFrancElefanteAdapter;
+import it.uniroma3.parallelcorpora.model.Page;
+import it.uniroma3.parallelcorpora.model.ParallelPages;
 
 public class CrawlingFrancElefanteAdapterTest {
 

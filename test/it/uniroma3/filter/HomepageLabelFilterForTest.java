@@ -2,9 +2,10 @@ package it.uniroma3.filter;
 
 import java.util.List;
 import org.apache.log4j.Logger;
-import it.uniroma3.parallel.configuration.ConfigurationProperties;
-import it.uniroma3.parallel.filter.HomepageLabelFilter;
-import it.uniroma3.parallel.utils.CybozuLanguageDetector;
+
+import it.uniroma3.parallelcorpora.configuration.ConfigurationProperties;
+import it.uniroma3.parallelcorpora.filter.HomepageLabelFilter;
+import it.uniroma3.parallelcorpora.utils.CybozuLanguageDetector;
 
 public class HomepageLabelFilterForTest extends HomepageLabelFilter {
 

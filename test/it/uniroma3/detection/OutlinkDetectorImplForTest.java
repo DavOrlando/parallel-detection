@@ -10,10 +10,10 @@ import org.jsoup.nodes.Element;
 
 import com.cybozu.labs.langdetect.LangDetectException;
 
-import it.uniroma3.parallel.detection.OutlinkMultilingualDetector;
-import it.uniroma3.parallel.filter.LinkTextFilter;
-import it.uniroma3.parallel.model.Page;
-import it.uniroma3.parallel.model.ParallelPages;
+import it.uniroma3.parallelcorpora.detection.OutlinkMultilingualDetector;
+import it.uniroma3.parallelcorpora.filter.LinkTextFilter;
+import it.uniroma3.parallelcorpora.model.Page;
+import it.uniroma3.parallelcorpora.model.ParallelPages;
 
 public class OutlinkDetectorImplForTest extends OutlinkMultilingualDetector {
 

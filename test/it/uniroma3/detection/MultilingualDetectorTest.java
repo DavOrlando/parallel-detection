@@ -9,7 +9,7 @@ import java.net.URL;
 import org.junit.Before;
 import org.junit.Test;
 
-import it.uniroma3.parallel.detection.HreflangMultilingualDetector;
+import it.uniroma3.parallelcorpora.detection.HreflangMultilingualDetector;
 
 public class MultilingualDetectorTest {
 
@@ -49,6 +49,30 @@ public class MultilingualDetectorTest {
 		URL falseMultilingualSite;
 		try {
 			falseMultilingualSite = new URL("http://www.test.citysite.com");
+			assertTrue(this.multilingualDetector.isInBlacklist(falseMultilingualSite));
+		} catch (MalformedURLException e) {
+			fail();
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	public void isBlacklistTest_wikipedia() {
+		URL falseMultilingualSite;
+		try {
+			falseMultilingualSite = new URL("http://www.wikipedia.com");
+			assertTrue(this.multilingualDetector.isInBlacklist(falseMultilingualSite));
+		} catch (MalformedURLException e) {
+			fail();
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void isBlacklistTest_wik() {
+		URL falseMultilingualSite;
+		try {
+			falseMultilingualSite = new URL("http://ko.wiktionary.org");
 			assertTrue(this.multilingualDetector.isInBlacklist(falseMultilingualSite));
 		} catch (MalformedURLException e) {
 			fail();

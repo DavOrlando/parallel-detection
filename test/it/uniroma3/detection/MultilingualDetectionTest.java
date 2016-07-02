@@ -32,7 +32,7 @@ http://www.bulthaup.com/
 
 import com.cybozu.labs.langdetect.LangDetectException;
 
-import it.uniroma3.parallel.detection.MultilingualDetection;
+import it.uniroma3.parallelcorpora.detection.MultilingualDetection;
 
 
 public class MultilingualDetectionTest {
@@ -55,7 +55,7 @@ public class MultilingualDetectionTest {
 
 	@Test
 	public void multilingualDetectionHomepage_test_real_site() throws IOException, InterruptedException, LangDetectException {
-		multiDetection.multilingualDetection("titleist.com", 2, new ReentrantLock(), new ReentrantLock(),
+		multiDetection.multilingualDetection("www.avast.com", 2, new ReentrantLock(), new ReentrantLock(),
 				new ReentrantLock(), new ReentrantLock());
 	}
 	

@@ -9,7 +9,7 @@ import org.jsoup.nodes.Element;
 import org.junit.Before;
 import org.junit.Test;
 
-import it.uniroma3.parallel.model.Page;
+import it.uniroma3.parallelcorpora.model.Page;
 
 public class OutlinkMultilingualDetectorTest {
 

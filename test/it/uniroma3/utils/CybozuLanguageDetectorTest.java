@@ -8,8 +8,8 @@ import org.junit.Test;
 
 import com.cybozu.labs.langdetect.LangDetectException;
 
-import it.uniroma3.parallel.model.Page;
-import it.uniroma3.parallel.utils.CybozuLanguageDetector;
+import it.uniroma3.parallelcorpora.model.Page;
+import it.uniroma3.parallelcorpora.utils.CybozuLanguageDetector;
 
 public class CybozuLanguageDetectorTest {
 

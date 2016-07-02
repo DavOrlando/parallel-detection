@@ -5,9 +5,9 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import it.uniroma3.parallel.detection.PreHomepageOutlinkMultilingualDetector;
-import it.uniroma3.parallel.model.ParallelPages;
-import it.uniroma3.parallel.model.PreHomepage;
+import it.uniroma3.parallelcorpora.detection.PreHomepageOutlinkMultilingualDetector;
+import it.uniroma3.parallelcorpora.model.ParallelPages;
+import it.uniroma3.parallelcorpora.model.PreHomepage;
 
 public class PreHomepageOutlinkMultilingualDetectorTest {
 

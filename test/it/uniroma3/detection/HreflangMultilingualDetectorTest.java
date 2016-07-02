@@ -10,9 +10,9 @@ import org.junit.Test;
 
 import com.cybozu.labs.langdetect.LangDetectException;
 
-import it.uniroma3.parallel.detection.HreflangMultilingualDetector;
-import it.uniroma3.parallel.model.ParallelPages;
-import it.uniroma3.parallel.model.Page;
+import it.uniroma3.parallelcorpora.detection.HreflangMultilingualDetector;
+import it.uniroma3.parallelcorpora.model.Page;
+import it.uniroma3.parallelcorpora.model.ParallelPages;
 
 public class HreflangMultilingualDetectorTest {
 
