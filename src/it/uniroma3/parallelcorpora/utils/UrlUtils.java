@@ -13,6 +13,11 @@ import org.jsoup.nodes.Element;
  */
 public class UrlUtils {
 
+	private static final String WWW = "www";
+	private static final String HTTP = "http";
+	private static final String HREF = "href";
+	private static final String ABS_HREF = "abs:href";
+	private static final String ABS_DATA_HREF = "abs:data-href";
 	private static UrlUtils instance;
 
 	private UrlUtils() {
@@ -44,7 +49,7 @@ public class UrlUtils {
 	 * @return true se contiene http all'inizio, false altrimenti.
 	 */
 	private boolean hasHttp(String urlSite) {
-		return urlSite.contains("http");
+		return urlSite.contains(HTTP);
 	}
 
 	/**
@@ -55,11 +60,13 @@ public class UrlUtils {
 	 * @throws MalformedURLException
 	 */
 	public URL getAbsoluteURL(Element link) throws MalformedURLException {
-		String urlLink = link.attr("href");
+		String urlLink = link.attr(HREF);
 		if(urlLink.length()>1 && urlLink.charAt(0) == '/' && urlLink.charAt(1) =='/')
-			urlLink = link.attr("abs:href");
-		if (!urlLink.contains("www") && !urlLink.contains("http"))
-			urlLink = link.attr("abs:href");
+			urlLink = link.attr(ABS_HREF);
+		if (!urlLink.contains(WWW) && !urlLink.contains(HTTP))
+			urlLink = link.attr(ABS_HREF);
+		if(urlLink.equals(""))
+			urlLink = link.attr(ABS_DATA_HREF);
 		return new URL(addHttp(urlLink));
 	}
 

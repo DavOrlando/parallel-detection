@@ -29,6 +29,8 @@ import it.uniroma3.parallelcorpora.utils.UrlUtils;
 
 public abstract class OutlinkMultilingualDetector extends MultilingualDetector {
 
+	private static final String ALT = "alt";
+	private static final String IMG = "img";
 	private static final String COM_HASH = "com#";
 	private static final Logger logger = Logger.getLogger(OutlinkMultilingualDetector.class);
 
@@ -93,14 +95,16 @@ public abstract class OutlinkMultilingualDetector extends MultilingualDetector {
 	 */
 	private boolean checkAltAttributes(Element link) {
 		boolean isGood = false;
-		for (Iterator<Element> iterator = link.getElementsByTag("img").iterator(); !isGood && iterator.hasNext();) {
+		for (Iterator<Element> iterator = link.getElementsByTag(IMG).iterator(); !isGood && iterator.hasNext();) {
 			Element element = iterator.next();
-			if (element.hasAttr("alt"))
-				isGood = new LinkTextFilter().filter(element.attr("alt"));
+			if (element.hasAttr(ALT))
+				isGood = new LinkTextFilter().filter(element.attr(ALT));
 		}
 		return isGood;
 	}
 
+
+	
 	/**
 	 * Controlla il linguaggio delle due pagine e ritorna true se è diverso.
 	 * 
