@@ -64,7 +64,7 @@ public class MultilingualDetection {
 								STRINGA_VUOTA, Long.toString(endTime - startTime) },
 						java.lang.Thread.currentThread().toString() + properties.getStringOfPathForTimeCSV());
 			}
-			if (groupOfHomepages != null) {
+			if (groupOfHomepages != null && !groupOfHomepages.isEmpty()) {
 				long endDetectionTime = Calendar.getInstance().getTimeInMillis();
 				synchronized (multSiteLogLock) {
 					Utils.csvWr(

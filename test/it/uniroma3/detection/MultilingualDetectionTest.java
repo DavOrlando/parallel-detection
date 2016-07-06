@@ -37,9 +37,9 @@ import it.uniroma3.parallelcorpora.detection.MultilingualDetection;
 
 public class MultilingualDetectionTest {
 	
-	private static final String HREFLANG_DETECTION = "www.ferrari.com";
-	private static final String HOMEPAGE_DETECTION = "www.toyota.com";
-	private static final String PREHOMEPAGE_DETECTION = "www.bulthaup.com";
+	private static final String HREFLANG_DETECTION = "http://localhost:8080/test/homeEn.html";
+	private static final String HOMEPAGE_DETECTION = "http://localhost:8080/testSenzaHreflang/homeIt.html";
+	private static final String PREHOMEPAGE_DETECTION = "http://localhost:8080/testForPreHomepageMultilingualDetection/twoGoodOutlink.html";
 	private MultilingualDetection multiDetection;
 
 	@Before
@@ -48,19 +48,19 @@ public class MultilingualDetectionTest {
 	}
 
 	@Test
-	public void multilingualDetectionPrehomepage_test_real_site() throws IOException, InterruptedException, LangDetectException {
+	public void multilingualDetectionPrehomepage_test() throws IOException, InterruptedException, LangDetectException {
 		multiDetection.multilingualDetection(PREHOMEPAGE_DETECTION, 2, new ReentrantLock(), new ReentrantLock(),
 				new ReentrantLock(), new ReentrantLock());
 	}
 
 	@Test
-	public void multilingualDetectionHomepage_test_real_site() throws IOException, InterruptedException, LangDetectException {
-		multiDetection.multilingualDetection("www.avast.com", 2, new ReentrantLock(), new ReentrantLock(),
+	public void multilingualDetectionHomepage_test() throws IOException, InterruptedException, LangDetectException {
+		multiDetection.multilingualDetection(HOMEPAGE_DETECTION, 2, new ReentrantLock(), new ReentrantLock(),
 				new ReentrantLock(), new ReentrantLock());
 	}
 	
 	@Test
-	public void multilingualDetectionHreflang_test_real_site() throws IOException, InterruptedException, LangDetectException {
+	public void multilingualDetectionHreflang_test() throws IOException, InterruptedException, LangDetectException {
 		multiDetection.multilingualDetection(HREFLANG_DETECTION, 2, new ReentrantLock(), new ReentrantLock(),
 				new ReentrantLock(), new ReentrantLock());
 	}

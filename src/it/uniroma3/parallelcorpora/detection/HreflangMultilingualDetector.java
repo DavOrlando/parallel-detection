@@ -22,6 +22,10 @@ import it.uniroma3.parallelcorpora.utils.UrlUtils;
  */
 public class HreflangMultilingualDetector extends MultilingualDetector {
 
+	private static final String HREFLANG = "hreflang";
+	private static final String X_DEFAULT = "x-default";
+	private static final String LINK_HREFLANG = "link[hreflang]";
+
 	/**
 	 * Si cercano nella homepage del sito passato come parametro dei link
 	 * uscenti con l'attributo hreflang, euristica che ci porta a dire che il
@@ -38,15 +42,15 @@ public class HreflangMultilingualDetector extends MultilingualDetector {
 	 */
 	@Override
 	public ParallelPages detect(Page page) throws IOException, LangDetectException, URISyntaxException {
-		Elements linksInHomePage = page.getDocument().select("link[hreflang]");
+		Elements linksInHomePage = page.getDocument().select(LINK_HREFLANG);
 		if (linksInHomePage.isEmpty())
 			return null;
 		ParallelPages groupOfHomepages = new ParallelPages(page);
-		for (Element link : linksInHomePage){
-			groupOfHomepages.addCandidateParallelHomepage(UrlUtils.getInstance().getAbsoluteURL(link));
+		for (Element link : linksInHomePage) {
+			if (!link.attr(HREFLANG).equals(X_DEFAULT))
+				groupOfHomepages.addCandidateParallelHomepage(UrlUtils.getInstance().getAbsoluteURL(link));
 		}
 		return groupOfHomepages;
 	}
- 
 
 }
