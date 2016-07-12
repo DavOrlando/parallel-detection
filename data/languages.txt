@@ -1,4 +1,4 @@
-aa,aar,aar,afar,afaraf
+ aa,aar,aar,afar,afaraf
 ab,abk,abk,abkhaz,аҧсуабызшәа,аҧсшәа
 ae,ave,ave,avestan,avesta
 af,afr,afr,afrikaans,afrikaans

@@ -13,6 +13,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import it.uniroma3.parallelcorpora.configuration.ConfigurationProperties;
 import it.uniroma3.parallelcorpora.model.Page;
@@ -31,6 +33,7 @@ public class FetchManager {
 
 	private static final String HTML = ".html";
 	private static final String HOME_PAGE = "HomePage";
+	private static final Logger logger = Logger.getLogger(FetchManager.class);
 	public static FetchManager instance;
 	private Map<URI, String> uri2LocalPath;
 	private Map<PairOfPages, RoadRunnerDataSet> pair2RRDataSet;
@@ -55,7 +58,7 @@ public class FetchManager {
 	 * @return
 	 * @throws URISyntaxException
 	 */
-	public String findPageByURL(URL url) throws URISyntaxException {
+	public String findPageSavedInLocalByURL(URL url) throws URISyntaxException {
 		return this.uri2LocalPath.get(url.toURI());
 	}
 
@@ -122,7 +125,6 @@ public class FetchManager {
 	 * @param groupOfHomepage
 	 */
 	public void persistPairOfHomepage(PairOfPages pairOfPages, String nameOfPreHomepage) {
-		makeDirectories(getBasePath(nameOfPreHomepage), pairOfPages.getPairNumber());
 		savePageInLocal(pairOfPages.getMainHomepage(), nameOfPreHomepage, pairOfPages.getPairNumber(), true);
 		savePageInLocal(pairOfPages.getHomepageFromList(1), nameOfPreHomepage, pairOfPages.getPairNumber(), false);
 	}
@@ -138,6 +140,8 @@ public class FetchManager {
 	 * @param isHomepage
 	 */
 	public void savePageInLocal(Page page, String nameOfPrimaryPage, int pageNumber, boolean isHomepage) {
+		if (isInCache(page))
+			return;
 		// cartella dove scaricare la pagina
 		String urlBase = getBasePath(nameOfPrimaryPage) + pageNumber;
 		try {
@@ -147,9 +151,23 @@ public class FetchManager {
 			else// E' l'altra pagina allora sarà la seconda della coppia.
 				this.saveAs(page, urlBase + "/" + HOME_PAGE + pageNumber + "-2" + HTML);
 		} catch (IOException | URISyntaxException e) {
-			e.printStackTrace();
+			logger.error(e);
 		}
 
+	}
+
+	/**
+	 * Verifica se la pagina è già stata scaricata in locale.
+	 * @param page
+	 * @return
+	 */
+	private boolean isInCache(Page page) {
+		try {
+			return this.uri2LocalPath.containsKey(page.getUrlRedirect().toURI());
+		} catch (URISyntaxException e1) {
+			logger.error(e1);
+			return false;
+		}
 	}
 
 	/**

@@ -74,18 +74,16 @@ public class RoadRunnerInvocator {
 	public void launchRR(PairOfPages pairOfHomepage, Lock errorLogLock, Page primaryPage)
 			throws FileNotFoundException, IOException, InterruptedException {
 		int pairNumber = pairOfHomepage.getPairNumber();
-
-		String urlBase = properties.getStringOfFolderForHtmlPages() + primaryPage.getPageName() + "/"
-				+ primaryPage.getPageName() + pairNumber;
 		FetchManager.getInstance().createFolderAndCopyStyleFile(primaryPage.getPageName() + pairNumber);
 
 		Thread t3 = new Thread() {
 			@Override
 			public void run() {
 				try {
-					String localPath = FetchManager.getInstance().findPageByURL(primaryPage.getUrlRedirect());
+					String firstPage = FetchManager.getInstance().findPageSavedInLocalByURL(pairOfHomepage.getMainHomepage().getUrlRedirect());
+					String secondPage = FetchManager.getInstance().findPageSavedInLocalByURL(pairOfHomepage.getHomepageFromList(1).getUrlRedirect());
 					rr(PARAMETRO_N + primaryPage.getPageName() + pairNumber, properties.getStringOfCommandAndPrefs(),
-							localPath, urlBase + "/" + HOME_PAGE + pairNumber + _2 + HTML);
+							firstPage, secondPage);
 					String ftv = primaryPage.getPageName() + pairNumber;
 					// alla coppia associo il suo output se esiste
 					if (new File(properties.getStringOfFolderOutput() + "/" + ftv + "/" + ftv
